@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="分类, 空白格的博客">
-    <meta name="description" content="分类 | 空白格的博客">
+    <meta name="keywords" content="分类: SpringBoot笔记, 空白格的博客">
+    <meta name="description" content="分类: SpringBoot笔记 | 空白格的博客">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>分类 | 空白格的博客</title>
+    <title>分类: SpringBoot笔记 | 空白格的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -357,7 +357,7 @@
                 
                 <a href="/categories/SpringBoot%E7%AC%94%E8%AE%B0/" title="SpringBoot笔记: 2">
                     <span class="chip center-align waves-effect waves-light
-                             chip-default "
+                             chip-active "
                             style="background-color: #F9EBEA;">SpringBoot笔记
                         <span class="tag-length">2</span>
                     </span>
@@ -370,64 +370,126 @@
 </div>
 
     
-    <style type="text/css">
-    #category-radar {
-        width: 100%;
-        height: 360px;
-    }
-</style>
 
-<div class="container" data-aos="fade-up">
-    <div class="card">
-        <div id="category-radar" class="card-content"></div>
-    </div>
-</div>
+    <article id="articles" class="container articles">
+        <div class="row tags-posts">
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2019/12/25/springboot-xue-xi-bi-ji-2/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="SpringBoot学习笔记">
+                            
+                            <span class="card-title">SpringBoot学习笔记</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary block-with-text">
+                            
+                                SpringBoot2.0学习笔记1-SpringBoot2.0入门1.1-SpringBoot2.x依赖环境和版本新特性简介：讲解新版本依赖环境和springboot2新特性概述
 
-<script type="text/javascript" src="/libs/echarts/echarts.min.js"></script>
-<script type="text/javascript">
-    let radarChart = echarts.init(document.getElementById('category-radar'));
+1、依赖版本jdk8以上, Springboot2.x用
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fas fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/SpringBoot%E7%AC%94%E8%AE%B0/" class="post-category">
+                                    SpringBoot笔记
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
 
-    
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/SpringBoot/">
+                            <span class="chip bg-color">SpringBoot</span>
+                        </a>
+                        
+                        <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                            <span class="chip bg-color">笔记</span>
+                        </a>
+                        
+                        <a href="/tags/Spring/">
+                            <span class="chip bg-color">Spring</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2019/12/25/springboot-xue-xi-bi-ji-1/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="SpringBoot学习笔记">
+                            
+                            <span class="card-title">SpringBoot学习笔记</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary block-with-text">
+                            
+                                1、Spring Boot概述1.1-Spring Boot简介
+Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程，J2EE开发的一站式解决方案。该框架使用了特定的方式
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fas fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/SpringBoot%E7%AC%94%E8%AE%B0/" class="post-category">
+                                    SpringBoot笔记
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
 
-    let option = {
-        title: {
-            left: 'center',
-            text: '文章分类雷达图',
-            textStyle: {
-                fontWeight: 500,
-                fontSize: 22
-            }
-        },
-        tooltip: {},
-        radar: {
-            name: {
-                textStyle: {
-                    color: '#3C4858'
-                }
-            },
-            indicator: [{"name":"SpringBoot笔记","max":4}],
-            nameGap: 5,
-            center: ['50%','55%'],
-            radius: '66%'
-        },
-        series: [{
-            type: 'radar',
-            color: ['#3ecf8e'],
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data : [
-                {
-                    value : [2],
-                    name : '文章分类数量'
-                }
-            ]
-        }]
-    };
-
-    radarChart.setOption(option);
-</script>
-    
-
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/SpringBoot/">
+                            <span class="chip bg-color">SpringBoot</span>
+                        </a>
+                        
+                        <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                            <span class="chip bg-color">笔记</span>
+                        </a>
+                        
+                        <a href="/tags/Spring/">
+                            <span class="chip bg-color">Spring</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </article>
 </main>
+
+
 
 
     <footer class="page-footer bg-color">
