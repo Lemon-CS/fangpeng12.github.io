@@ -420,12 +420,29 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                                <span class="chip bg-color">笔记</span>
+                            </a>
+                        
+                            <a href="/tags/kafka/">
+                                <span class="chip bg-color">kafka</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Kafka%E7%AC%94%E8%AE%B0/" class="post-category">
+                                Kafka笔记
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -434,7 +451,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-01-03
+                    2019-12-25
                 </div>
                 
 
@@ -491,12 +508,12 @@
 <li><strong>Topic</strong>：Topic为一个逻辑上的概念，每条发布到Kafka集群的消息都有一个类别，这个类别被称为Topic. Producer可以针对某个主题进行生产，Consumer可以针对某个主题进行订阅。</li>
 <li><strong>Partition</strong>：Parition是物理上的概念，每个Topic包含一个或多个Partition。Kafka通过partition对topic的数据文件切片，可以将一个Topic可以分布存储到多个Broker上。</li>
 </ul>
-<h1 id="2-kafka架构"><a href="#2-kafka架构" class="headerlink" title="2-kafka架构"></a>2-kafka架构</h1><h2 id="2-1-kafka部署架构"><a href="#2-1-kafka部署架构" class="headerlink" title="2.1-kafka部署架构"></a>2.1-kafka部署架构</h2><p><img src="/2020/01/03/kafka-xue-xi-bi-ji/kafka%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84.png" alt="kafka部署架构"></p>
+<h1 id="2-kafka架构"><a href="#2-kafka架构" class="headerlink" title="2-kafka架构"></a>2-kafka架构</h1><h2 id="2-1-kafka部署架构"><a href="#2-1-kafka部署架构" class="headerlink" title="2.1-kafka部署架构"></a>2.1-kafka部署架构</h2><p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84.png" alt="kafka部署架构"></p>
 <ul>
 <li>完全的分布式：Producer、Broker、Consumer、zookeeper都是分布式</li>
 <li>一个典型的Kafka集群中包含若干Producer，若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干Consumer Group，以及一个<a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Zookeeper</a>集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在Consumer Group发生变化时进行rebalance。Producer使用push模式将消息发布到broker，Consumer使用pull模式从broker订阅并消费消息</li>
 </ul>
-<h2 id="2-2-kafka集群架构"><a href="#2-2-kafka集群架构" class="headerlink" title="2.2-kafka集群架构"></a>2.2-kafka集群架构</h2><p><img src="/2020/01/03/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84.png" alt="kafka集群架构"></p>
+<h2 id="2-2-kafka集群架构"><a href="#2-2-kafka集群架构" class="headerlink" title="2.2-kafka集群架构"></a>2.2-kafka集群架构</h2><p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84.png" alt="kafka集群架构"></p>
 <h2 id="2-3-kafka存储结构"><a href="#2-3-kafka存储结构" class="headerlink" title="2.3-kafka存储结构"></a>2.3-kafka存储结构</h2><h3 id="2-3-1-Topic中partition存储分布"><a href="#2-3-1-Topic中partition存储分布" class="headerlink" title="2.3.1-Topic中partition存储分布"></a>2.3.1-Topic中partition存储分布</h3><ul>
 <li><strong>存储根目录</strong>：kafka的Log文件存储在Kafka broker中，其的根目录在server.properties文件中配置(参数 <code>log.dirs=xxx/message-folder</code>)   </li>
 <li><strong>partition目录命名</strong>：在Kafka的Log文件存储中，同一个topic下有多个不同partition，每个partition为一个目录，partiton命名规则为topic名称+有序序号，第一个partiton序号从0开始，序号最大值为partitions数量减1</li>
@@ -505,17 +522,17 @@
 <p>例如创建1个topic名称分别为report_push, partitions=3，假设有三个broker（Broker1、Broker2、Broker3），那么其存储路径和目录规则可能为：<br>    Broker1根目录下有目录： report_push-0<br>    Broker2根目录下有目录： report_push-1<br>    Broker3根目录下有目录： report_push-2   </p>
 <p><code>partition将均衡的分布在各个broker上，这样有助于提高吞吐量。</code></p>
 <h3 id="2-3-2-partiton中文件存储方式"><a href="#2-3-2-partiton中文件存储方式" class="headerlink" title="2.3.2-partiton中文件存储方式"></a>2.3.2-partiton中文件存储方式</h3><p>每个partition在存储层面是append log文件。任何发布到此partition的消息都会被直接追加到log文件的尾部，每条消息在文件中的位置称为offset（偏移量），offset为一个long型数字，它是唯一标记一条消息。partition是以文件的形式存储在文件系统中。Logs文件根据broker中的配置要求,保留一定时间后删除来释放磁盘空间。</p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/partition.png" alt="partition"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/partition.png" alt="partition"></p>
 <ul>
 <li><strong>Partition</strong>：<pre><code>Topic 物理上的分组，一个 topic 可以分为多个 partition，每个 partition 是一个有序的队列。       partition 中的每条消息都会被分配一个有序的 id（offset）。</code></pre></li>
 <li>每个partion(目录)相当于一个巨型文件被平均分配到多个大小相等segment(段)数据文件中，segment文件大小由属性log.segment.bytes 指定。但每个段segment file消息数量不一定相等，这种特性方便old segment file快速被删除。</li>
 </ul>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/segment.png" alt="segment"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment.png" alt="segment"></p>
 <h3 id="2-3-3-partiton中segment文件存储结构"><a href="#2-3-3-partiton中segment文件存储结构" class="headerlink" title="2.3.3-partiton中segment文件存储结构"></a>2.3.3-partiton中segment文件存储结构</h3><ul>
 <li><strong>Segment file组成：</strong>由2大部分组成，分别为index file和data file，此2个文件一一对应，成对出现，后缀”.index”和“.log”分别表示为segment索引文件、数据文件.</li>
 <li><strong>Segment文件命名规则：</strong>partion全局的第一个segment从0开始，后续每个segment文件名为上一个segment文件最后一条消息的offset值。数值最大为64位long大小，19位数字字符长度，没有数字用0填充。</li>
 </ul>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/segment%E6%96%87%E4%BB%B6%E7%BB%84%E6%88%90.png" alt="segment文件组成"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E6%96%87%E4%BB%B6%E7%BB%84%E6%88%90.png" alt="segment文件组成"></p>
 <h3 id="2-3-4-Segment中message存储结构"><a href="#2-3-4-Segment中message存储结构" class="headerlink" title="2.3.4-Segment中message存储结构"></a>2.3.4-Segment中message存储结构</h3><ul>
 <li><p><strong>Message组成</strong>：每条Message包含了以下三个属性</p>
 <table>
@@ -546,10 +563,10 @@
 </ul>
 <h3 id="2-3-5-segment索引文件、数据文件的关系"><a href="#2-3-5-segment索引文件、数据文件的关系" class="headerlink" title="2.3.5-segment索引文件、数据文件的关系"></a>2.3.5-segment索引文件、数据文件的关系</h3><ul>
 <li><p><strong>segment索引文件</strong>：由下图中看出，index文件有两列，第一列代表message在log文件中的位置，第二列代表物理偏移量。以索引文件中 元数据3,497为例，依次在数据文件中表示第3个message(在全局partiton表示第368772个message)、以及该消息的物理偏移地址为497。索引文件稀疏索引方式存储，它减少索引文件大小。索引文件被映射到内存中，有助于提高查找速度</p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/segment%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84.png" alt="segment索引结构"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84.png" alt="segment索引结构"></p>
 </li>
 <li><p><strong>segment数据文件</strong>：由上图了解到segment data file由许多message组成，message物理结构如下图</p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/segment%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png" alt="segment物理结构"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png" alt="segment物理结构"></p>
 </li>
 <li><p><strong>Message的查找过程</strong>：</p>
 <p><code>比如：要查找绝对offset为7的Message：</code><br>1、首先是用二分查找确定它是在哪个LogSegment中，自然是在第一个Segment中。</p>
@@ -559,11 +576,11 @@
 <p>一句话，Kafka的Message存储采用了分区(partition)，分段(LogSegment)和稀疏索引这几个手段来达到了高效性。</p>
 </li>
 </ul>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/message%E6%9F%A5%E6%89%BE.png" alt="message查找"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/message%E6%9F%A5%E6%89%BE.png" alt="message查找"></p>
 <h3 id="2-3-6-Replication-存储副本"><a href="#2-3-6-Replication-存储副本" class="headerlink" title="2.3.6-Replication 存储副本"></a>2.3.6-Replication 存储副本</h3><p>Kafka从0.8开始提供<code>High Availability机制</code>。</p>
 <p>​    <strong>同一个Partition可能会多个Replication ，这些Replication之间将会选举一个Leader，Producer和Consumer只与这个Leader交互，其它Replica作为Follower从Leader中复制数据。Kafka内部有自己的算法将Replica均匀分布到整个集群，如果某些broker宕机，仍能保持kafka集群的高可用性</strong>。</p>
 <p><code>Kafka分配Replica的算法如下</code>：<br>1、将所Broker（假设共n个Broker和待分配的Partition排序 )<br>2、将第i个Partition分配到第（i mod n个Broker上）<br>3、将第i个Partition的第j个Replica分配到第（(i + j) mode n个Broker上</p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/replication.png" alt="replication"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/replication.png" alt="replication"></p>
 <p><code>Kafka 的Leader Election</code><br>      Kafka在ZooKeeper中动态维护了一个<code>ISR</code>（in-sync replicas，这个ISR里的所Replica都跟上了leader，只ISR里的成员才被为Leader的可能），kafka引进Leader的概念是为了保持数据的一致性。</p>
 <h1 id="3-kafka生产和消费"><a href="#3-kafka生产和消费" class="headerlink" title="3-kafka生产和消费"></a>3-kafka生产和消费</h1><h2 id="3-1-kafka生产"><a href="#3-1-kafka生产" class="headerlink" title="3.1-kafka生产"></a>3.1-kafka生产</h2><p><strong>Producer：</strong>消息生产者，就是向Kafka broker发消息的客户端。</p>
 <p>Producer使用<code>push模式</code>将消息发布到broker，<strong>一个topic在集群中可以有多个partition，消息发送到哪个分区上， 由producer客户端决定</strong>， producer端实现“消息均衡分发”，一般可通过如下的<code>路由策略</code>实现：</p>
@@ -586,13 +603,13 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9.png" alt="kafka消费"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9.png" alt="kafka消费"></p>
 <p><code>注:同一个group中的consumer个数最好不要超过topic的partition数，如果超过，那么将有consumer处于闲置状态</code></p>
 <h2 id="3-3-Kafka如何保证消息只能被消费一次呢？"><a href="#3-3-Kafka如何保证消息只能被消费一次呢？" class="headerlink" title="3.3-Kafka如何保证消息只能被消费一次呢？"></a>3.3-Kafka如何保证消息只能被消费一次呢？</h2><p>Consumer Group在消费某Topic时，kafka通过一个特殊的topic 即<strong>consumer_offsets记录该消费组Offset消费偏移量，最新Consumer加入并消费某一主题时，将会从可以从</strong>consumer_offsets获取最新的Offset点开始消费。在topic中存储结构如下：</p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9%E8%BF%87%E7%A8%8B.png" alt="kafka消费过程"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9%E8%BF%87%E7%A8%8B.png" alt="kafka消费过程"></p>
 <p><code>注：kafka只能保证同一个Partition中的消息消费是顺序性的，不能保证整个topic中的消息消费的顺序</code></p>
 <h2 id="3-4-kafka集群管理"><a href="#3-4-kafka集群管理" class="headerlink" title="3.4-kafka集群管理"></a>3.4-kafka集群管理</h2><p>Zookeeper在Kafka中<strong>用于存储集群MataData并管理、协调Kafka代理。</strong></p>
-<p><img src="/2020/01/03/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86.png" alt="kafka集群管理"></p>
+<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86.png" alt="kafka集群管理"></p>
 <ul>
 <li><p><strong>Zookeeper在Kafka中的用途:</strong></p>
 <p><strong>用于管理、协调Kafka代理。</strong>每个Kafka代理都通过ZooKeeper协调其它Kafka代理。当Kafka系统中新增了代理或者某个代理故障失效时，ZooKeeper服务将通知生产者和消费者。生产者和消费者据此开始与其它代理协调工作</p>
@@ -679,7 +696,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2020/01/03/kafka-xue-xi-bi-ji/">https://fangpeng12.github.io/2020/01/03/kafka-xue-xi-bi-ji/</a>
+                    <a href="https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/">https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -716,7 +733,15 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                                    <span class="chip bg-color">笔记</span>
+                                </a>
+                            
+                                <a href="/tags/kafka/">
+                                    <span class="chip bg-color">kafka</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -880,48 +905,9 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
-            <div class="card">
-                <a href="/2020/01/03/kafka-xue-xi-bi-ji/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Kafka学习笔记">
-                        
-                        <span class="card-title">Kafka学习笔记</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            Kafka学习笔记1-kafka介绍1.1-什么是kafka？Apache Kafka是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-03
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            fangpeng
-                            
-                        </span>
-                    </div>
-                </div>
-
-                
-            </div>
-        </div>
-        
-        
         <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
                 <a href="/2019/12/25/springboot-bi-ji-er/">
                     <div class="card-image">
@@ -938,6 +924,64 @@
                             SpringBoot2.0学习笔记1-SpringBoot2.0入门1.1-SpringBoot2.x依赖环境和版本新特性简介：讲解新版本依赖环境和springboot2新特性概述
 
 1、依赖版本jdk8以上, Springboot2.x用
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/SpringBoot%E7%AC%94%E8%AE%B0/" class="post-category">
+                                    SpringBoot笔记
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/SpringBoot/">
+                        <span class="chip bg-color">SpringBoot</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                        <span class="chip bg-color">笔记</span>
+                    </a>
+                    
+                    <a href="/tags/Spring/">
+                        <span class="chip bg-color">Spring</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/12/25/springboot-bi-ji-yi/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="SpringBoot学习笔记1">
+                        
+                        <span class="card-title">SpringBoot学习笔记1</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            1、Spring Boot概述1.1-Spring Boot简介
+Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程，J2EE开发的一站式解决方案。该框架使用了特定的方式
                         
                     </div>
                     <div class="publish-info">
