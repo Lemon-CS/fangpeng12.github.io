@@ -2303,7 +2303,7 @@ logging<span class="token punctuation">.</span>pattern<span class="token punctua
         <span class="token comment" spellcheck="true">//转发到/error</span>
         <span class="token keyword">return</span> <span class="token string">"forward:/error"</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span></code></pre>
-<h4 id="6-2-3-将我们的定制数据携带出去；"><a href="#6-2-3-将我们的定制数据携带出去；" class="headerlink" title="6.2-3 将我们的定制数据携带出去；"></a>6.2-3 将我们的定制数据携带出去；</h4><p>出现错误以后，会来到/error请求，会被BasicErrorController处理，响应出去可以获取的数据是由getErrorAttributes得到的（是AbstractErrorController（ErrorController）规定的方法）；</p>
+<h3 id="6-2-3-将我们的定制数据携带出去；"><a href="#6-2-3-将我们的定制数据携带出去；" class="headerlink" title="6.2-3 将我们的定制数据携带出去；"></a>6.2-3 将我们的定制数据携带出去；</h3><p>出现错误以后，会来到/error请求，会被BasicErrorController处理，响应出去可以获取的数据是由getErrorAttributes得到的（是AbstractErrorController（ErrorController）规定的方法）；</p>
 <p> 1、完全来编写一个ErrorController的实现类【或者是编写AbstractErrorController的子类】，放在容器中；</p>
 <p> 2、页面上能用的数据，或者是json返回能用的数据都是通过errorAttributes.getErrorAttributes得到；</p>
 <p> 容器中DefaultErrorAttributes.getErrorAttributes()；默认进行数据处理的；</p>
@@ -3228,7 +3228,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">18.1k</span>&nbsp;字
+                class="white-color">32.6k</span>&nbsp;字
             
             
             
