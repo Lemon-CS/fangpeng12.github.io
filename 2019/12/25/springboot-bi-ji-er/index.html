@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    12.3k
+                    18.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    55 分
+                    83 分
                 </div>
                 
 				
@@ -1578,7 +1578,7 @@ requestContextFilter</code></pre><ol start="2">
 <h2 id="7-3-SpringBoot整合Mybatis实操和打印SQL语句"><a href="#7-3-SpringBoot整合Mybatis实操和打印SQL语句" class="headerlink" title="7.3-SpringBoot整合Mybatis实操和打印SQL语句"></a>7.3-SpringBoot整合Mybatis实操和打印SQL语句</h2><ol>
 <li><p>控制台打印sql语句        </p>
 <pre><code>#增加打印sql语句，一般用于本地开发测试
-`mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl`</code></pre></li>
+   `mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl`</code></pre></li>
 <li><p>增加mapper代码    </p>
 <pre class=" language-java"><code class="language-java">        <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"SELECT * FROM user"</span><span class="token punctuation">)</span>
     <span class="token annotation punctuation">@Results</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
@@ -1695,14 +1695,14 @@ PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛�
 <h2 id="8-2-源码编译安装Redis4-x"><a href="#8-2-源码编译安装Redis4-x" class="headerlink" title="8.2-源码编译安装Redis4.x"></a>8.2-源码编译安装Redis4.x</h2><ol>
 <li><p>快速安装  <a href="https://redis.io/download#installation" target="_blank" rel="noopener">https://redis.io/download#installation</a></p>
 <pre><code>    wget http://download.redis.io/releases/redis-4.0.9.tar.gz
-    tar xzf redis-4.0.9.tar.gz
-    cd redis-4.0.9
-    make</code></pre><p> 启动服务端：src/redis-server<br> 启动客户端：src/redis-cli</p>
+       tar xzf redis-4.0.9.tar.gz
+       cd redis-4.0.9
+       make</code></pre><p> 启动服务端：src/redis-server<br> 启动客户端：src/redis-cli</p>
 </li>
 <li><p>默认是本地访问的，需要开放外网访问</p>
 <pre><code>1）打开redis.conf文件在NETWORK部分修改
-   注释掉bind 127.0.0.1可以使所有的ip访问redis
-   修改 protected-mode，值改为no</code></pre></li>
+      注释掉bind 127.0.0.1可以使所有的ip访问redis
+      修改 protected-mode，值改为no</code></pre></li>
 </ol>
 <h2 id="8-3-SpringBoot整合redis实战"><a href="#8-3-SpringBoot整合redis实战" class="headerlink" title="8.3-SpringBoot整合redis实战"></a>8.3-SpringBoot整合redis实战</h2><ol>
 <li><p>官网：<a href="https://docs.spring.io/spring-boot/docs/2.1.0.BUILD-SNAPSHOT/reference/htmlsingle/#boot-features-redis" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/2.1.0.BUILD-SNAPSHOT/reference/htmlsingle/#boot-features-redis</a><br>集群文档：<a href="https://docs.spring.io/spring-data/data-redis/docs/current/reference/html/#cluster" target="_blank" rel="noopener">https://docs.spring.io/spring-data/data-redis/docs/current/reference/html/#cluster</a></p>
@@ -2455,9 +2455,9 @@ PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛�
 <ol start="2">
 <li><p>定义异步任务类并使用@Component标记组件被容器扫描,异步方法加上@Async</p>
 <pre><code>    注意点：
-        1）要把异步任务封装到类里面，不能直接写到Controller
-        2）增加Future&lt;String&gt; 返回结果 AsyncResult&lt;String&gt;(&quot;task执行完成&quot;);  
-        3）如果需要拿到结果 需要判断全部的 task.isDone()</code></pre><p><code>@EnableAsync</code> 表示支持异步任务，springboot对于异步，定时，缓存，切面等的配置都是通过在启动类上加 @EnableXXX来配置的。</p>
+           1）要把异步任务封装到类里面，不能直接写到Controller
+           2）增加Future&lt;String&gt; 返回结果 AsyncResult&lt;String&gt;(&quot;task执行完成&quot;);  
+           3）如果需要拿到结果 需要判断全部的 task.isDone()</code></pre><p><code>@EnableAsync</code> 表示支持异步任务，springboot对于异步，定时，缓存，切面等的配置都是通过在启动类上加 @EnableXXX来配置的。</p>
 <p><code>@Async</code>表示该方法会异步执行，也就是说主线程会直接跳过该方法，而是使用线程池中的线程来执行该方法。</p>
 <pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AsyncTask</span> <span class="token punctuation">{</span>
@@ -2528,7 +2528,13 @@ PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛�
 <span class="token punctuation">}</span></code></pre>
 </li>
 </ol>
-<h2 id="9-3-SpringBootz整合Quartz"><a href="#9-3-SpringBootz整合Quartz" class="headerlink" title="9.3-SpringBootz整合Quartz"></a>9.3-SpringBootz整合Quartz</h2><ol>
+<h2 id="9-3-SpringBootz整合Quartz"><a href="#9-3-SpringBootz整合Quartz" class="headerlink" title="9.3-SpringBootz整合Quartz"></a>9.3-SpringBootz整合Quartz</h2><p>Quartz是一款功能强大的任务调度器，可以实现较为复杂的调度功能，如每月一号执行、每天凌晨执行、每周五执行等等，还支持分布式调度。本文使用Springboot+Mybatis+Quartz实现对定时任务的增、删、改、查、启用、停用等功能。并把定时任务持久化到数据库以及支持集群。</p>
+<h3 id="Quartz的3个基本要素"><a href="#Quartz的3个基本要素" class="headerlink" title="Quartz的3个基本要素"></a>Quartz的3个基本要素</h3><ul>
+<li>Scheduler：调度器。所有的调度都是由它控制。</li>
+<li>Trigger： 触发器。决定什么时候来执行任务。</li>
+<li>JobDetail &amp; Job： JobDetail定义的是任务数据，而真正的执行逻辑是在Job中。使用JobDetail + Job而不是Job，这是因为任务是有可能并发执行，如果Scheduler直接使用Job，就会存在对同一个Job实例并发访问的问题。而JobDetail &amp; Job 方式，sheduler每次执行，都会根据JobDetail创建一个新的Job实例，这样就可以规避并发访问的问题。</li>
+</ul>
+<ol>
 <li><p>引入依赖jar包</p>
 <pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--QuartZ--></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
@@ -2536,15 +2542,25 @@ PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛�
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-quartz<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
 </li>
+</ol>
+<ol start="2">
 <li><p>添加配置application-quartz.yml</p>
 <pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token comment" spellcheck="true">#配置数据源</span>
+  <span class="token key atrule">datasource</span><span class="token punctuation">:</span>
+    <span class="token key atrule">driver-class-name</span><span class="token punctuation">:</span> com.mysql.jdbc.Driver
+    <span class="token key atrule">url</span><span class="token punctuation">:</span> jdbc<span class="token punctuation">:</span>mysql<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>3306/testquartz<span class="token punctuation">?</span>serverTimezone=UTC<span class="token important">&amp;useSSL</span>=false<span class="token important">&amp;useUnicode</span>=true<span class="token important">&amp;characterEncoding</span>=UTF<span class="token punctuation">-</span><span class="token number">8</span>
+    <span class="token key atrule">username</span><span class="token punctuation">:</span> root
+    <span class="token key atrule">password</span><span class="token punctuation">:</span> password
   <span class="token key atrule">quartz</span><span class="token punctuation">:</span>
-    <span class="token comment" spellcheck="true">#相关属性配置</span>
+    <span class="token comment" spellcheck="true">#持久化到数据库方式</span>
+    <span class="token key atrule">job-store-type</span><span class="token punctuation">:</span> jdbc
+    <span class="token key atrule">initialize-schema</span><span class="token punctuation">:</span> embedded
     <span class="token key atrule">properties</span><span class="token punctuation">:</span>
       <span class="token key atrule">org</span><span class="token punctuation">:</span>
         <span class="token key atrule">quartz</span><span class="token punctuation">:</span>
           <span class="token key atrule">scheduler</span><span class="token punctuation">:</span>
-            <span class="token key atrule">instanceName</span><span class="token punctuation">:</span> clusteredScheduler
+            <span class="token key atrule">instanceName</span><span class="token punctuation">:</span> MyScheduler
             <span class="token key atrule">instanceId</span><span class="token punctuation">:</span> AUTO
           <span class="token key atrule">jobStore</span><span class="token punctuation">:</span>
             <span class="token key atrule">class</span><span class="token punctuation">:</span> org.quartz.impl.jdbcjobstore.JobStoreTX
@@ -2556,15 +2572,855 @@ PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛�
           <span class="token key atrule">threadPool</span><span class="token punctuation">:</span>
             <span class="token key atrule">class</span><span class="token punctuation">:</span> org.quartz.simpl.SimpleThreadPool
             <span class="token key atrule">threadCount</span><span class="token punctuation">:</span> <span class="token number">10</span>
-            <span class="token key atrule">threadPriority</span><span class="token punctuation">:</span> <span class="token number">5</span>
-            <span class="token key atrule">threadsInheritContextClassLoaderOfInitializingThread</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
-    <span class="token comment" spellcheck="true">#数据库方式</span>
-    <span class="token key atrule">job-store-type</span><span class="token punctuation">:</span> jdbc
-    <span class="token comment" spellcheck="true">#初始化表结构</span>
-    <span class="token comment" spellcheck="true">#jdbc:</span>
-      <span class="token comment" spellcheck="true">#initialize-schema: never</span></code></pre>
+         <span class="token key atrule">threadPriority</span><span class="token punctuation">:</span> <span class="token number">5</span>
+            <span class="token key atrule">threadsInheritContextClassLoaderOfInitializingThread</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+</li>
+<li><p>实现<code>Job</code>接口并且在<code>execute</code>方法中实现自己的业务逻辑</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloworldJob</span> <span class="token keyword">extends</span> <span class="token class-name">QuartzJobBean</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    HelloworldService helloworldService<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">executeInternal</span><span class="token punctuation">(</span>JobExecutionContext jobExecutionContext<span class="token punctuation">)</span> <span class="token keyword">throws</span> JobExecutionException <span class="token punctuation">{</span>
+        helloworldService<span class="token punctuation">.</span><span class="token function">printHelloWorld</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello world! :"</span> <span class="token operator">+</span> jobExecutionContext<span class="token punctuation">.</span><span class="token function">getJobDetail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>添加配置类</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">QuartzConfig</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> JobDetail <span class="token function">myJobDetail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        JobDetail jobDetail <span class="token operator">=</span> JobBuilder<span class="token punctuation">.</span><span class="token function">newJob</span><span class="token punctuation">(</span>HiJob<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">withIdentity</span><span class="token punctuation">(</span><span class="token string">"myJob1"</span><span class="token punctuation">,</span><span class="token string">"myJobGroup1"</span><span class="token punctuation">)</span>
+                <span class="token comment" spellcheck="true">//JobDataMap可以给任务execute传递参数</span>
+                <span class="token punctuation">.</span><span class="token function">usingJobData</span><span class="token punctuation">(</span><span class="token string">"job_param"</span><span class="token punctuation">,</span><span class="token string">"job_param1"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">storeDurably</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> jobDetail<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> Trigger <span class="token function">myTrigger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        Trigger trigger <span class="token operator">=</span> TriggerBuilder<span class="token punctuation">.</span><span class="token function">newTrigger</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">forJob</span><span class="token punctuation">(</span><span class="token function">myJobDetail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">withIdentity</span><span class="token punctuation">(</span><span class="token string">"myTrigger1"</span><span class="token punctuation">,</span><span class="token string">"myTriggerGroup1"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">usingJobData</span><span class="token punctuation">(</span><span class="token string">"job_trigger_param"</span><span class="token punctuation">,</span><span class="token string">"job_trigger_param1"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">startNow</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token comment" spellcheck="true">//.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(5).repeatForever())</span>
+                <span class="token punctuation">.</span><span class="token function">withSchedule</span><span class="token punctuation">(</span>CronScheduleBuilder<span class="token punctuation">.</span><span class="token function">cronSchedule</span><span class="token punctuation">(</span><span class="token string">"0/5 * * * * ? 2018"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> trigger<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>Quartz使用同一组数据库表作集群只需要配置相同的<code>instanceName</code>实例名称，以及设置<code>org.quartz.jobStore.isClustered = true</code><br>启动两个节点后关闭其中正在跑任务的节点，另一个节点会自动检测继续运行定时任务</p>
 </li>
 </ol>
+<p>注：多任务的问题，多个<code>JobDetail</code>使用同一个<code>Trigger</code>报错：<code>Trigger does not reference given job!</code></p>
+<p>​        一个Job可以对应多个Trigger，但多个Job绑定一个Trigger报错。</p>
+<h1 id="10-Logback日志框架介绍和SpringBoot整合"><a href="#10-Logback日志框架介绍和SpringBoot整合" class="headerlink" title="10-Logback日志框架介绍和SpringBoot整合"></a>10-Logback日志框架介绍和SpringBoot整合</h1><h2 id="10-1-新日志框架LogBack介绍"><a href="#10-1-新日志框架LogBack介绍" class="headerlink" title="10.1-新日志框架LogBack介绍"></a>10.1-新日志框架LogBack介绍</h2><ol>
+<li><p>常用处理java的日志组件 slf4j,log4j,logback,common-logging 等</p>
+</li>
+<li><p>logback介绍：</p>
+<p>​    基于Log4j基础上大量改良，不能单独使用，推荐配合日志框架SLF4J来使用<br>​    logback当前分成三个模块：logback-core,logback-classic和logback-access;<br>​    logback-core是其它两个模块的基础模块</p>
+</li>
+<li><p>Logback的核心对象：</p>
+<pre><code>Logger：日志记录器
+Appender：指定日志输出的目的地，目的地可以是控制台，文件
+Layout：日志布局 格式化日志信息的输出</code></pre></li>
+<li><p>日志级别：DEBUG &lt; INFO &lt; WARN &lt; ERROR</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span>log4j示例<span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span><span class="token punctuation">=</span>        
+<span class="token comment" spellcheck="true">### 设置###</span>
+<span class="token attr-name">log4j.rootLogger</span> <span class="token punctuation">=</span> <span class="token attr-value">debug,stdout,D,E</span>
+
+<span class="token comment" spellcheck="true">### 输出信息到控制抬 ###</span>
+<span class="token attr-name">log4j.appender.stdout</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.ConsoleAppender</span>
+<span class="token attr-name">log4j.appender.stdout.Target</span> <span class="token punctuation">=</span> <span class="token attr-value">System.out</span>
+<span class="token attr-name">log4j.appender.stdout.layout</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.PatternLayout</span>
+<span class="token attr-name">log4j.appender.stdout.layout.ConversionPattern</span> <span class="token punctuation">=</span> <span class="token attr-value">[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n</span>
+
+<span class="token comment" spellcheck="true">### 输出DEBUG 级别以上的日志到=D://logs/error.log ###</span>
+<span class="token attr-name">log4j.appender.D</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.DailyRollingFileAppender</span>
+<span class="token attr-name">log4j.appender.D.File</span> <span class="token punctuation">=</span> <span class="token attr-value">D://logs/log.log</span>
+<span class="token attr-name">log4j.appender.D.Append</span> <span class="token punctuation">=</span> <span class="token attr-value">true</span>
+<span class="token attr-name">log4j.appender.D.Threshold</span> <span class="token punctuation">=</span> <span class="token attr-value">DEBUG </span>
+<span class="token attr-name">log4j.appender.D.layout</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.PatternLayout</span>
+<span class="token attr-name">log4j.appender.D.layout.ConversionPattern</span> <span class="token punctuation">=</span> <span class="token attr-value">%-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n</span>
+
+<span class="token comment" spellcheck="true">### 输出ERROR 级别以上的日志到=D://logs/error.log ###</span>
+<span class="token attr-name">log4j.appender.E</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.DailyRollingFileAppender</span>
+<span class="token attr-name">log4j.appender.E.File</span> <span class="token punctuation">=</span><span class="token attr-value">E://logs/error.log </span>
+<span class="token attr-name">log4j.appender.E.Append</span> <span class="token punctuation">=</span> <span class="token attr-value">true</span>
+<span class="token attr-name">log4j.appender.E.Threshold</span> <span class="token punctuation">=</span> <span class="token attr-value">ERROR </span>
+<span class="token attr-name">log4j.appender.E.layout</span> <span class="token punctuation">=</span> <span class="token attr-value">org.apache.log4j.PatternLayout</span>
+<span class="token attr-name">log4j.appender.E.layout.ConversionPattern</span> <span class="token punctuation">=</span> <span class="token attr-value">%-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n </span></code></pre>
+</li>
+<li><p>Log4j日志转换为logback在线工具（支持log4j.properties转换为logback.xml,不支持 log4j.xml转换为logback.xml） <a href="https://logback.qos.ch/translator/" target="_blank" rel="noopener">https://logback.qos.ch/translator/</a></p>
+</li>
+</ol>
+<h2 id="10-2-SpringBoot2-x日志讲解和Logback"><a href="#10-2-SpringBoot2-x日志讲解和Logback" class="headerlink" title="10.2-SpringBoot2.x日志讲解和Logback"></a>10.2-SpringBoot2.x日志讲解和Logback</h2><ol>
+<li><p>官网介绍：<a href="https://docs.spring.io/spring-boot/docs/2.1.0.BUILD-SNAPSHOT/reference/htmlsingle/#boot-features-logging" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/2.1.0.BUILD-SNAPSHOT/reference/htmlsingle/#boot-features-logging</a></p>
+<p>各个组件案例：<a href="https://logback.qos.ch/manual/index.html" target="_blank" rel="noopener">https://logback.qos.ch/manual/index.html</a></p>
+</li>
+<li><p>分析SpringBoot启动日志</p>
+<ul>
+<li>默认情况下，Spring Boot将日志输出到控制台</li>
+</ul>
+</li>
+<li><p>整合Logback实战</p>
+<ul>
+<li>创建 日志文件logback-spring.xml，官方推荐 -spring.xml结尾<br>默认加载加载配置顺序 logback-spring.xml, logback-spring.groovy, logback.xml, or logback.groovy</li>
+</ul>
+</li>
+<li><p>注释：</p>
+<pre><code>&lt;configuration&gt; 子节点
+&lt;appender&gt;&lt;/appender&gt;                       
+&lt;logger&gt;&lt;/logger&gt;
+&lt;root&gt;&lt;/root&gt;(要加在最后)        </code></pre></li>
+</ol>
+<p><code>Logback.xml</code></p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span> <span class="token attr-name">debug</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span> <span class="token attr-name">scan</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span> <span class="token attr-name">scanPeriod</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1 seconds<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>contextName</span><span class="token punctuation">></span></span>logback<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>contextName</span><span class="token punctuation">></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--定义参数,后面可以通过${app.name}使用--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>app.name<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>logback_test<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--ConsoleAppender 用于在屏幕上输出日志--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>stdout<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ch.qos.logback.core.ConsoleAppender<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义了一个过滤器,在LEVEL之下的日志输出不会被打印出来--></span>
+        <span class="token comment" spellcheck="true">&lt;!--这里定义了DEBUG，也就是控制台不会输出比ERROR级别小的日志--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ch.qos.logback.classic.filter.ThresholdFilter<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>level</span><span class="token punctuation">></span></span>DEBUG<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>level</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!-- encoder 默认配置为PatternLayoutEncoder --></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义控制台输出格式--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">></span></span>%d [%thread] %-5level %logger{36} [%file : %line] - %msg%n<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>file<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义日志输出的路径--></span>
+        <span class="token comment" spellcheck="true">&lt;!--这里的scheduler.manager.server.home 没有在上面的配置中设定，所以会使用java启动时配置的值--></span>
+        <span class="token comment" spellcheck="true">&lt;!--比如通过 java -Dscheduler.manager.server.home=/path/to XXXX 配置该属性--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>file</span><span class="token punctuation">></span></span>${scheduler.manager.server.home}/logs/${app.name}.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>file</span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义日志滚动的策略--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.TimeBasedRollingPolicy<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+            <span class="token comment" spellcheck="true">&lt;!--定义文件滚动时的文件名的格式--></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">></span></span>${scheduler.manager.server.home}/logs/${app.name}.%d{yyyy-MM-dd.HH}.log.gz
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">></span></span>
+            <span class="token comment" spellcheck="true">&lt;!--60天的时间周期，日志量最大20GB--></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">></span></span>60<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">></span></span>
+            <span class="token comment" spellcheck="true">&lt;!-- 该属性在 1.1.6版本后 才开始支持--></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>totalSizeCap</span><span class="token punctuation">></span></span>20GB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>totalSizeCap</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>triggeringPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+            <span class="token comment" spellcheck="true">&lt;!--每个日志文件最大100MB--></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">></span></span>100MB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>triggeringPolicy</span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义输出格式--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">></span></span>%d [%thread] %-5level %logger{36} [%file : %line] - %msg%n<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--root是默认的logger 这里设定输出级别是debug--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>root</span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>trace<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--定义了两个appender，日志会通过往这两个appender里面写--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>stdout<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>file<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>root</span><span class="token punctuation">></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--对于类路径以 com.example.logback 开头的Logger,输出级别设置为warn,并且只输出到控制台--></span>
+    <span class="token comment" spellcheck="true">&lt;!--这个logger没有指定appender，它会继承root节点中定义的那些appender--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>logger</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.example.logback<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>warn<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--通过 LoggerFactory.getLogger("mytest") 可以获取到这个logger--></span>
+    <span class="token comment" spellcheck="true">&lt;!--由于这个logger自动继承了root的appender，root中已经有stdout的appender了，自己这边又引入了stdout的appender--></span>
+    <span class="token comment" spellcheck="true">&lt;!--如果没有设置 additivity="false" ,就会导致一条日志在控制台输出两次的情况--></span>
+    <span class="token comment" spellcheck="true">&lt;!--additivity表示要不要使用rootLogger配置的appender进行输出--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>logger</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mytest<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>info<span class="token punctuation">"</span></span> <span class="token attr-name">additivity</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>stdout<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>logger</span><span class="token punctuation">></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--由于设置了 additivity="false" ，所以输出时不会使用rootLogger的appender--></span>
+    <span class="token comment" spellcheck="true">&lt;!--但是这个logger本身又没有配置appender，所以使用这个logger输出日志的话就不会输出到任何地方--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>logger</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mytest2<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>info<span class="token punctuation">"</span></span> <span class="token attr-name">additivity</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">></span></span></code></pre>
+<h1 id="11-搜索框架ElasticSearch介绍和整合SpringBoot"><a href="#11-搜索框架ElasticSearch介绍和整合SpringBoot" class="headerlink" title="11-搜索框架ElasticSearch介绍和整合SpringBoot"></a>11-搜索框架ElasticSearch介绍和整合SpringBoot</h1><h2 id="11-1-搜索知识"><a href="#11-1-搜索知识" class="headerlink" title="11.1-搜索知识"></a>11.1-搜索知识</h2><ul>
+<li><p>mysql：like 模糊，性能问题</p>
+</li>
+<li><p>solr:针对企业，Lucene</p>
+</li>
+<li><p><code>elasticsearch：</code></p>
+<p>针对数据量特别大，PB,TB<br>纯java开发，springboot使用，5.6版本<br>es升级4-&gt;5版本，改动大，但是5版本后，改动不大</p>
+</li>
+</ul>
+<h2 id="11-2-ElasticSearch介绍"><a href="#11-2-ElasticSearch介绍" class="headerlink" title="11.2-ElasticSearch介绍"></a>11.2-ElasticSearch介绍</h2><p>Elasticsearch(ES)是一个基于Apache的开源索引库Lucene而构建的开源、分布式、具有RESTful接口的全文搜索引擎, 还是一个分布式文档数据库.</p>
+<p>ES可以轻松扩展数以百计的服务器(水平扩展), 用于存储和处理数据. 它可以在很短的时间内存储、搜索和分析海量数据, 通常被作为复杂搜索场景下的核心引擎.</p>
+<p><strong>由于Lucene提供的API操作起来非常繁琐, 需要编写大量的代码, Elasticsearch对Lucene进行了封装与优化, 并提供了REST风格的操作接口, 开箱即用, 很大程度上方便了开发人员的使用.</strong></p>
+<ul>
+<li>elasticSearch主要特点<ol>
+<li>特点：全文检索，结构化检索，数据统计、分析，接近实时处理，分布式搜索(可部署数百台服务器)，处理PB级别的数据，搜索纠错，自动完成</li>
+<li>使用场景：日志搜索，数据聚合，数据监控，报表统计分析</li>
+<li>国内外使用者：维基百科，Stack Overflow，GitHub</li>
+</ol>
+</li>
+</ul>
+<h2 id="11-3-SpringBoot整合ElasticSearch"><a href="#11-3-SpringBoot整合ElasticSearch" class="headerlink" title="11.3-SpringBoot整合ElasticSearch"></a>11.3-SpringBoot整合ElasticSearch</h2><ol>
+<li>添加依赖</li>
+</ol>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--elasticsearch--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-data-elasticsearch<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<ol start="2">
+<li>配置文件</li>
+</ol>
+<pre class=" language-yml"><code class="language-yml">spring:
+  data:
+    elasticsearch:
+      cluster-name: esCluster
+      cluster-nodes: 127.0.0.1:9300 
+      #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode（9200端口是http查询使用的。9300集群使用。这里使用9300.）</code></pre>
+<ol start="3">
+<li>创建实体类bean</li>
+</ol>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
+<span class="token annotation punctuation">@Document</span><span class="token punctuation">(</span>indexName <span class="token operator">=</span> <span class="token string">"testgoods"</span><span class="token punctuation">,</span> type <span class="token operator">=</span> <span class="token string">"goods"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestGoodsBo</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Id</span>
+    <span class="token keyword">private</span> <span class="token keyword">long</span> id<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//@Field(type = FieldType.Text)</span>
+    <span class="token keyword">private</span> String name<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> BigDecimal price<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">long</span> stock<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Version</span>
+    <span class="token keyword">private</span> Long version<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<ul>
+<li><p>@Document注解</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Persistent</span>
+<span class="token annotation punctuation">@Inherited</span>
+<span class="token annotation punctuation">@Retention</span><span class="token punctuation">(</span>RetentionPolicy<span class="token punctuation">.</span>RUNTIME<span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Target</span><span class="token punctuation">(</span><span class="token punctuation">{</span>ElementType<span class="token punctuation">.</span>TYPE<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> @<span class="token keyword">interface</span> <span class="token class-name">Document</span> <span class="token punctuation">{</span>
+    String <span class="token function">indexName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//索引库的名称，个人建议以项目的名称命名</span>
+    String <span class="token function">type</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">""</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//类型，个人建议以实体的名称命名</span>
+    <span class="token keyword">short</span> <span class="token function">shards</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token number">5</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//默认分区数</span>
+    <span class="token keyword">short</span> <span class="token function">replicas</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token number">1</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//每个分区默认的备份数</span>
+    String <span class="token function">refreshInterval</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">"1s"</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//刷新间隔</span>
+    String <span class="token function">indexStoreType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">"fs"</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//索引文件存储类型</span>
+<span class="token punctuation">}</span></code></pre>
+<p><code>@Document</code>作用于类上，经测试代码初始化时若es中没有对应的索引，则会在es中创建一个。</p>
+</li>
+<li><p>@Field注解</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Retention</span><span class="token punctuation">(</span>RetentionPolicy<span class="token punctuation">.</span>RUNTIME<span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Target</span><span class="token punctuation">(</span>ElementType<span class="token punctuation">.</span>FIELD<span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Documented</span>
+<span class="token annotation punctuation">@Inherited</span>
+<span class="token keyword">public</span> @<span class="token keyword">interface</span> <span class="token class-name">Field</span> <span class="token punctuation">{</span>
+
+    FieldType <span class="token function">type</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> FieldType<span class="token punctuation">.</span>Auto<span class="token punctuation">;</span>#自动检测属性的类型
+    FieldIndex <span class="token function">index</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> FieldIndex<span class="token punctuation">.</span>analyzed<span class="token punctuation">;</span>#默认情况下分词
+    DateFormat <span class="token function">format</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> DateFormat<span class="token punctuation">.</span>none<span class="token punctuation">;</span>
+    String <span class="token function">pattern</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">""</span><span class="token punctuation">;</span>
+    <span class="token keyword">boolean</span> <span class="token function">store</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token boolean">false</span><span class="token punctuation">;</span>#默认情况下不存储原文
+    String <span class="token function">searchAnalyzer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">""</span><span class="token punctuation">;</span>#指定字段搜索时使用的分词器
+    String <span class="token function">indexAnalyzer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">""</span><span class="token punctuation">;</span>#指定字段建立索引时指定的分词器
+    String<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">ignoreFields</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>#如果某个字段需要被忽略
+    <span class="token keyword">boolean</span> <span class="token function">includeInParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><code>@Field</code>作用于属性上，经测试该注解的属性有时会与现有的属性冲突，造成异常，错误信息如下，所以建议es中映射已建立的情况下，不要使用该注解。</p>
+</li>
+<li><p><code>@Id</code>和<code>@Version</code>分别用来绑定es中的<code>_id</code>和<code>_version</code>字段。</p>
+</li>
+</ul>
+<ol start="4">
+<li>创建Repository(接口继承ElasticSearchRepository)</li>
+</ol>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">GoodsRepository</span> <span class="token keyword">extends</span> <span class="token class-name">ElasticsearchRepository</span><span class="token operator">&lt;</span>TestGoodsBo<span class="token punctuation">,</span>Long<span class="token operator">></span> <span class="token punctuation">,</span> PagingAndSortingRepository<span class="token operator">&lt;</span>TestGoodsBo<span class="token punctuation">,</span>Long<span class="token operator">></span> <span class="token punctuation">{</span>
+
+        List<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByNameAndPrice</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span> Long price<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        List<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByNameOrPrice</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span> Long price<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByName</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span>Pageable page<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByNameNot</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span>Pageable page<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByPriceBetween</span><span class="token punctuation">(</span><span class="token keyword">long</span> price<span class="token punctuation">,</span>Pageable page<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByNameLike</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span>Pageable page<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token annotation punctuation">@Query</span><span class="token punctuation">(</span><span class="token string">"{\"bool\" : {\"must\" : {\"term\" : {\"message\" : \"?0\"}}}}"</span><span class="token punctuation">)</span>
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">findByMessage</span><span class="token punctuation">(</span>String message<span class="token punctuation">,</span> Pageable pageable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>es的操作主要通过自定义的Repository对象完成，该对象可以通过继承模板接口<code>ElasticsearchRepository</code>实现，该模板提供了<code>save</code>、<code>findById</code>、<code>findAll</code>和<code>search</code>等通用方法的实现，同时还支持通过规定的名称格式自定义操作方法.</p>
+<ol start="5">
+<li>使用</li>
+</ol>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/search"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SearchController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> GoodsRepository repository<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> ElasticsearchTemplate elasticsearchTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/insert"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> TestGoodsBo <span class="token function">insert</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> TestGoodsBo bo<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        repository<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>bo<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> bo<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/get"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> TestGoodsBo <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Optional<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> result <span class="token operator">=</span> repository<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span>1L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/find"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">find</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span>Pageable page<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> repository<span class="token punctuation">.</span><span class="token function">findByName</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> page<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/search"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">search</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span> <span class="token annotation punctuation">@PageableDefault</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token number">15</span><span class="token punctuation">,</span> sort <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">"id"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> direction <span class="token operator">=</span> Sort<span class="token punctuation">.</span>Direction<span class="token punctuation">.</span>DESC<span class="token punctuation">)</span>Pageable pageable<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment" spellcheck="true">//        //通过ElasticsearchTemplate实现</span>
+<span class="token comment" spellcheck="true">//        QueryBuilder queryBuilder = QueryBuilders.matchQuery("name", name);</span>
+<span class="token comment" spellcheck="true">//        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(queryBuilder).withHighlightFields().build();</span>
+<span class="token comment" spellcheck="true">//        Page&lt;TestGoodsBo> sampleEntities = elasticsearchTemplate.queryForPage(searchQuery, TestGoodsBo.class);</span>
+
+<span class="token comment" spellcheck="true">//        //Pageable对象的手动实现</span>
+<span class="token comment" spellcheck="true">//        Sort sort = new Sort(Sort.Direction.ASC,"name");</span>
+<span class="token comment" spellcheck="true">//        Pageable page = PageRequest.of(0,10,sort);</span>
+
+        Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> sampleEntities <span class="token operator">=</span> repository<span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span>QueryBuilders<span class="token punctuation">.</span><span class="token function">matchQuery</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">,</span>pageable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> sampleEntities<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<ol start="6">
+<li>Pageable对象</li>
+</ol>
+<p>该对象可以帮助我们完成分页和排序操作，有手动和自动两种方式实现：</p>
+<ul>
+<li><p>手动</p>
+<pre class=" language-java"><code class="language-java"> Sort sort <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Sort</span><span class="token punctuation">(</span>Sort<span class="token punctuation">.</span>Direction<span class="token punctuation">.</span>ASC<span class="token punctuation">,</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ Pageable page <span class="token operator">=</span> PageRequest<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">,</span>sort<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>自动</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/search"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Page<span class="token operator">&lt;</span>TestGoodsBo<span class="token operator">></span> <span class="token function">search</span><span class="token punctuation">(</span>String name<span class="token punctuation">,</span> <span class="token annotation punctuation">@PageableDefault</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token number">15</span><span class="token punctuation">,</span> sort <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">"id"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> direction <span class="token operator">=</span> Sort<span class="token punctuation">.</span>Direction<span class="token punctuation">.</span>DESC<span class="token punctuation">)</span>Pageable pageable<span class="token punctuation">)</span></code></pre>
+<p>自动方式可以在request传参的同时就根据传入的参数来组装<code>Pageable</code>对象，同时还能使用<code>@PageableDefault</code>注解设定默认值，因此更推荐使用。</p>
+<p>Spring支持的request参数如下：</p>
+<ul>
+<li><p>page，第几页，从0开始，默认为第0页</p>
+</li>
+<li><p>size，每一页的大小，默认为20</p>
+</li>
+<li><p>sort，排序相关的信息，例如sort=firstname&amp;sort=lastname,desc表示在按firstname正序排列基础上按lastname倒序排列</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="12-消息队列介绍和SpringBoot整合RockketMQ、ActiveMQ"><a href="#12-消息队列介绍和SpringBoot整合RockketMQ、ActiveMQ" class="headerlink" title="12-消息队列介绍和SpringBoot整合RockketMQ、ActiveMQ"></a>12-消息队列介绍和SpringBoot整合RockketMQ、ActiveMQ</h1><h2 id="12-1-JMS介绍和使用场景及基础编程模型"><a href="#12-1-JMS介绍和使用场景及基础编程模型" class="headerlink" title="12.1-JMS介绍和使用场景及基础编程模型"></a>12.1-JMS介绍和使用场景及基础编程模型</h2><ol>
+<li><p>什么是JMS？</p>
+<p>Java消息服务（Java Message Service),Java平台中关于面向消息中间件的接口</p>
+</li>
+<li><p>JMS是一种与厂商无关的 API，用来访问消息收发系统消息，它类似于JDBC(Java Database Connectivity)。这里，JDBC 是可以用来访问许多不同关系数据库的 API</p>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>跨平台 </li>
+<li>多语言 </li>
+<li>多项目</li>
+<li>解耦</li>
+<li>分布式事务</li>
+<li>流量控制</li>
+<li>最终一致性</li>
+<li>RPC调用</li>
+</ul>
+</li>
+<li><p>概念</p>
+<ul>
+<li>JMS提供者：Apache ActiveMQ、RabbitMQ、Kafka、Notify、MetaQ、RocketMQ</li>
+<li>JMS生产者(Message Producer)</li>
+<li>JMS消费者(Message Consumer)</li>
+<li>JMS消息</li>
+<li>JMS队列</li>
+<li>JMS主题</li>
+</ul>
+<p>JMS消息通常有两种类型：<code>点对点</code>、<code>发布/订阅</code></p>
+</li>
+<li><p>编程模型</p>
+<p>MQ中需要用的一些类</p>
+<pre><code>ConnectionFactory ：连接工厂，JMS 用它创建连接
+Connection ：JMS 客户端到JMS Provider 的连接
+Session： 一个发送或接收消息的线程
+Destination ：消息的目的地;消息发送给谁
+MessageConsumer / MessageProducer： 消息接收者，消费者</code></pre></li>
+</ol>
+<h2 id="12-2-ActiveMQ消息队列基础介绍"><a href="#12-2-ActiveMQ消息队列基础介绍" class="headerlink" title="12.2-ActiveMQ消息队列基础介绍"></a>12.2-ActiveMQ消息队列基础介绍</h2><p>ActiveMQ是一种开源的基于JMS规范的一种消息中间件的实现，ActiveMQ的设计目标是提供标准的，面向消息的，能够跨越多语言和多系统的应用集成消息通信中间件。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>支持来自Java，C，C ++，C＃，Ruby，Perl，Python，PHP的各种跨语言客户端和协议</li>
+<li>支持许多高级功能，如消息组，虚拟目标，通配符和复合目标</li>
+<li>完全支持JMS 1.1和J2EE 1.4，支持瞬态，持久，事务和XA消息</li>
+<li>Spring支持，ActiveMQ可以轻松嵌入到Spring应用程序中，并使用Spring的XML配置机制进行配置</li>
+<li>支持在流行的J2EE服务器（如TomEE，Geronimo，JBoss，GlassFish和WebLogic）中进行测试</li>
+<li>使用JDBC和高性能日志支持非常快速的持久化</li>
+</ul>
+<h2 id="12-3-SpringBoot2整合ActiveMQ实战之点对点消息"><a href="#12-3-SpringBoot2整合ActiveMQ实战之点对点消息" class="headerlink" title="12.3-SpringBoot2整合ActiveMQ实战之点对点消息"></a>12.3-SpringBoot2整合ActiveMQ实战之点对点消息</h2><ol>
+<li><p>添加依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- 整合消息队列ActiveMQ --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>  
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>  
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-activemq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>  
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>  
+
+<span class="token comment" spellcheck="true">&lt;!-- 如果配置线程池则加入 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>  
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.apache.activemq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>  
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>activemq-pool<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>  
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>配置文件</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#整合jms测试，安装在别的机器，防火墙和端口号记得开放</span>
+<span class="token attr-name">spring.activemq.broker-url</span><span class="token punctuation">=</span><span class="token attr-value">tcp://127.0.0.1:61616</span>
+
+<span class="token comment" spellcheck="true">#集群配置</span>
+<span class="token comment" spellcheck="true">#spring.activemq.broker-url=failover:(tcp://localhost:61616,tcp://localhost:61617)</span>
+
+<span class="token attr-name">spring.activemq.user</span><span class="token punctuation">=</span><span class="token attr-value">admin</span>
+<span class="token attr-name">spring.activemq.password</span><span class="token punctuation">=</span><span class="token attr-value">admin</span>
+<span class="token comment" spellcheck="true">#下列配置要增加依赖</span>
+<span class="token attr-name">spring.activemq.pool.enabled</span><span class="token punctuation">=</span><span class="token attr-value">true</span>
+<span class="token attr-name">spring.activemq.pool.max-connections</span><span class="token punctuation">=</span><span class="token attr-value">100</span></code></pre>
+</li>
+<li><p>启动类添加@EnableJms注解</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token annotation punctuation">@EnableJms</span> <span class="token comment" spellcheck="true">//启动消息队列</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProductApplication</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>ProductApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>QueueConfig定义消息队列</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">import</span> javax<span class="token punctuation">.</span>jms<span class="token punctuation">.</span>Queue<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>activemq<span class="token punctuation">.</span>command<span class="token punctuation">.</span>ActiveMQQueue<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Bean<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Configuration<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">QueueConfig</span> <span class="token punctuation">{</span>
+
+   <span class="token comment" spellcheck="true">//定义存放消息的队列</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> Queue <span class="token function">queue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ActiveMQQueue</span><span class="token punctuation">(</span><span class="token string">"ActiveMQQueue"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>ProviderController测试</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProductController</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//注入存放消息的队列，用于下列方法一</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> Queue queue<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//注入springboot封装的工具类</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> JmsMessagingTemplate jmsMessagingTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"send"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">send</span><span class="token punctuation">(</span>String message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//方法一：添加消息到消息队列</span>
+        jmsMessagingTemplate<span class="token punctuation">.</span><span class="token function">convertAndSend</span><span class="token punctuation">(</span>queue<span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//方法二：这种方式不需要手动创建queue，系统会自行创建名为test的队列</span>
+        <span class="token comment" spellcheck="true">//jmsMessagingTemplate.convertAndSend("test", message);</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>消费者应用</p>
+<p>application.properties 和 ConsumerApplication 同 provider类似，如下为不同的ActiveConsumer：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ActiveConsumer</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> JmsMessagingTemplate jmsMessagingTemplate<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 使用JmsListener配置消费者监听的队列，其中message是接收到的消息</span>
+    <span class="token annotation punctuation">@JmsListener</span><span class="token punctuation">(</span>destination <span class="token operator">=</span> <span class="token string">"ActiveMQQueue"</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// SendTo 会将此方法返回的数据, 写入到 OutQueue 中去.</span>
+    <span class="token annotation punctuation">@SendTo</span><span class="token punctuation">(</span><span class="token string">"SQueue"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">handleMessage</span><span class="token punctuation">(</span>String message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"成功接受message"</span> <span class="token operator">+</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"成功接受message"</span> <span class="token operator">+</span> message<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+</ol>
+<ol start="7">
+<li>模拟请求 <code>localhost:8080/send?msg=123</code></li>
+</ol>
+<h2 id="12-4-SpringBoot整合ActiveMQ实战之发布订阅模式"><a href="#12-4-SpringBoot整合ActiveMQ实战之发布订阅模式" class="headerlink" title="12.4-SpringBoot整合ActiveMQ实战之发布订阅模式"></a>12.4-SpringBoot整合ActiveMQ实战之发布订阅模式</h2><ol>
+<li><p>需要加入配置文件，支持发布订阅模型，默认只支持点对点</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#default point to point</span>
+<span class="token comment" spellcheck="true">#默认消费者并不会消费订阅发布类型的消息，这是由于springboot默认采用的是p2p模式进行消息的监听</span>
+<span class="token attr-name">spring.jms.pub-sub-domain</span><span class="token punctuation">=</span><span class="token attr-value">true</span></code></pre>
+</li>
+<li><p>新建JMS配置类</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JmsConfig</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">static</span> String TOPIC <span class="token operator">=</span> <span class="token string">"springboot.topic.test"</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">static</span> String QUEUE <span class="token operator">=</span> <span class="token string">"springboot.queue.test"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> Topic <span class="token function">topic</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ActiveMQTopic</span><span class="token punctuation">(</span>TOPIC<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+   <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> Queue <span class="token function">queue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ActiveMQQueue</span><span class="token punctuation">(</span>QUEUE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// topic模式的ListenerContainer</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> JmsListenerContainerFactory<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> <span class="token function">jmsListenerContainerTopic</span><span class="token punctuation">(</span>ConnectionFactory activeMQConnectionFactory<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        DefaultJmsListenerContainerFactory bean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultJmsListenerContainerFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        bean<span class="token punctuation">.</span><span class="token function">setPubSubDomain</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        bean<span class="token punctuation">.</span><span class="token function">setConnectionFactory</span><span class="token punctuation">(</span>activeMQConnectionFactory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// queue模式的ListenerContainer</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> JmsListenerContainerFactory<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> <span class="token function">jmsListenerContainerQueue</span><span class="token punctuation">(</span>ConnectionFactory activeMQConnectionFactory<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        DefaultJmsListenerContainerFactory bean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultJmsListenerContainerFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        bean<span class="token punctuation">.</span><span class="token function">setConnectionFactory</span><span class="token punctuation">(</span>activeMQConnectionFactory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> bean<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>生产者</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span><span class="token punctuation">(</span><span class="token string">"producer"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Producer</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> JmsMessagingTemplate jmsTemplate<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 发送消息，destination是发送到的队列，message是待发送的消息</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sendMessage</span><span class="token punctuation">(</span>Destination destination<span class="token punctuation">,</span> <span class="token keyword">final</span> String message<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        jmsTemplate<span class="token punctuation">.</span><span class="token function">convertAndSend</span><span class="token punctuation">(</span>destination<span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>消费者类</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Consumer</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">static</span> Logger logger <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>JMSConsumer3<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@JmsListener</span><span class="token punctuation">(</span>destination <span class="token operator">=</span> JmsConfig<span class="token punctuation">.</span>TOPIC<span class="token punctuation">,</span>containerFactory <span class="token operator">=</span> <span class="token string">"jmsListenerContainerTopic"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onTopicMessage1</span><span class="token punctuation">(</span>String msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"接收到topic消息：{}"</span><span class="token punctuation">,</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+   <span class="token annotation punctuation">@JmsListener</span><span class="token punctuation">(</span>destination <span class="token operator">=</span> JmsConfig<span class="token punctuation">.</span>TOPIC<span class="token punctuation">,</span>containerFactory <span class="token operator">=</span> <span class="token string">"jmsListenerContainerTopic"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onTopicMessage2</span><span class="token punctuation">(</span>String msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"接收到topic消息：{}"</span><span class="token punctuation">,</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@JmsListener</span><span class="token punctuation">(</span>destination <span class="token operator">=</span> JmsConfig<span class="token punctuation">.</span>QUEUE<span class="token punctuation">,</span>containerFactory <span class="token operator">=</span> <span class="token string">"jmsListenerContainerQueue"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onQueueMessage</span><span class="token punctuation">(</span>String msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"接收到queue消息：{}"</span><span class="token punctuation">,</span>text<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>测试</p>
+<pre class=" language-java"><code class="language-java">        <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> Topic topic<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> Queue queue<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testJms</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token number">10</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            jmsProducer<span class="token punctuation">.</span><span class="token function">sendMessage</span><span class="token punctuation">(</span>queue<span class="token punctuation">,</span><span class="token string">"queue,world!"</span> <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            jmsProducer<span class="token punctuation">.</span><span class="token function">sendMessage</span><span class="token punctuation">(</span>topic<span class="token punctuation">,</span> <span class="token string">"topic,world!"</span> <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span></code></pre>
+</li>
+</ol>
+<h2 id="12-5-RocketMQ消息队列介绍"><a href="#12-5-RocketMQ消息队列介绍" class="headerlink" title="12.5-RocketMQ消息队列介绍"></a>12.5-RocketMQ消息队列介绍</h2><p>RocketMQ 是一款分布式、队列模型的消息中间件</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>在高压下1毫秒内响应延迟超过99.6％。</li>
+<li>适合金融类业务，高可用性跟踪和审计功能。</li>
+<li>支持发布订阅模型，和点对点</li>
+<li>支持拉pull和推push两种消息模式</li>
+<li>单一队列百万消息</li>
+<li>支持单master节点，多master节点，多master多slave节点</li>
+</ul>
+<p><strong>概念：</strong></p>
+<ul>
+<li>Producer:消息生产者</li>
+<li>Producer Group:消息生产者组，发送同类消息的一个消息生产组</li>
+<li>Consumer:消费者</li>
+<li>Consumer Group:消费同个消息的多个实例</li>
+<li>Tag:标签，子主题（二级分类）,用于区分同一个主题下的不同业务的消息</li>
+<li>Topic:主题</li>
+<li>Message：消息</li>
+<li>Broker：MQ程序，接收生产的消息，提供给消费者消费的程序</li>
+<li>Name Server：给生产和消费者提供路由信息，提供轻量级的服务发现和路由    </li>
+</ul>
+<p><strong>官网地址</strong>：<a href="http://rocketmq.apache.org/" target="_blank" rel="noopener">http://rocketmq.apache.org/</a></p>
+<h2 id="12-6-Springboot2整合RocketMQ4-x实战"><a href="#12-6-Springboot2整合RocketMQ4-x实战" class="headerlink" title="12.6-Springboot2整合RocketMQ4.x实战"></a>12.6-Springboot2整合RocketMQ4.x实战</h2><ol>
+<li><p>添加依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.apache.rocketmq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>rocketmq-spring-boot-starter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>配置文件</p>
+<pre class=" language-yml"><code class="language-yml">rocketmq:
+  # 生产者配置
+  producer:
+    isOnOff: on
+    # 发送同一类消息的设置为同一个group，保证唯一
+    groupName: FeePlatGroup
+    # 服务地址
+    namesrvAddr: 10.1.1.207:9876
+    # 消息最大长度 默认1024*4(4M)
+    maxMessageSize: 4096
+    # 发送消息超时时间,默认3000
+    sendMsgTimeout: 3000
+    # 发送消息失败重试次数，默认2
+    retryTimesWhenSendFailed: 2
+  # 消费者配置
+  consumer:
+    isOnOff: on
+    # 官方建议：确保同一组中的每个消费者订阅相同的主题。
+    groupName: FeePlatGroup
+    # 服务地址
+    namesrvAddr: 10.1.1.207:9876
+    # 接收该 Topic 下所有 Tag
+    topics: FangPlatTopic~*;
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    # 设置一次消费消息的条数，默认为1条
+    consumeMessageBatchMaxSize: 1
+
+# 配置 Group  Topic  Tag
+fang-plat:
+  fang-plat-group: FangPlatGroup
+  fang-plat-topic: FangPlatTopic
+  fang-account-tag: FangAccountTag</code></pre>
+</li>
+<li><p>生产者配置</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//RocketMQ生产者配置</span>
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProducerConfig</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Logger LOG <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>ProducerConfig<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.producer.groupName}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String groupName<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.producer.namesrvAddr}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String namesrvAddr<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.producer.maxMessageSize}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer maxMessageSize <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.producer.sendMsgTimeout}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer sendMsgTimeout<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.producer.retryTimesWhenSendFailed}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer retryTimesWhenSendFailed<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> DefaultMQProducer <span class="token function">getRocketMQProducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        DefaultMQProducer producer<span class="token punctuation">;</span>
+        producer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQProducer</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        producer<span class="token punctuation">.</span><span class="token function">setNamesrvAddr</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>namesrvAddr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//如果需要同一个jvm中不同的producer往不同的mq集群发送消息，需要设置不同的instanceName</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>maxMessageSize<span class="token operator">!=</span>null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            producer<span class="token punctuation">.</span><span class="token function">setMaxMessageSize</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>maxMessageSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>sendMsgTimeout<span class="token operator">!=</span>null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            producer<span class="token punctuation">.</span><span class="token function">setSendMsgTimeout</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>sendMsgTimeout<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//如果发送消息失败，设置重试次数，默认为2次</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>retryTimesWhenSendFailed<span class="token operator">!=</span>null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            producer<span class="token punctuation">.</span><span class="token function">setRetryTimesWhenSendFailed</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>retryTimesWhenSendFailed<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            producer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">MQClientException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> producer<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>消费者配置</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//消费者配置</span>
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConsumerConfig</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Logger LOG <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>ConsumerConfig<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.namesrvAddr}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String namesrvAddr<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.groupName}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String groupName<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.consumeThreadMin}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> consumeThreadMin<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.consumeThreadMax}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> consumeThreadMax<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.topics}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String topics<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${rocketmq.consumer.consumeMessageBatchMaxSize}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> consumeMessageBatchMaxSize<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> RocketMsgListener msgListener<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> DefaultMQPushConsumer <span class="token function">getRocketMQConsumer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        DefaultMQPushConsumer consumer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultMQPushConsumer</span><span class="token punctuation">(</span>groupName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setNamesrvAddr</span><span class="token punctuation">(</span>namesrvAddr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setConsumeThreadMin</span><span class="token punctuation">(</span>consumeThreadMin<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setConsumeThreadMax</span><span class="token punctuation">(</span>consumeThreadMax<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">registerMessageListener</span><span class="token punctuation">(</span>msgListener<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setConsumeFromWhere</span><span class="token punctuation">(</span>ConsumeFromWhere<span class="token punctuation">.</span>CONSUME_FROM_LAST_OFFSET<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        consumer<span class="token punctuation">.</span><span class="token function">setConsumeMessageBatchMaxSize</span><span class="token punctuation">(</span>consumeMessageBatchMaxSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            String<span class="token punctuation">[</span><span class="token punctuation">]</span> topicTagsArr <span class="token operator">=</span> topics<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">";"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span>String topicTags <span class="token operator">:</span> topicTagsArr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                String<span class="token punctuation">[</span><span class="token punctuation">]</span> topicTag <span class="token operator">=</span> topicTags<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"~"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                consumer<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span>topicTag<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>topicTag<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            consumer<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">MQClientException</span> e<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> consumer<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>消费者监听配置</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//消费监听配置</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RocketMsgListener</span> <span class="token keyword">implements</span> <span class="token class-name">MessageListenerConcurrently</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Logger LOGGER <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>RocketMsgListener<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> ParamConfigService paramConfigService <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> ConsumeConcurrentlyStatus <span class="token function">consumeMessage</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>MessageExt<span class="token operator">></span> list<span class="token punctuation">,</span> ConsumeConcurrentlyContext context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> ConsumeConcurrentlyStatus<span class="token punctuation">.</span>CONSUME_SUCCESS<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        MessageExt messageExt <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        LOG<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"接受到的消息为："</span><span class="token operator">+</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>messageExt<span class="token punctuation">.</span><span class="token function">getBody</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> reConsume <span class="token operator">=</span> messageExt<span class="token punctuation">.</span><span class="token function">getReconsumeTimes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 消息已经重试了3次，如果不需要再次消费，则返回成功</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>reConsume <span class="token operator">==</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> ConsumeConcurrentlyStatus<span class="token punctuation">.</span>CONSUME_SUCCESS<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>messageExt<span class="token punctuation">.</span><span class="token function">getTopic</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>paramConfigService<span class="token punctuation">.</span>feePlatTopic<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            String tags <span class="token operator">=</span> messageExt<span class="token punctuation">.</span><span class="token function">getTags</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">;</span>
+            <span class="token keyword">switch</span> <span class="token punctuation">(</span>tags<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">case</span> <span class="token string">"FeeAccountTag"</span><span class="token operator">:</span>
+                    LOGGER<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"开户 tag == >>"</span><span class="token operator">+</span>tags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">break</span> <span class="token punctuation">;</span>
+                <span class="token keyword">default</span><span class="token operator">:</span>
+                    LOGGER<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"未匹配到Tag == >>"</span><span class="token operator">+</span>tags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">break</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 消息消费成功</span>
+        <span class="token keyword">return</span> ConsumeConcurrentlyStatus<span class="token punctuation">.</span>CONSUME_SUCCESS<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>配置参数绑定</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ParamConfigService</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${fang-plat.fang-plat-group}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String fangPlatGroup <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${fang-plat.fang-plat-topic}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String fangPlatTopic <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${fang-plat.fang-account-tag}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String fangAccountTag <span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>测试</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FeePlatMqServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">FeePlatMqService</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> DefaultMQProducer defaultMQProducer<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> ParamConfigService paramConfigService <span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> SendResult <span class="token function">openAccountMsg</span><span class="token punctuation">(</span>String msgInfo<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 可以不使用Config中的Group</span>
+        defaultMQProducer<span class="token punctuation">.</span><span class="token function">setProducerGroup</span><span class="token punctuation">(</span>paramConfigService<span class="token punctuation">.</span>fangPlatGroup<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        SendResult sendResult <span class="token operator">=</span> null<span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            Message sendMsg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Message</span><span class="token punctuation">(</span>paramConfigService<span class="token punctuation">.</span>fangPlatTopic<span class="token punctuation">,</span>
+                                          paramConfigService<span class="token punctuation">.</span>fangAccountTag<span class="token punctuation">,</span>
+                                         <span class="token string">"fang_open_account_key"</span><span class="token punctuation">,</span> msgInfo<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            sendResult <span class="token operator">=</span> defaultMQProducer<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>sendMsg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> sendResult <span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+</ol>
+<h1 id="13-SpringBoot多环境配置"><a href="#13-SpringBoot多环境配置" class="headerlink" title="13-SpringBoot多环境配置"></a>13-SpringBoot多环境配置</h1><h2 id="13-1-SpringBoot多环境配置介绍"><a href="#13-1-SpringBoot多环境配置介绍" class="headerlink" title="13.1-SpringBoot多环境配置介绍"></a>13.1-SpringBoot多环境配置介绍</h2><ol>
+<li>不同环境使用不同配置<br>例如数据库配置，在开发的时候，我们一般用开发数据库，而在生产环境的时候，我们是用正式的数据</li>
+<li>配置文件存放路径<br><code>classpath</code>根目录的“/config”包下<br><code>classpath</code>的根目录下</li>
+<li>spring boot允许通过命名约定按照一定的格式<code>(application-{profile}.properties)</code>来定义多个配置文件</li>
+<li><code>spring.profiles.active=dev</code>来指定加载哪个环境的配置文件</li>
+</ol>
+<h1 id="14-SpringBoot2-0响应式编程（Webflux）"><a href="#14-SpringBoot2-0响应式编程（Webflux）" class="headerlink" title="14-SpringBoot2.0响应式编程（Webflux）"></a>14-SpringBoot2.0响应式编程（Webflux）</h1><h2 id="14-1-什么是reactive响应式编程（反应式编程）？"><a href="#14-1-什么是reactive响应式编程（反应式编程）？" class="headerlink" title="14.1-什么是reactive响应式编程（反应式编程）？"></a>14.1-什么是reactive响应式编程（反应式编程）？</h2><p>是一种异步编程范式，它关注数据流和变化的传播。这意味着可以通过使用编程语言轻松地表示静态（例如数组）和动态（例如事件发射器）数据流。</p>
+<p>响应式编程是一种流行的编程方法，编写代码是基于对变化的反应。它的灵感来自于我们的日常生活，也即我们如何采取行动以及与他人沟通。</p>
+<p>我们在执行日常生活活动时，我们会尽可能多任务，但大脑无法处理多任务，不管我们如何努力去做。我们人类实现多任务的唯一办法是在时间线上在任务之间切换。事实上，我们总是切换任务，即使我们没有意识到它。</p>
+<p>例如，要执行一个任务：在星巴克喝一杯咖啡饮料，你需要发出一个命令，等待它准备好，然后接受你的饮料。当你在等待的时候，你很可能会找到别的事情做。这是最简单的执行任务的反应(响应)形式，你会在你等待来自咖啡师的“响应”时做别的事情，当你的咖啡已经准备好后，会叫你的名字时。</p>
+<p>响应编程能够简化编程，它依赖于事件，代码运行的顺序不是代码行的顺序，而是和一个以上的事件有关，这些事件发生是以随着时间的推移的序列。我们把这一系列事件称为“流”。</p>
+<p>何为事件？例如，你知道某个名人总是在发送有趣微博，每次他推发一条微博我们可以称之为一个“事件”。如果你看看这位名人微博系列，你会发现其实是一个随着时间的推移（一系列的事件）发生的一序列的“事件”，响应式编程就是因为我们得“响应”这些事件而得以命名。</p>
+<ul>
+<li>依赖于事件，事件驱动(Event-driven)</li>
+<li>一系列事件称为“流”</li>
+<li>异步</li>
+<li>非阻塞</li>
+<li>观察者模式</li>
+</ul>
+<p><strong>例子</strong></p>
+<p><code>int A = B + C;</code></p>
+<p>A被赋值为B和C的值。这时，如果我们改变B的值，A的值并不会随之改变。而如果我们运用一种机制，当B或者C的值发现变化的时候，A的值也随之改变，这样就实现了”响应式“。</p>
+<h2 id="14-2-Webflux"><a href="#14-2-Webflux" class="headerlink" title="14.2-Webflux"></a>14.2-Webflux</h2><ul>
+<li><p>传统的Servlet</p>
+<p>servlet由servlet container进行生命周期管理。container启动时构造servlet对象并调用servlet init()进行初始化；container关闭时调用servlet destory()销毁servlet；container运行时接受请求，并为每个请求分配一个线程（一般从线程池中获取空闲线程）然后调用service()。</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/servlet.png" alt="Servlet结构"></p>
+</li>
+</ul>
+<p>  <strong>缺点：</strong></p>
+<p>  servlet是一个简单的网络编程模型，当请求进入servlet container时，servlet container就会为其绑定一个线程，在并发不高的场景下这种模型是适用的，但是一旦并发上升，线程数量就会上涨，而线程资源代价是昂贵的（上线文切换，内存消耗大）严重影响请求的处理时间。在一些简单的业务场景下，不希望为每个request分配一个线程，只需要1个或几个线程就能应对极大并发的请求，这种业务场景下servlet模型就较为吃力。</p>
+<p>  <strong>例如：</strong></p>
+<p>  spring webmvc是基于servlet之上的一个路由模型，即spring实现了处理所有request请求的一个servlet（DispatcherServlet），并由该servlet进行路由。所以spring webmvc无法摆脱servlet模型的弊端。</p>
+<ul>
+<li><p>Webflux</p>
+<p>Webflux模式替换了旧的Servlet线程模型。用少量的线程处理request和response io操作，这些线程称为Loop线程，而业务交给响应式编程框架处理，响应式编程是非常灵活的，用户可以将业务中阻塞的操作提交到响应式框架的work线程中执行，而不阻塞的操作依然可以在Loop线程中进行处理，大大提高了Loop线程的利用率。</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/webflux.png" alt="webflux"></p>
+<p>Spring WebFlux是Spring Framework 5.0中引入的新的反应式Web框架，与Spring MVC不同，它不需要Servlet API，完全异步和非阻塞，并 通过Reactor项目实现Reactive Streams规范。</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/mvc%E5%92%8Cwebflux.png" alt="mvc和webflux"></p>
+</li>
+</ul>
 
             </div>
             <hr/>
@@ -3057,7 +3913,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">32.6k</span>&nbsp;字
+                class="white-color">39k</span>&nbsp;字
             
             
             
