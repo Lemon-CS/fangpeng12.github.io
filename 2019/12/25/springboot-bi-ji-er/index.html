@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    18.7k
+                    20.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    83 分
+                    92 分
                 </div>
                 
 				
@@ -3403,25 +3403,353 @@ fang-plat:
 <p><strong>例子</strong></p>
 <p><code>int A = B + C;</code></p>
 <p>A被赋值为B和C的值。这时，如果我们改变B的值，A的值并不会随之改变。而如果我们运用一种机制，当B或者C的值发现变化的时候，A的值也随之改变，这样就实现了”响应式“。</p>
-<h2 id="14-2-Webflux"><a href="#14-2-Webflux" class="headerlink" title="14.2-Webflux"></a>14.2-Webflux</h2><ul>
+<h2 id="14-2-SpringBoot2-x响应式编程webflux介绍"><a href="#14-2-SpringBoot2-x响应式编程webflux介绍" class="headerlink" title="14.2-SpringBoot2.x响应式编程webflux介绍"></a>14.2-SpringBoot2.x响应式编程webflux介绍</h2><ol>
+<li><p>Spring WebFlux是Spring Framework 5.0中引入的新的反应式Web框架，与Spring MVC不同，它不需要Servlet API，完全异步和非阻塞，并 通过Reactor项目实现Reactive Streams规范。</p>
+<ul>
 <li><p>传统的Servlet</p>
 <p>servlet由servlet container进行生命周期管理。container启动时构造servlet对象并调用servlet init()进行初始化；container关闭时调用servlet destory()销毁servlet；container运行时接受请求，并为每个请求分配一个线程（一般从线程池中获取空闲线程）然后调用service()。</p>
 <p><img src="/2019/12/25/springboot-bi-ji-er/servlet.png" alt="Servlet结构"></p>
 </li>
 </ul>
-<p>  <strong>缺点：</strong></p>
-<p>  servlet是一个简单的网络编程模型，当请求进入servlet container时，servlet container就会为其绑定一个线程，在并发不高的场景下这种模型是适用的，但是一旦并发上升，线程数量就会上涨，而线程资源代价是昂贵的（上线文切换，内存消耗大）严重影响请求的处理时间。在一些简单的业务场景下，不希望为每个request分配一个线程，只需要1个或几个线程就能应对极大并发的请求，这种业务场景下servlet模型就较为吃力。</p>
-<p>  <strong>例如：</strong></p>
-<p>  spring webmvc是基于servlet之上的一个路由模型，即spring实现了处理所有request请求的一个servlet（DispatcherServlet），并由该servlet进行路由。所以spring webmvc无法摆脱servlet模型的弊端。</p>
-<ul>
+</li>
+</ol>
+<pre><code> **缺点：**
+
+ servlet是一个简单的网络编程模型，当请求进入servlet container时，servlet container就会为其绑定一个线程，在并发不高的场景下这种模型是适用的，但是一旦并发上升，线程数量就会上涨，而线程资源代价是昂贵的（上线文切换，内存消耗大）严重影响请求的处理时间。在一些简单的业务场景下，不希望为每个request分配一个线程，只需要1个或几个线程就能应对极大并发的请求，这种业务场景下servlet模型就较为吃力。
+
+
+
+ **例如：**
+
+ spring webmvc是基于servlet之上的一个路由模型，即spring实现了处理所有request请求的一个servlet（DispatcherServlet），并由该servlet进行路由。所以spring webmvc无法摆脱servlet模型的弊端。</code></pre><ul>
 <li><p>Webflux</p>
 <p>Webflux模式替换了旧的Servlet线程模型。用少量的线程处理request和response io操作，这些线程称为Loop线程，而业务交给响应式编程框架处理，响应式编程是非常灵活的，用户可以将业务中阻塞的操作提交到响应式框架的work线程中执行，而不阻塞的操作依然可以在Loop线程中进行处理，大大提高了Loop线程的利用率。</p>
 <p><img src="/2019/12/25/springboot-bi-ji-er/webflux.png" alt="webflux"></p>
 <p>Spring WebFlux是Spring Framework 5.0中引入的新的反应式Web框架，与Spring MVC不同，它不需要Servlet API，完全异步和非阻塞，并 通过Reactor项目实现Reactive Streams规范。</p>
 <p><img src="/2019/12/25/springboot-bi-ji-er/mvc%E5%92%8Cwebflux.png" alt="mvc和webflux"></p>
+<p><strong>响应式与非响应式区别：</strong></p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%92%8C%E9%9D%9E%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8C%BA%E5%88%AB.png" alt="SpringBoot中响应式和非响应式"></p>
 </li>
 </ul>
+<ol start="2">
+<li><p>Flux和Mono</p>
+<ul>
+<li><p>简单业务而言：和其他普通对象差别不大，复杂请求业务，就可以提升性能</p>
+</li>
+<li><p>通俗理解：</p>
+<ul>
+<li><p>Mono 表示的是包含 0 或者 1 个元素的异步序列</p>
+<p><code>mono-&gt;单一对象 User  如： redis-&gt;用户ID-&gt;唯一的用户Mono&lt;User&gt;</code> </p>
+</li>
+<li><p>Flux 表示的是包含 0 到 N 个元素的异步序列</p>
+<p><code>flux-&gt;数组列表对象 List&lt;User&gt;  如： redis-&gt;男性用户-&gt;Flux&lt;User&gt;</code></p>
+</li>
+<li><p>Flux 和 Mono 之间可以进行转换</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Spring WebFlux有两种风格：基于功能和基于注解的。基于注解非常接近Spring MVC模型</p>
+<ul>
+<li><p>基于注解的方式</p>
+<p><strong>业务层Service：</strong>调用了ReactiveRedisTemplate对数据进行操作</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ReactiveServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">ReactiveService</span> <span class="token punctuation">{</span>
 
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> ReactiveRedisTemplate reactiveRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String USER_KEY <span class="token operator">=</span> <span class="token string">"entity:user"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Flux<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>USER_KEY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">queryByUUID</span><span class="token punctuation">(</span>String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>USER_KEY<span class="token punctuation">,</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">add</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String uuid <span class="token operator">=</span> <span class="token function">generateUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        user<span class="token punctuation">.</span><span class="token function">setUuid</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> reactiveRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>USER_KEY<span class="token punctuation">,</span>user<span class="token punctuation">.</span><span class="token function">getUuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> String <span class="token function">generateUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-"</span><span class="token punctuation">,</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">update</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>USER_KEY<span class="token punctuation">,</span>user<span class="token punctuation">.</span><span class="token function">getUuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">delete</span><span class="token punctuation">(</span>String uuid<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>Controller层：</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/user"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ReactiveController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> ReactiveService reactiveService<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 查询所有</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/find/all"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Flux<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveService<span class="token punctuation">.</span><span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 查询单个</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/query/{uuid}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">queryByName</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"uuid"</span><span class="token punctuation">)</span> String uuid<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveService<span class="token punctuation">.</span><span class="token function">queryByUUID</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 添加用户</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/add"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token keyword">return</span> reactiveService<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 更新用户</span>
+    <span class="token annotation punctuation">@PutMapping</span><span class="token punctuation">(</span><span class="token string">"/update"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveService<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 删除用户</span>
+    <span class="token annotation punctuation">@DeleteMapping</span><span class="token punctuation">(</span><span class="token string">"/delete/{uuid}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> <span class="token function">delete</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"uuid"</span><span class="token punctuation">)</span> String uuid<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> reactiveService<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>和使用mvc没有任何的区别，唯一的区别在于返回的对象是<code>Mono</code>和<code>Flux</code>，简单点理解，返回单个数据就是<code>Mono</code>，多个就使用<code>Flux</code>。</p>
+<p>启动项目可以看到实际上使用的是<code>Netty</code>服务器</p>
+</li>
+<li><p>基于功能（函数式）</p>
+<p>处理请求的类，实现具体的业务逻辑，接口 <code>ServerRequest</code> 表示的是一个 HTTP 请求体。通过ServerRequest 对象可获取到请求的相关信息，如请求路径、查询参数和请求内容等。方法 的返回值是一个 Mono<T extends serverresponse>对象。接口 <code>ServerResponse</code> 用来表示 HTTP 响应。ServerResponse 中包含了很多静态方法来创建不同 HTTP 状态码的响应对象。</T></p>
+<p>涉及几个比较重要的类如：<code>RouterFunction、HandlerFunction和DispatcherHandler</code></p>
+<p><code>RouterFunction</code>就是一个路由函数，可以理解为将请求和具体的<code>HandlerFunction</code>做一个映射；</p>
+<ol>
+<li><p>先创建<code>RouterFunction</code></p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserFunctionRouter</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> UserHandler userHandler<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Bean</span><span class="token punctuation">(</span><span class="token string">"userRouter"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> RouterFunction <span class="token function">router</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        RouterFunction<span class="token operator">&lt;</span>ServerResponse<span class="token operator">></span> routerFunction <span class="token operator">=</span> <span class="token function">route</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/user/find/all"</span><span class="token punctuation">,</span> <span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">,</span> userHandler<span class="token operator">:</span><span class="token operator">:</span>findAll<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/user/query/{uuid}"</span><span class="token punctuation">,</span> <span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON<span class="token punctuation">)</span><span class="token punctuation">,</span> userHandler<span class="token operator">:</span><span class="token operator">:</span>queryByName<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/user/add"</span><span class="token punctuation">,</span> <span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">,</span>userHandler<span class="token operator">:</span><span class="token operator">:</span>add<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">PUT</span><span class="token punctuation">(</span><span class="token string">"/user/update"</span><span class="token punctuation">,</span> <span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">,</span>userHandler<span class="token operator">:</span><span class="token operator">:</span>update<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">DELETE</span><span class="token punctuation">(</span><span class="token string">"/user/delete/{uuid}"</span><span class="token punctuation">,</span><span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">,</span> userHandler<span class="token operator">:</span><span class="token operator">:</span>delete<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> routerFunction<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>将具体的请求路径和具体的handler做了映射，这样会根据用户具体的请求路径找具体的handler，其实就是具体的方法。和mvc的@RequestMapping功能上是一样的。但是这个需要注意的是返回的结果是ServerResponse，请求是ServerRequest，这个也可以和mvc的HttpServletRequest、HttpServletResponse对应起来，都是封装用户的请求信息，其实和mvc都还是能对应起来的，只是编程方式不太一样。</p>
+</li>
+<li><p>然后创建<code>HandlerFunction</code></p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserHandler</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> UserRepository userRepository<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> Mono <span class="token function">findAll</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Flux<span class="token operator">&lt;</span>User<span class="token operator">></span> flux <span class="token operator">=</span> userRepository<span class="token punctuation">.</span><span class="token function">findAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contentType</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">body</span><span class="token punctuation">(</span>flux<span class="token punctuation">,</span> User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 查询单个</span>
+    <span class="token keyword">public</span> Mono <span class="token function">queryByUUID</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String uuid <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">pathVariable</span><span class="token punctuation">(</span><span class="token string">"uuid"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contentType</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">body</span><span class="token punctuation">(</span>userRepository<span class="token punctuation">.</span><span class="token function">queryByUUID</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">,</span>User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 添加用户</span>
+    <span class="token keyword">public</span> Mono <span class="token function">add</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 将请求体转成指定Momo对象</span>
+        Mono<span class="token operator">&lt;</span>User<span class="token operator">></span> mono <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">bodyToMono</span><span class="token punctuation">(</span>User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String uuid <span class="token operator">=</span> <span class="token function">generateUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 方法2</span>
+        Mono<span class="token operator">&lt;</span>Object<span class="token operator">></span> safeUser <span class="token operator">=</span> mono<span class="token punctuation">.</span><span class="token function">doOnNext</span><span class="token punctuation">(</span>u <span class="token operator">-</span><span class="token operator">></span> u<span class="token punctuation">.</span><span class="token function">setUuid</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>user <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token keyword">return</span> userRepository<span class="token punctuation">.</span><span class="token function">saveUser</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">//        User user = createUser(serverRequest);</span>
+        <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contentType</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON_UTF8<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">body</span><span class="token punctuation">(</span>safeUser<span class="token punctuation">,</span>Object<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+           <span class="token comment" spellcheck="true">//方法1</span>
+<span class="token comment" spellcheck="true">//        Mono&lt;User> userMono = mono.doOnNext(u -> u.setUuid(uuid)).doOnSuccess(user -> userRepository.saveNoReturn(user));</span>
+<span class="token comment" spellcheck="true">//        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(userMono,User.class);</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">private</span> User <span class="token function">createUser</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Optional<span class="token operator">&lt;</span>String<span class="token operator">></span> userId <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">queryParam</span><span class="token punctuation">(</span><span class="token string">"userId"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Optional<span class="token operator">&lt;</span>String<span class="token operator">></span> userName <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">queryParam</span><span class="token punctuation">(</span><span class="token string">"userName"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Optional<span class="token operator">&lt;</span>String<span class="token operator">></span> age <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">queryParam</span><span class="token punctuation">(</span><span class="token string">"age"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Optional<span class="token operator">&lt;</span>String<span class="token operator">></span> sex <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">queryParam</span><span class="token punctuation">(</span><span class="token string">"sex"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Optional<span class="token operator">&lt;</span>String<span class="token operator">></span> uuid <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">queryParam</span><span class="token punctuation">(</span><span class="token string">"uuid"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>userId<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> user<span class="token punctuation">.</span><span class="token function">setUserId</span><span class="token punctuation">(</span>userId<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>userName<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> user<span class="token punctuation">.</span><span class="token function">setUserName</span><span class="token punctuation">(</span>userName<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>age<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> user<span class="token punctuation">.</span><span class="token function">setAge</span><span class="token punctuation">(</span>Integer<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>age<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>sex<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> user<span class="token punctuation">.</span><span class="token function">setSex</span><span class="token punctuation">(</span>sex<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>uuid<span class="token punctuation">.</span><span class="token function">isPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            user<span class="token punctuation">.</span><span class="token function">setUuid</span><span class="token punctuation">(</span>uuid<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            user<span class="token punctuation">.</span><span class="token function">setUuid</span><span class="token punctuation">(</span><span class="token function">generateUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> user<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 更新用户</span>
+    <span class="token keyword">public</span> Mono <span class="token function">update</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Mono<span class="token operator">&lt;</span>User<span class="token operator">></span> mono <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">bodyToMono</span><span class="token punctuation">(</span>User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        User user <span class="token operator">=</span> <span class="token function">createUser</span><span class="token punctuation">(</span>serverRequest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">body</span><span class="token punctuation">(</span>userRepository<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">,</span>Boolean<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 删除用户</span>
+    <span class="token keyword">public</span> Mono <span class="token function">delete</span><span class="token punctuation">(</span>ServerRequest serverRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String uuid <span class="token operator">=</span> serverRequest<span class="token punctuation">.</span><span class="token function">pathVariable</span><span class="token punctuation">(</span><span class="token string">"uuid"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">body</span><span class="token punctuation">(</span>userRepository<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">,</span>Long<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">private</span> String <span class="token function">generateUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-"</span><span class="token punctuation">,</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>Spring WebFlux应用程序不严格依赖于Servlet API，因此它们不能作为war文件部署，也不能使用src/main/webapp目录</p>
+</li>
+<li><p>可以整合多个模板引擎</p>
+<pre><code>除了REST Web服务外，您还可以使用Spring WebFlux提供动态HTML内容。Spring WebFlux支持各种模板技术，包括Thymeleaf，FreeMarker。</code></pre></li>
+</ol>
+<h2 id="14-3-SpringBoot2-x-webflux实战"><a href="#14-3-SpringBoot2-x-webflux实战" class="headerlink" title="14.3-SpringBoot2.x webflux实战"></a>14.3-SpringBoot2.x webflux实战</h2><ol>
+<li><p>WebFlux中，请求和响应不再是WebMVC中的ServletRequest和ServletResponse，而是ServerRequest和ServerResponse</p>
+</li>
+<li><p>加入依赖，如果同时存在spring-boot-starter-web，则会优先用spring-boot-starter-web</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-webflux<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>编写测试类UserController</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/api/v1/user"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/test"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> Mono<span class="token punctuation">.</span><span class="token function">just</span><span class="token punctuation">(</span><span class="token string">"hello webflux!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>启动方式默认是Netty,8080端口</p>
+<p>测试:localhost:8080/api/v1/user/test</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/webflux%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C.png" alt="webflux测试结果"></p>
+</li>
+</ol>
+<h2 id="14-4-WebFlux客户端WebClient"><a href="#14-4-WebFlux客户端WebClient" class="headerlink" title="14.4-WebFlux客户端WebClient"></a>14.4-WebFlux客户端WebClient</h2><p>WebClient是一个响应式客户端，它提供了RestTemplate的替代方法。它公开了一个功能齐全、流畅的API，并依赖于非阻塞I / O，使其能够比RestTemplate更高效地支持高并发性。WebClient非常适合流式的传输方案，并且依赖于较低级别的HTTP客户端库来执行请求，是可插拔的。</p>
+<p><strong>与RestTemplate相比，WebClient是：</strong></p>
+<ul>
+<li>非阻塞，Reactive的，并支持更高的并发性和更少的硬件资源。</li>
+<li>提供利用Java 8 lambdas的函数API。</li>
+<li>支持同步和异步方案。</li>
+<li>支持从服务器向上或向下流式传输。</li>
+</ul>
+<p>RestTemplate不适合在非阻塞应用程序中使用，因此Spring WebFlux应用程序应始终使用WebClient。在大多数高并发场景中，WebClient也应该是Spring MVC中的首选，并且用于编写一系列远程，相互依赖的调用。</p>
+<p>Reactive方法：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+
+  <span class="token keyword">private</span> WebClient client <span class="token operator">=</span> WebClient<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">"http://localhost:8080"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">getUser</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> client<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">uri</span><span class="token punctuation">(</span><span class="token string">"/user/{id}"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON<span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">retrieve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">bodyToMono</span><span class="token punctuation">(</span>User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<h1 id="15-SpringBoot2-0服务器端主动推送SSE技术"><a href="#15-SpringBoot2-0服务器端主动推送SSE技术" class="headerlink" title="15-SpringBoot2.0服务器端主动推送SSE技术"></a>15-SpringBoot2.0服务器端主动推送SSE技术</h1><h2 id="15-1-服务端推送常用技术介绍"><a href="#15-1-服务端推送常用技术介绍" class="headerlink" title="15.1-服务端推送常用技术介绍"></a>15.1-服务端推送常用技术介绍</h2><ol>
+<li><p>客户端轮询:ajax定时拉取</p>
+<p>ajax长时间和服务端保持通讯太占内存</p>
+</li>
+<li><p>服务端主动推送:WebSocket</p>
+<pre><code>全双工的，本质上是一个额外的tcp连接，建立和关闭时握手使用http协议，其他数据传输不使用http协议
+更加复杂一些，适用于需要进行复杂双向数据通讯的场景</code></pre><p>​    websocket可以进行服务端和前端双向通讯,写法较为复杂</p>
+</li>
+<li><p>服务端主动推送:SSE (Server Send Event)</p>
+<pre><code>html5新标准，用来从服务端实时推送数据到浏览器端，
+直接建立在当前http连接上，本质上是保持一个http长连接，轻量协议
+简单的服务器数据推送的场景，使用服务器推送事件    
+学习资料：http://www.w3school.com.cn/html5/html_5_serversentevents.asp</code></pre></li>
+</ol>
+<h2 id="15-2-SpringBoot2-x服务端主动推送SSE"><a href="#15-2-SpringBoot2-x服务端主动推送SSE" class="headerlink" title="15.2-SpringBoot2.x服务端主动推送SSE"></a>15.2-SpringBoot2.x服务端主动推送SSE</h2><ol>
+<li><p>后端代码</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SSEController</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//produces = "text/event-stream;charset=UTF-8"一定要带上</span>
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/get_data"</span><span class="token punctuation">,</span> produces <span class="token operator">=</span> <span class="token string">"text/event-stream;charset=UTF-8"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+         <span class="token keyword">try</span> <span class="token punctuation">{</span>
+              Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+         <span class="token punctuation">}</span><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+
+        <span class="token keyword">double</span> moeny <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">10</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>String<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">"%.2f"</span><span class="token punctuation">,</span>moeny<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          DecimalFormat df <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DecimalFormat</span><span class="token punctuation">(</span><span class="token string">".00"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          String price <span class="token operator">=</span> df<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>moeny<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token comment" spellcheck="true">//！！！注意，EventSource返回的参数必须以data:开头，"\n\n"结尾，不然onmessage方法无法执行。</span>
+          <span class="token keyword">return</span> <span class="token string">"data:猪肉价格行情:"</span> <span class="token operator">+</span> price <span class="token operator">+</span><span class="token string">"元"</span><span class="token operator">+</span> <span class="token string">"\n\n"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>前段代码</p>
+<pre class=" language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Insert title here<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text/javascript<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript">  
+<span class="token comment" spellcheck="true">//需要判断浏览器支不支持，可以去w3c进行查看</span>
+
+<span class="token keyword">var</span> source <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EventSource</span><span class="token punctuation">(</span><span class="token string">'/get_data'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+source<span class="token punctuation">.</span>onmessage <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'result'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText <span class="token operator">=</span> event<span class="token punctuation">.</span>data
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>  
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>result<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>  
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+
+</code></pre>
+</li>
+</ol>
+   
+
+<pre><code>
+
+
+
+
+
+
+
+</code></pre>
             </div>
             <hr/>
 
@@ -3913,7 +4241,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">39k</span>&nbsp;字
+                class="white-color">41.1k</span>&nbsp;字
             
             
             
