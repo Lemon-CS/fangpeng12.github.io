@@ -424,12 +424,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/SpringBoot/">
-                                <span class="chip bg-color">SpringBoot</span>
-                            </a>
-                        
                             <a href="/tags/%E7%AC%94%E8%AE%B0/">
                                 <span class="chip bg-color">笔记</span>
+                            </a>
+                        
+                            <a href="/tags/SpringBoot/">
+                                <span class="chip bg-color">SpringBoot</span>
                             </a>
                         
                             <a href="/tags/Spring/">
@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    20.7k
+                    21.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    92 分
+                    97 分
                 </div>
                 
 				
@@ -3728,7 +3728,6 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
   console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
   document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'result'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText <span class="token operator">=</span> event<span class="token punctuation">.</span>data
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
-
 </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>  
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
 
@@ -3736,20 +3735,156 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>result<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>  
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
 
-</code></pre>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></code></pre>
 </li>
 </ol>
-   
+<h1 id="16-SpringBoot2-x监控Actuator"><a href="#16-SpringBoot2-x监控Actuator" class="headerlink" title="16-SpringBoot2.x监控Actuator"></a>16-SpringBoot2.x监控Actuator</h1><p><code>Spring Boot Actuator</code>是<code>spring boot</code>项目一个监控模块，提供了很多原生的端点，包含了对应用系统的自省和监控的集成功能，可以查看应用配置的详细信息，比如<strong>应用程序上下文里全部的Bean</strong>、<strong>健康指标</strong>、<strong>环境变量</strong>及<strong>各类重要度量指标</strong>等等，这些都是使用可<code>HTTP</code>进行请求访问。通过这些监控信息，我们就能随时了解应用的运行情况了。</p>
+<p>Actuator 是 Spring Boot 提供的对应用系统的自省和监控功能。通过 Actuator，可以使用数据化的指标去度量应用的运行情况，比如查看服务器的磁盘、内存、CPU等信息，系统的线程、gc、运行状态等等。</p>
+<p>Actuator 通常通过使用 HTTP 和 JMX 来管理和监控应用，大多数情况使用 HTTP 的方式。</p>
+<ol>
+<li><p>添加依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-actuator<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>添加配置</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+  <span class="token key atrule">servlet</span><span class="token punctuation">:</span>
+    <span class="token key atrule">context-path</span><span class="token punctuation">:</span> /demo
+<span class="token comment" spellcheck="true"># actuator 监控配置</span>
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token comment" spellcheck="true">#actuator端口 如果不配置做默认使用上面8080端口</span>
+  <span class="token key atrule">server</span><span class="token punctuation">:</span>
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">9090</span>
+  <span class="token key atrule">endpoints</span><span class="token punctuation">:</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token comment" spellcheck="true">#默认值访问health,info端点  用*可以包含全部端点</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> <span class="token string">"*"</span>
+      <span class="token comment" spellcheck="true">#修改访问路径 2.0之前默认是/; 2.0默认是/actuator可以通过这个属性值修改</span>
+      <span class="token key atrule">base-path</span><span class="token punctuation">:</span> /actuator</code></pre>
+<p>配置完成启动项目后就可以通过postman或者直接在预览器输入路径等方式来查看应用的运行状态了。<br> 当项目启动时，访问<code>[http://127.0.0.1:9090/actuator]</code>地址</p>
+<h5 id="注意：如果没有配置-actuator端口-采用默认访问地址：http-127-0-0-1-8080-demo-actuator"><a href="#注意：如果没有配置-actuator端口-采用默认访问地址：http-127-0-0-1-8080-demo-actuator" class="headerlink" title="注意：如果没有配置 actuator端口,采用默认访问地址：http://127.0.0.1:8080/demo/actuator"></a><code>注意：如果没有配置 actuator端口,采用默认访问地址：http://127.0.0.1:8080/demo/actuator</code></h5><p>如果看到类似下面的内容，说明actuator已经生效了</p>
+<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"_links"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"self"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"auditevents"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/auditevents"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"beans"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/beans"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"caches-cache"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/caches/{cache}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"caches"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/caches"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"health"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/health"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"health-component"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/health/{component}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"health-component-instance"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/health/{component}/{instance}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"conditions"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/conditions"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"configprops"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/configprops"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"env"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/env"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"env-toMatch"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/env/{toMatch}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"info"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/info"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"loggers"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/loggers"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"loggers-name"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/loggers/{name}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"heapdump"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/heapdump"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"threaddump"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/threaddump"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"metrics-requiredMetricName"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/metrics/{requiredMetricName}"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"metrics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/metrics"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"scheduledtasks"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/scheduledtasks"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"httptrace"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/httptrace"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"mappings"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"href"</span><span class="token operator">:</span> <span class="token string">"http://127.0.0.1:9090/actuator/mappings"</span><span class="token punctuation">,</span>
+            <span class="token property">"templated"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>建议</p>
+<ul>
+<li><p>只能访问几个url</p>
+<ul>
+<li>需要在配置文件中加入下列配置<br><code>management.endpoints.web.exposure.include=*</code></li>
+<li>官网说明：<a href="https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator</a></li>
+</ul>
+<p><strong>原因：</strong><br>出于安全考虑，除/ health和/ info之外的所有执行器默认都是禁用的。  <code>management.endpoints.web.exposure.include</code>属性可用于启用执行器</p>
+</li>
+<li><p>建议<br>在设置management.endpoints.web.exposure.include之前，请确保暴露的执行器不包含敏感信息和/<br>或通过将其放置在防火墙进行控制，不对外进行使用</p>
+<p>禁用的端点将从应用程序上下文中完全删除。如果您只想更改端点所暴露的技术，请改用 include和exclude属性<br><strong>例子：</strong></p>
+<pre><code>开启全部：`management.endpoints.web.exposure.include=*`
+开启某个：`management.endpoints.web.exposure.include=metrics`
+关闭某个：`management.endpoints.web.exposure.exclude=metrics`</code></pre><p>或者用springadmin进行管理</p>
+<pre><code>相关资料：https://www.cnblogs.com/ityouknow/p/8440455.html</code></pre><p>或者用自己编写脚本监控</p>
+<pre><code>CPU、内存、磁盘、nginx的http响应状态码200,404,5xx </code></pre></li>
+<li><p>介绍常用的几个</p>
+<pre><code>`/health`     查看应用健康指标
+`/actuator/metrics`    查看应用基本指标列表
+`/actuator/metrics/{name}`        通过上述列表，查看具体 查看具体指标
+`/actuator/env`        显示来自Spring的 ConfigurableEnvironment的属性    </code></pre></li>
+</ul>
+</li>
+</ol>
 
-<pre><code>
-
-
-
-
-
-
-
-</code></pre>
             </div>
             <hr/>
 
@@ -3812,12 +3947,12 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/SpringBoot/">
-                                    <span class="chip bg-color">SpringBoot</span>
-                                </a>
-                            
                                 <a href="/tags/%E7%AC%94%E8%AE%B0/">
                                     <span class="chip bg-color">笔记</span>
+                                </a>
+                            
+                                <a href="/tags/SpringBoot/">
+                                    <span class="chip bg-color">SpringBoot</span>
                                 </a>
                             
                                 <a href="/tags/Spring/">
@@ -3987,26 +4122,77 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2019/12/25/springboot-bi-ji-er/">
+                <a href="/2019/12/25/kafka-xue-xi-bi-ji/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="SpringBoot学习笔记2">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Kafka学习笔记">
                         
-                        <span class="card-title">SpringBoot学习笔记2</span>
+                        <span class="card-title">Kafka学习笔记</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            SpringBoot2.0学习笔记1-SpringBoot2.0入门1.1-SpringBoot2.x依赖环境和版本新特性简介：讲解新版本依赖环境和springboot2新特性概述
-
-1、依赖版本jdk8以上, Springboot2.x用
+                            Kafka学习笔记1-kafka介绍1.1-什么是kafka？Apache Kafka是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Kafka%E7%AC%94%E8%AE%B0/" class="post-category">
+                                    Kafka笔记
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/kafka/">
+                        <span class="chip bg-color">kafka</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                        <span class="chip bg-color">笔记</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/12/25/springboot-bi-ji-yi/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="SpringBoot学习笔记1">
+                        
+                        <span class="card-title">SpringBoot学习笔记1</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            1、Spring Boot概述1.1-Spring Boot简介
+Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程，J2EE开发的一站式解决方案。该框架使用了特定的方式
                         
                     </div>
                     <div class="publish-info">
@@ -4025,73 +4211,19 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                        <span class="chip bg-color">笔记</span>
+                    </a>
                     
                     <a href="/tags/SpringBoot/">
                         <span class="chip bg-color">SpringBoot</span>
                     </a>
                     
-                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                        <span class="chip bg-color">笔记</span>
-                    </a>
-                    
                     <a href="/tags/Spring/">
                         <span class="chip bg-color">Spring</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2019/12/25/kafka-xue-xi-bi-ji/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Kafka学习笔记">
-                        
-                        <span class="card-title">Kafka学习笔记</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            Kafka学习笔记1-kafka介绍1.1-什么是kafka？Apache Kafka是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Kafka%E7%AC%94%E8%AE%B0/" class="post-category">
-                                    Kafka笔记
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                        <span class="chip bg-color">笔记</span>
-                    </a>
-                    
-                    <a href="/tags/kafka/">
-                        <span class="chip bg-color">kafka</span>
                     </a>
                     
                 </div>
@@ -4241,7 +4373,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">41.1k</span>&nbsp;字
+                class="white-color">42.1k</span>&nbsp;字
             
             
             
