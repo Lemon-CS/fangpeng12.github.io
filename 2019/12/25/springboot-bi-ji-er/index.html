@@ -3864,8 +3864,12 @@ source<span class="token punctuation">.</span>onmessage <span class="token opera
 <ul>
 <li><p>只能访问几个url</p>
 <ul>
-<li>需要在配置文件中加入下列配置<br><code>management.endpoints.web.exposure.include=*</code></li>
-<li>官网说明：<a href="https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator</a></li>
+<li><p>访问的url在SpringBoot2.0版本需要加上actuator</p>
+</li>
+<li><p>需要在配置文件中加入下列配置<br><code>management.endpoints.web.exposure.include=*</code></p>
+</li>
+<li><p>官网说明：<a href="https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator</a></p>
+</li>
 </ul>
 <p><strong>原因：</strong><br>出于安全考虑，除/ health和/ info之外的所有执行器默认都是禁用的。  <code>management.endpoints.web.exposure.include</code>属性可用于启用执行器</p>
 </li>
