@@ -449,14 +449,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.6k
+                    4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    12 分
+                    14 分
                 </div>
                 
 				
@@ -497,7 +497,7 @@
 <li>每个小型服务都运行在自己的进程中，并经常采用HTTP资源API轻量的机制来相互通信</li>
 <li>这些服务围绕业务功能进行构建，并能通过全自动的部署机制来进行独立部署</li>
 <li>一个微服务只关注某个特定的功能</li>
-<li>优点：<ul>
+<li><strong>优点：</strong><ul>
 <li>易于开发和维护：一个微服务只会关注一个特定的业务功能，所以业务清晰、代码量较少。开发和维护单个微服务相对简单，每个服务为独立的业务开发，一个微服务只关注某个特定的功能，如订单管理、用户管理等</li>
 <li>单个微服务启动较快，每个微服务可独立运行在自己的进程里</li>
 <li>局部修改容易部署：单体应用只要有修改，就得重新部署整个应用。一般来说，对某个微服务进行修改，只需要重新部署这个服务即可</li>
@@ -505,7 +505,7 @@
 <li>按需伸缩：可根据需求，实现细粒度的扩展</li>
 </ul>
 </li>
-<li>缺点：<ul>
+<li><strong>缺点：</strong><ul>
 <li>运维要求高：更多的服务意味着要投入更多的运维</li>
 <li>分布式固有的复杂性：使用微服务构建的是分布式系统。对于一个分布式系统，系统容错、网络延迟、分布式事务等都会带来巨大的问题。</li>
 <li>接口调整成本高：微服务之间通过接口进行通信。如果修改某一个微服务的API，可能所有用到这个接口的微服务都需要进行调整</li>
@@ -616,6 +616,94 @@
 <li><p>Spring Cloud Connectors 用于 Paas 云平台连接到后端。</p>
 </li>
 </ul>
+<h1 id="3-Dubbo和SpringCloud"><a href="#3-Dubbo和SpringCloud" class="headerlink" title="3-Dubbo和SpringCloud"></a>3-Dubbo和SpringCloud</h1><ol>
+<li><p><strong>dubbo:</strong> zookeeper + dubbo + springmvc/springboot<br>官方地址：<a href="http://dubbo.apache.org/#!/?lang=zh-cn" target="_blank" rel="noopener">http://dubbo.apache.org/#!/?lang=zh-cn</a><br>配套：</p>
+<pre><code>   通信方式：rpc
+   注册中心：zookeper/redis
+   配置中心：diamond</code></pre><p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/Dubbo%E7%BB%84%E4%BB%B6.png" alt="Dubbo"></p>
+</li>
+<li><p>Dubbo核心组件</p>
+<ul>
+<li><strong>Provider：</strong>暴露服务的提供方，可以通过 jar 或者容器的方式启动服务。</li>
+<li><strong>Consumer：</strong>调用远程服务的服务消费方。</li>
+<li><strong>Registry：</strong>服务注册中心和发现中心。</li>
+<li><strong>Monitor：</strong>统计服务和调用次数，调用时间监控中心。（Dubbo 的控制台页面中可以显示，目前只有一个简单版本。）</li>
+<li><strong>Container：</strong>服务运行的容器。</li>
+</ul>
+</li>
+<li><p>Spring Cloud</p>
+<p>springcloud: 全家桶+轻松嵌入第三方组件<br>官网：<a href="http://projects.spring.io/spring-cloud/" target="_blank" rel="noopener">http://projects.spring.io/spring-cloud/</a><br>   配套</p>
+<pre><code>    通信方式：http restful
+    注册中心：eruka/consul
+    配置中心：config
+    断路器：hystrix
+    网关：zuul
+    分布式追踪系统：sleuth+zipkin</code></pre></li>
+<li><p>SpringCloud和Dubbo区别</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Dubbo</th>
+<th>Spring Cloud</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务注册中心</td>
+<td>Zookeeper</td>
+<td>Spring Cloud Netflix Eureka</td>
+</tr>
+<tr>
+<td>服务调用方式</td>
+<td>RPC</td>
+<td>REST API</td>
+</tr>
+<tr>
+<td>服务监控</td>
+<td>无</td>
+<td>Spring Boot Admin</td>
+</tr>
+<tr>
+<td>断路器</td>
+<td>不完善</td>
+<td>Spring Cloud Netflix Hystrix</td>
+</tr>
+<tr>
+<td>服务网关</td>
+<td>无</td>
+<td>Spring Cloud Netflix Zuul</td>
+</tr>
+<tr>
+<td>分布式配置</td>
+<td>无</td>
+<td>Spring Cloud Config</td>
+</tr>
+<tr>
+<td>服务跟踪</td>
+<td>无</td>
+<td>Spring Cloud Sleuth</td>
+</tr>
+<tr>
+<td>消息总线</td>
+<td>无</td>
+<td>Spring Cloud Bus</td>
+</tr>
+<tr>
+<td>数据流</td>
+<td>无</td>
+<td>Spring Cloud Stream</td>
+</tr>
+<tr>
+<td>批量任务</td>
+<td>无</td>
+<td>Spring Cloud Task</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>Spring Cloud 抛弃了 Dubbo 的 RPC 通信，采用的是基于 HTTP 的 REST 方式。严格来说，这两种方式各有优劣。虽然从一定程度上来说，后者牺牲了服务调用的性能，但也避免了上面提到的原生 RPC 带来的问题。而且 REST 相比 RPC 更为灵活，服务提供方和调用方，不存在代码级别的强依赖，这在强调快速演化的微服务环境下显得更加合适。</p>
+<p>很明显，Spring Cloud 的功能比 Dubbo 更加强大，涵盖面更广，而且作为 Spring 的拳头项目，它也能够与 Spring Framework、Spring Boot、Spring Data、Spring Batch 等其他 Spring 项目完美融合，这些对于微服务而言是至关重要的。</p>
+</li>
+</ol>
 
             </div>
             <hr/>
@@ -1088,7 +1176,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">45.7k</span>&nbsp;字
+                class="white-color">46.1k</span>&nbsp;字
             
             
             
