@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-01-13T14:27:56.860Z</updated>
+  <updated>2020-01-15T14:50:36.629Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -17,11 +17,71 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>单元测试之Junit</title>
+    <link href="https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/"/>
+    <id>https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/</id>
+    <published>2020-01-15T14:36:54.000Z</published>
+    <updated>2020-01-15T14:50:36.629Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Junit5单元测试&quot;&gt;&lt;a href=&quot;#Junit5单元测试&quot; class=&quot;headerlink&quot; title=&quot;Junit5单元测试&quot;&gt;&lt;/a&gt;Junit5单元测试&lt;/h1&gt;&lt;h2 id=&quot;1-前言&quot;&gt;&lt;a href=&quot;#1-前言&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Junit" scheme="https://fangpeng12.github.io/categories/Junit/"/>
+    
+    
+      <category term="Junit" scheme="https://fangpeng12.github.io/tags/Junit/"/>
+    
+      <category term="单元测试" scheme="https://fangpeng12.github.io/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Angular学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/01/15/angular-xue-xi-bi-ji/"/>
+    <id>https://fangpeng12.github.io/2020/01/15/angular-xue-xi-bi-ji/</id>
+    <published>2020-01-15T12:36:54.000Z</published>
+    <updated>2020-01-15T14:51:25.009Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Angular学习笔记&quot;&gt;&lt;a href=&quot;#Angular学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Angular学习笔记&quot;&gt;&lt;/a&gt;Angular学习笔记&lt;/h1&gt;&lt;h1 id=&quot;1-Angular入门&quot;&gt;&lt;a
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Angular笔记" scheme="https://fangpeng12.github.io/categories/Angular%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="Angular" scheme="https://fangpeng12.github.io/tags/Angular/"/>
+    
+      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+  </entry>
+  
+  <entry>
     <title>SpringCloud学习笔记一</title>
     <link href="https://fangpeng12.github.io/2020/01/13/springcloud-xue-xi-bi-ji-yi/"/>
     <id>https://fangpeng12.github.io/2020/01/13/springcloud-xue-xi-bi-ji-yi/</id>
     <published>2020-01-13T12:36:54.000Z</published>
-    <updated>2020-01-13T14:27:56.860Z</updated>
+    <updated>2020-01-14T15:01:13.606Z</updated>
     
     <summary type="html">
     

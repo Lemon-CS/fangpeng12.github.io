@@ -1,0 +1,1698 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="单元测试之Junit, 空白格的博客">
+    <meta name="description" content="Junit5单元测试1-前言单元测试是软件开发过程中必不可少的一环，但是在平常开发中往往因为项目周期紧，工作量大而被忽略，这样往往导致软件问题层出不穷。线上出现不少问题其实在右单元测试的情况下就可以及时发现和处理，因此培养自己在日常开发中写">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>单元测试之Junit | 空白格的博客</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="空白格的博客" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">空白格的博客</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">空白格的博客</div>
+        <div class="logo-desc">
+            
+            个人技术博客：主要是一些技术杂谈和学习笔记的分享
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/fangpeng12" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #36b3ec;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/fangpeng12" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        单元测试之Junit
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Junit/">
+                                <span class="chip bg-color">Junit</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+                                <span class="chip bg-color">单元测试</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Junit/" class="post-category">
+                                Junit
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-01-15
+                </div>
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    16 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Junit5单元测试"><a href="#Junit5单元测试" class="headerlink" title="Junit5单元测试"></a>Junit5单元测试</h1><h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1-前言"></a>1-前言</h2><p>单元测试是软件开发过程中必不可少的一环，但是在平常开发中往往因为项目周期紧，工作量大而被忽略，这样往往导致软件问题层出不穷。线上出现不少问题其实在右单元测试的情况下就可以及时发现和处理，因此培养自己在日常开发中写单元测试的能力是很有必要的，无论是对自己编码能力的提高，还是项目质量的提升，都大有帮助。</p>
+<h2 id="2-认识Junit5"><a href="#2-认识Junit5" class="headerlink" title="2-认识Junit5"></a>2-认识Junit5</h2><p>在java单元测试领域中，<code>Junit</code>和<code>TestNG</code>占据着主要的市场，其中Junit有着就爱哦长的发展历史和不断演进的丰富功能，备受大多数Java开发者的青睐。</p>
+<p>而<code>Junit5</code>版本是Junit单元测试框架的一次重大升级，要完全使用<code>Junit5</code>的功能，就必须使用<code>JDK8</code>以上的环境。</p>
+<p>与以前版本不同的是Junit5是由三个不同子项目的几个不同模块组成：</p>
+<p><code>Junit 5 = Junit Platform + Junit Jupiter + Junit Vintage</code></p>
+<ul>
+<li>Junit Platform：用于JVM上启动测试框架的基础服务，提供命令行，IDE和构建工具等方式执行测试的支持，并通过命令行定义TestEngine API；</li>
+<li>Junit Jupiter：用于编写测试和扩展编程的扩展模型，然后通过插件在Junit、Gradle或Maven中来构建；</li>
+<li>Junit Vintage：用于在Junit 5中兼容运行Junit3.x和Junit4.x的测试用例；</li>
+</ul>
+<h2 id="3-为什么需要Junit-5？"><a href="#3-为什么需要Junit-5？" class="headerlink" title="3-为什么需要Junit 5？"></a>3-为什么需要Junit 5？</h2><p>自从有了Junit之类的测试框架，Java单元测试领域逐渐成熟，开发人员对单元测试框架也有了更高的要求：</p>
+<p>​    如：更多的测试方法、更少的其他库依赖；</p>
+<p>因此大家都期待着一个更强大的测试框架诞生，Junit作为Java测试领域的领头羊，推出了Junit 5这个版本；</p>
+<p>主要特性有：</p>
+<ul>
+<li>提供全新的断言和测试注解，支持测试类内嵌，允许在断言中使用Lambda表达式</li>
+<li>更丰富的测试方法：支持动态测试，重复测试，参数化测试等</li>
+<li>实现了模块化，让测试执行和测试发现等不同模块解耦，减少依赖</li>
+<li>提供对Java8的支持，如Lambda表达式，Stream API等</li>
+</ul>
+<p><img src="/2020/01/15/dan-yuan-ce-shi-zhi-junit/junit.png" alt="Junit5"></p>
+<h2 id="4-如何使用Junit-5"><a href="#4-如何使用Junit-5" class="headerlink" title="4-如何使用Junit 5"></a>4-如何使用Junit 5</h2><ol>
+<li><p>首先需要添加Junit 5的依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependencies</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.junit.jupiter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>junit-jupiter-api<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>${junit.jupiter.version}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>junit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>junit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>${junit.version}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>定义测试方法</p>
+<table>
+<thead>
+<tr>
+<th>import org.junit.jupiter.api.*（注解）</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Test</td>
+<td>将方法标识为测试方法</td>
+</tr>
+<tr>
+<td>@RepeatedTest（<Number>）</Number></td>
+<td>重复测试<Number>次</Number></td>
+</tr>
+<tr>
+<td>@TestFactory</td>
+<td>方法是进行动态测试的工厂</td>
+</tr>
+<tr>
+<td>@BeforeEach</td>
+<td>在每次测试之前执行，它用于准备测试环境（如：读取输入数据，初始化类）</td>
+</tr>
+<tr>
+<td>@AfterEach</td>
+<td>在每次测试后执行，它用于清理测试环境（如：删除临时数据，恢复默认值），它还可以通过清理昂贵的内存结构来节省内存</td>
+</tr>
+<tr>
+<td>@BeforeAll</td>
+<td>在所有测试开始前执行一次，它用于执行耗时的活动，例如：连接到数据库；需要标记带有此批注的方法<code>static</code>才能与Junit一起使用</td>
+</tr>
+<tr>
+<td>@AfterAll</td>
+<td>在完成所有测试之后，执行一次，它用于执行清理活动，例如：与数据库断开连接；需要定义此注解的方法static以便与Junit一起使用</td>
+</tr>
+<tr>
+<td>@Nested</td>
+<td>使得可以嵌套内部测试类以强制执行一定的执行顺序，能够以静态内部类的形式对测试用例类进行逻辑分组</td>
+</tr>
+<tr>
+<td>@Tag(“<TagName>“)</TagName></td>
+<td>Junit 5中的测试可以通过标签过滤；例如：仅运行标签为“快速”的测试方法</td>
+</tr>
+<tr>
+<td>@ExtendWith</td>
+<td>可以让你注册一个或多个扩展点集成的扩展类</td>
+</tr>
+<tr>
+<td>@Disabled（@Disabled（“WhyDisabled”））</td>
+<td>指示应该禁用测试，当基础代码已更改且测试用例尚未适用时，这很有用；或者如果侧测试的执行时间太长而无法包括在内；最佳的做法是提供可选说明，说明为什么禁用测试</td>
+</tr>
+<tr>
+<td>@DisplayName（”<Name>“）</Name></td>
+<td>&lt;名称&gt;，将由测试运行器显示，与方法名称相反，DisplayName可以包含空格</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>断言</p>
+<p>在断言API设计上，Junit 5进行显著的改进，并且充分利用Java 8的新特性，特别是Lambda表达式，最终提供了新的断言类</p>
+<p><code>org.junit.jupiter.api.Assertions</code>；许多断言方法接收Lambda表达式参数，在断言消息使用Lambda表达式的一个优点就是踏实延迟计算的，如果消息构造开销很大，这样做一定程度上可以节省时间和资源。</p>
+<ul>
+<li><code>assertAll</code>：断言所有提供的可执行文件都不会抛出异常。若提供的标题(heading),其将包含在MultipleFailuresError的消息字符串中。</li>
+<li><code>assertArrayEquals</code>：断言期望的和实际的XX类型数组是相等的。若失败，将显示提供的失败消息。</li>
+<li><code>assertDoesNotThrow</code>：虽然从测试方法抛出的任何异常都会导致测试失败，但在某些用例中，显式断言测试方法中的给定代码块不会抛出异常会很有用。若提供的标题(heading),其将包含在MultipleFailuresError的消息字符串中。</li>
+<li><code>assertEquals</code>：断言预期和实际是相等的。如有必要，将从提供的messageSupplier中懒惰地检索失败消息。</li>
+<li><code>assertFalse</code>：断言提供的条件不是真。失败并显示提供的失败消息。</li>
+<li><code>assertIterableEquals</code>：断言预期和实际的迭代是完全相同的。类似于检查assertArrayEquals(Object []，Object []，String)中的完全相等，如果遇到两个迭代(包括期望和实际)，则它们的迭代器必须以相同的顺序返回相等的元素。注意：这意味着迭代器不需要是同一类型。</li>
+<li><code>assertNotNull</code>：断言提供的条件不为null</li>
+<li><code>assertNotSame</code>：断言预期和实际不会引用同一个对象</li>
+<li><code>assertNull</code>：断言提供的实际为null</li>
+<li><code>assertSame</code>：断言预期和实际引用同一个对象</li>
+<li><code>assertThrows</code>：断言所提供的可执行代码块的执行会引发expectedType的异常并返回异常。如果没有抛出异常，或者抛出了不同类型的异常，则此方法将失败。如果不想对异常实例执行其他检查，只需忽略返回值。</li>
+<li><code>assertTimeout</code>：断言在超出给定超时之前，所提供的可执行代码块的执行完成。注意：可执行代码块将在与调用代码相同的线程中执行。因此，如果超过超时，则不会抢先中止执行可执行代码块。</li>
+<li><code>assertTimeoutPreemptively</code>：断言在超出给定超时之前，所提供的可执行代码块的执行完成。注意：可执行代码块将在与调用代码不同的线程中执行。此外，如果超过超时，则可抢占地执行可执行代码块。</li>
+<li><code>assertTrue</code>：断言提供的条件为true</li>
+<li><code>fail</code>：使用给定的失败消息以及根本原因进行测试失败。泛型返回类型V允许此方法直接用作单语句lambda表达式，从而避免需要实现具有显式返回值的代码块。 由于此方法在其return语句之前抛出AssertionFailedError，因此该方法实际上永远不会向其调用者返回值。</li>
+</ul>
+</li>
+<li><p>测试方法案例</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"我的第一个测试用例"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyFirstTestCaseTest</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@BeforeAll</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"初始化数据"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@AfterAll</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">cleanup</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"清理数据"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@BeforeEach</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">tearup</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"当前测试方法开始"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@AfterEach</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">tearDown</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"当前测试方法结束"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"我的第一个测试"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">testFirstTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我的第一个测试开始测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"我的第二个测试"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">testSecondTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我的第二个测试开始测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>测试结果如下：</p>
+<p><img src="/2020/01/15/dan-yuan-ce-shi-zhi-junit/%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95.jpg" alt="第一个测试"></p>
+</li>
+</ol>
+<p>   <strong>禁用测试方法：</strong><code>@Disabled</code></p>
+<pre class=" language-java"><code class="language-java">   <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"我的第三个测试"</span><span class="token punctuation">)</span>
+   <span class="token annotation punctuation">@Disabled</span>
+   <span class="token annotation punctuation">@Test</span>
+   <span class="token keyword">void</span> <span class="token function">testThirdTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我的第三个测试开始测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span></code></pre>
+<p>   测试结果如下：</p>
+<p>   <img src="/2020/01/15/dan-yuan-ce-shi-zhi-junit/%E7%A6%81%E7%94%A8%E6%B5%8B%E8%AF%95.png" alt="禁用测试"></p>
+<p>   <code>@Disabled</code> 也可以使用在类上，用于标记类下所有的测试方法不被执行，一般使用对多个测试类组合测试的时候。</p>
+<p>   <strong>内嵌测试类：</strong><code>@Nested</code></p>
+<p>   当我们编写的类和代码逐渐增多，随之而来的需要测试的对应测试类也会越来越多。为了解决测试类数量爆炸的问题，JUnit 5提供了@Nested 注解，能够以静态内部成员类的形式对测试用例类进行逻辑分组。 并且每个静态内部类都可以有自己的生命周期方法， 这些方法将按从外到内层次顺序执行。 此外，嵌套的类也可以用<code>@DisplayName</code> 标记，这样我们就可以使用正确的测试名称。</p>
+<pre class=" language-java"><code class="language-java">   <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"内嵌测试类"</span><span class="token punctuation">)</span>
+   <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">NestUnitTest</span> <span class="token punctuation">{</span>
+       <span class="token annotation punctuation">@BeforeEach</span>
+       <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+           System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"测试方法执行前准备"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+       <span class="token punctuation">}</span>
+
+       <span class="token annotation punctuation">@Nested</span>
+       <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"第一个内嵌测试类"</span><span class="token punctuation">)</span>
+       <span class="token keyword">class</span> <span class="token class-name">FirstNestTest</span> <span class="token punctuation">{</span>
+           <span class="token annotation punctuation">@Test</span>
+           <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+               System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"第一个内嵌测试类执行测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+           <span class="token punctuation">}</span>
+       <span class="token punctuation">}</span>
+
+       <span class="token annotation punctuation">@Nested</span>
+       <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"第二个内嵌测试类"</span><span class="token punctuation">)</span>
+       <span class="token keyword">class</span> <span class="token class-name">SecondNestTest</span> <span class="token punctuation">{</span>
+           <span class="token annotation punctuation">@Test</span>
+           <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+               System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"第二个内嵌测试类执行测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+           <span class="token punctuation">}</span>
+       <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span></code></pre>
+<p>   测试结果如下：</p>
+<p>   <img src="/2020/01/15/dan-yuan-ce-shi-zhi-junit/%E5%86%85%E5%B5%8C%E6%B5%8B%E8%AF%95%E7%B1%BB.png" alt="内嵌测试类"></p>
+<p>   <strong>重复性测试：</strong><code>@RepeatedTest</code><br>   在 JUnit 5 里新增了对测试方法设置运行次数的支持，允许让测试方法进行重复运行。当要运行一个测试方法 N次时，可以使用 @RepeatedTest 标记它</p>
+<pre class=" language-java"><code class="language-java">   <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"重复测试"</span><span class="token punctuation">)</span>
+   <span class="token annotation punctuation">@RepeatedTest</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">)</span>
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">i_am_a_repeated_test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"执行测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span></code></pre>
+<p>   测试结果如下：</p>
+<p>   <img src="/2020/01/15/dan-yuan-ce-shi-zhi-junit/%E9%87%8D%E5%A4%8D%E6%B5%8B%E8%AF%95.png" alt="重复测试"></p>
+<ol start="5">
+<li><p>断言案例</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">AssertionsDemo</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//定义一个person对象，Person类里面有两个参数lastName,firstName</span>
+    <span class="token keyword">static</span> Person person <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Person</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 使用 @BeforeAll注解在所有测试方法执行前执行person对象的赋值
+     */</span>
+    <span class="token annotation punctuation">@BeforeAll</span>
+    <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">initPerson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        person<span class="token punctuation">.</span><span class="token function">setFirstName</span><span class="token punctuation">(</span><span class="token string">"John"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        person<span class="token punctuation">.</span><span class="token function">setLastName</span><span class="token punctuation">(</span><span class="token string">"Doe"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertEquals比较两个值是否相同
+     * assertTrue 判断括号里面的参数是否为true
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">standardAssertions</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//当不相等时，会打印出第三个参数，下面的所有的此类型的参数都是这种作用</span>
+        <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token string">"The optional assertion message is now the last parameter."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertTrue</span><span class="token punctuation">(</span><span class="token string">'a'</span> <span class="token operator">&lt;</span> <span class="token string">'b'</span><span class="token punctuation">,</span> <span class="token string">"Assertion messages can be lazily evaluated -- "</span>
+                <span class="token operator">+</span> <span class="token string">"to avoid constructing complex messages unnecessarily."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertAll()方法用于将多个测试语句放在一个组中执行
+     * 组中若有一个测试语句不通过，则这个组将会一起报错.
+     * 方法中第一个参数：组名称
+     * 方法中第二个参数：组测试语句
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">groupedAssertions</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">assertAll</span><span class="token punctuation">(</span><span class="token string">"person"</span><span class="token punctuation">,</span>
+                <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token string">"John"</span><span class="token punctuation">,</span> person<span class="token punctuation">.</span><span class="token function">getFirstName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token string">"Doe"</span><span class="token punctuation">,</span> person<span class="token punctuation">.</span><span class="token function">getLastName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertAll()方法也可以嵌套多个assertAll()方法
+     * 其中嵌套的多个测试组，这些组只会打印出这个组和父组的错误，对其他的组没有影响
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">dependentAssertions</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">assertAll</span><span class="token punctuation">(</span><span class="token string">"properties"</span><span class="token punctuation">,</span>
+                <span class="token comment" spellcheck="true">//第一个测试组</span>
+                <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                    String firstName <span class="token operator">=</span> person<span class="token punctuation">.</span><span class="token function">getFirstName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token function">assertNotNull</span><span class="token punctuation">(</span>firstName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                    <span class="token function">assertAll</span><span class="token punctuation">(</span><span class="token string">"first name"</span><span class="token punctuation">,</span>
+                            <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>firstName<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">"J"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                            <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>firstName<span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">"n"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token comment" spellcheck="true">//第二个测试组</span>
+                <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                    String lastName <span class="token operator">=</span> person<span class="token punctuation">.</span><span class="token function">getLastName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token function">assertNotNull</span><span class="token punctuation">(</span>lastName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                    <span class="token function">assertAll</span><span class="token punctuation">(</span><span class="token string">"last name"</span><span class="token punctuation">,</span>
+                            <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>lastName<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">"D"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                            <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>lastName<span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">"e"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertThrows()可以用来判断lambda表达式中的代码抛出的异常
+     * 比如下面案例就是测试了抛出异常的信息是否相同
+     * 参数：
+     * 1：异常类声明
+     * 2：测试代码Lambda表达式
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">exceptionTesting</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Throwable exception <span class="token operator">=</span> <span class="token function">assertThrows</span><span class="token punctuation">(</span>IllegalArgumentException<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">//这里只是简单的做个测试，当然1/0不该抛IllegalArgumentException异常 ，只是简单的测试一下</span>
+              <span class="token keyword">int</span> s <span class="token operator">=</span> <span class="token number">1</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token string">"a message"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token string">"a message"</span><span class="token punctuation">,</span> exception<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertTimeout()对方法执行时间进行测试
+     * 这里要借助java.time.Duration中的方法结合实现
+     * 实例中执行的代码部分必须在2分钟之内执行完毕，否则测试不通过
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">timeoutNotExceeded</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">assertTimeout</span><span class="token punctuation">(</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//执行的代码部分</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertTimeout()还可以接受一个返回值（泛型 T）
+     * 被测试代码如果通过测试并返回一个值，这个值被assertTimeout()方法返回
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">timeoutNotExceededWithResult</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String actualResult <span class="token operator">=</span> <span class="token function">assertTimeout</span><span class="token punctuation">(</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token string">"a result"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token string">"a result"</span><span class="token punctuation">,</span> actualResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * assertTimeout（）毫秒案例
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">timeoutExceeded</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">assertTimeout</span><span class="token punctuation">(</span><span class="token function">ofMillis</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+</ol>
+<h2 id="6-Junit参数化测试"><a href="#6-Junit参数化测试" class="headerlink" title="6-Junit参数化测试"></a>6-Junit参数化测试</h2><ul>
+<li><p><code>@ValueSource</code>——最简单的数据参数源，通过注解可以直接指定携带的运行参数，支持 Java 的八大基本类型和字符串，Class，使用时赋值给注解上对应类型属性，以数组方式传递。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ValueSourcesExampleTest</span> <span class="token punctuation">{</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@ValueSource</span><span class="token punctuation">(</span>ints <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testNumberShouldBeEven</span><span class="token punctuation">(</span><span class="token keyword">int</span> num<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> num <span class="token operator">%</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@ValueSource</span><span class="token punctuation">(</span>strings <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"Radar"</span><span class="token punctuation">,</span> <span class="token string">"Rotor"</span><span class="token punctuation">,</span> <span class="token string">"Tenet"</span><span class="token punctuation">,</span> <span class="token string">"Madam"</span><span class="token punctuation">,</span> <span class="token string">"Racecar"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testStringShouldBePalindrome</span><span class="token punctuation">(</span>String word<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token function">isPalindrome</span><span class="token punctuation">(</span>word<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@ValueSource</span><span class="token punctuation">(</span>doubles <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">2</span><span class="token punctuation">.</span>D<span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">.</span>D<span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">.</span>D<span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testDoubleNumberBeEven</span><span class="token punctuation">(</span><span class="token keyword">double</span> num<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> num <span class="token operator">%</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">boolean</span> <span class="token function">isPalindrome</span><span class="token punctuation">(</span>String word<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> word<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StringBuffer</span><span class="token punctuation">(</span>word<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>输出如下：</p>
+<pre><code>[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running qiucao.learning.ParaTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.155 s - in qiucao.learning.ParaTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0</code></pre></li>
+<li><p><code>@EnumSource</code>——枚举参数源，允许我们通过将参数值由给定Enum枚举类型传入。并可以通过制定约束条件或正则匹配来筛选传入参数。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">EnumSourcesExampleTest</span> <span class="token punctuation">{</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"[{index}] TimeUnit: {arguments}"</span><span class="token punctuation">)</span>
+  <span class="token annotation punctuation">@EnumSource</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testTimeUnitMinimumNanos</span><span class="token punctuation">(</span>TimeUnit unit<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>unit<span class="token punctuation">.</span><span class="token function">toMillis</span><span class="token punctuation">(</span>2000000L<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@EnumSource</span><span class="token punctuation">(</span>value <span class="token operator">=</span> TimeUnit<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> names <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"SECONDS"</span><span class="token punctuation">,</span> <span class="token string">"MINUTES"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testTimeUnitJustSecondsAndMinutes</span><span class="token punctuation">(</span>TimeUnit unit<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>EnumSet<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>EnumSet
+        <span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>DAYS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>HOURS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>NANOSECONDS<span class="token punctuation">,</span>
+            TimeUnit<span class="token punctuation">.</span>MICROSECONDS<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@EnumSource</span><span class="token punctuation">(</span>value <span class="token operator">=</span> TimeUnit<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> mode <span class="token operator">=</span> Mode<span class="token punctuation">.</span>EXCLUDE<span class="token punctuation">,</span> names <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"SECONDS"</span><span class="token punctuation">,</span> <span class="token string">"MINUTES"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testTimeUnitExcludingSecondsAndMinutes</span><span class="token punctuation">(</span>TimeUnit unit<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>EnumSet<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>EnumSet
+        <span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>DAYS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>HOURS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>NANOSECONDS<span class="token punctuation">,</span>
+            TimeUnit<span class="token punctuation">.</span>MICROSECONDS<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@EnumSource</span><span class="token punctuation">(</span>value <span class="token operator">=</span> TimeUnit<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> mode <span class="token operator">=</span> Mode<span class="token punctuation">.</span>MATCH_ALL<span class="token punctuation">,</span> names <span class="token operator">=</span> <span class="token string">".*SECONDS"</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testTimeUnitIncludingAllTypesOfSecond</span><span class="token punctuation">(</span>TimeUnit unit<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>EnumSet<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>DAYS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>HOURS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>EnumSet
+        <span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>NANOSECONDS<span class="token punctuation">,</span>
+            TimeUnit<span class="token punctuation">.</span>MICROSECONDS<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>unit<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>输出如下：</p>
+<pre><code>[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running qiucao.learning.ParaTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.206 s - in qiucao.learning.ParaTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0</code></pre></li>
+<li><p><code>@MethodSource</code>——通过其他的Java方法函数来作为参数源。引用的方法返回值必须是Stream, Iterator 或者Iterable，指定一个返回的 Stream / Array / 可迭代对象 的方法作为数据源。 需要注意的是该方法必须是静态的，并且不能接受任何参数。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MethodSourceExampleTest</span> <span class="token punctuation">{</span>
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@MethodSource</span><span class="token punctuation">(</span><span class="token string">"stringGenerator"</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">shouldNotBeNullString</span><span class="token punctuation">(</span>String arg<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">assertNotNull</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@MethodSource</span><span class="token punctuation">(</span><span class="token string">"intGenerator"</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">shouldBeNumberWithinRange</span><span class="token punctuation">(</span><span class="token keyword">int</span> arg<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">assertAll</span><span class="token punctuation">(</span>
+        <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>arg <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">assertTrue</span><span class="token punctuation">(</span>arg <span class="token operator">&lt;=</span> <span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"[{index}] user with id: {0} and name: {1}"</span><span class="token punctuation">)</span>
+  <span class="token annotation punctuation">@MethodSource</span><span class="token punctuation">(</span><span class="token string">"userGenerator"</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">shouldUserWithIdAndName</span><span class="token punctuation">(</span><span class="token keyword">long</span> id<span class="token punctuation">,</span> String name<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token function">assertNotNull</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertNotNull</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> Stream<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">stringGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> Stream<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">,</span> <span class="token string">"world"</span><span class="token punctuation">,</span> <span class="token string">"let's"</span><span class="token punctuation">,</span> <span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> IntStream <span class="token function">intGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> IntStream<span class="token punctuation">.</span><span class="token function">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> Stream<span class="token operator">&lt;</span>Arguments<span class="token operator">></span> <span class="token function">userGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> Stream<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>Arguments<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>1L<span class="token punctuation">,</span> <span class="token string">"Sally"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Arguments<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>2L<span class="token punctuation">,</span> <span class="token string">"Terry"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Arguments<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>3L<span class="token punctuation">,</span> <span class="token string">"Fred"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>输出如下：</p>
+<pre><code>[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running qiucao.learning.ParaTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.191 s - in qiucao.learning.ParaTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0</code></pre></li>
+<li><p><code>@ArgumentsSource</code>——通过实现 ArgumentsProvider 接口的参数类来作为数据源，重写它的 <code>provideArguments</code> 方法可以返回自定义类型的 Stream<Arguments> ，作为测试方法所需要的数据使用。</Arguments></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ArgumentsSourceExampleTest</span> <span class="token punctuation">{</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@ArgumentsSource</span><span class="token punctuation">(</span>CustomArgumentsGenerator<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testGeneratedArguments</span><span class="token punctuation">(</span><span class="token keyword">double</span> number<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>number <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">.</span>D<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>number <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>number <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">CustomArgumentsGenerator</span> <span class="token keyword">implements</span> <span class="token class-name">ArgumentsProvider</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Stream<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">Arguments</span><span class="token operator">></span> <span class="token function">provideArguments</span><span class="token punctuation">(</span>ExtensionContext context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> Stream<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>Arguments<span class="token operator">:</span><span class="token operator">:</span>of<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@CsvSource</code>——通过 @CsvSource 可以注入指定 CSV 格式 (comma-separated-values) 的一组数据，用每个逗号分隔的值来匹配一个测试方法对应的参数。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CsvSourceExampleTest</span> <span class="token punctuation">{</span>
+
+  Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> String<span class="token operator">></span> idToUsername <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token punctuation">{</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>1L<span class="token punctuation">,</span> <span class="token string">"Selma"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>2L<span class="token punctuation">,</span> <span class="token string">"Lisa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>3L<span class="token punctuation">,</span> <span class="token string">"Tim"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@CsvSource</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"1,Selma"</span><span class="token punctuation">,</span> <span class="token string">"2,Lisa"</span><span class="token punctuation">,</span> <span class="token string">"3,Tim"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testUsersFromCsv</span><span class="token punctuation">(</span><span class="token keyword">long</span> id<span class="token punctuation">,</span> String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>idToUsername<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>idToUsername<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>输出如下：</p>
+<pre><code>[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running qiucao.learning.ParaTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.164 s - in qiucao.learning.ParaTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0</code></pre></li>
+<li><p><code>@CsvFileSource</code>——除了使用csv参数源，这里也支持使用csv文件作为参数源</p>
+<p>假设users.csv 文件包含如下csv格式的数据：</p>
+<pre class=" language-css"><code class="language-css"><span class="token number">1</span>,Selma
+<span class="token number">2</span>,Lisa
+<span class="token number">3</span>,Tim</code></pre>
+<p>代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CsvFileSourceExampleTest</span> <span class="token punctuation">{</span>
+
+  Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> String<span class="token operator">></span> idToUsername <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token punctuation">{</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>1L<span class="token punctuation">,</span> <span class="token string">"Selma"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>2L<span class="token punctuation">,</span> <span class="token string">"Lisa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    idToUsername<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>3L<span class="token punctuation">,</span> <span class="token string">"Tim"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token annotation punctuation">@ParameterizedTest</span>
+  <span class="token annotation punctuation">@CsvFileSource</span><span class="token punctuation">(</span>resources <span class="token operator">=</span> <span class="token string">"/users.csv"</span><span class="token punctuation">)</span>
+  <span class="token keyword">void</span> <span class="token function">testUsersFromCsv</span><span class="token punctuation">(</span><span class="token keyword">long</span> id<span class="token punctuation">,</span> String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>idToUsername<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>idToUsername<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>输出如下：</p>
+<pre><code>[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running qiucao.learning.ParaTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.199 s - in qiucao.learning.ParaTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0</code></pre></li>
+</ul>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io" rel="external nofollow noreferrer">fangpeng</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/">https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Junit/">
+                                    <span class="chip bg-color">Junit</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+                                    <span class="chip bg-color">单元测试</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/01/15/dan-yuan-ce-shi-zhi-junit/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="单元测试之Junit">
+                        
+                        <span class="card-title">单元测试之Junit</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Junit5单元测试1-前言单元测试是软件开发过程中必不可少的一环，但是在平常开发中往往因为项目周期紧，工作量大而被忽略，这样往往导致软件问题层出不穷。线上出现不少问题其实在右单元测试的情况下就可以及时发现和处理，因此培养自己在日常开发中写
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-15
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Junit/" class="post-category">
+                                    Junit
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Junit/">
+                        <span class="chip bg-color">Junit</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">单元测试</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/01/15/angular-xue-xi-bi-ji/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Angular学习笔记">
+                        
+                        <span class="card-title">Angular学习笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Angular学习笔记1-Angular入门1.1-开发环境的搭建
+安装最新版本的NodeJS
+具体安装教程可参照 https://www.cnblogs.com/zhouyu2017/p/6485265.html
+
+设置镜像
+在命令窗口中
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-15
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Angular%E7%AC%94%E8%AE%B0/" class="post-category">
+                                    Angular笔记
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                        <span class="chip bg-color">笔记</span>
+                    </a>
+                    
+                    <a href="/tags/Angular/">
+                        <span class="chip bg-color">Angular</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%89%8D%E7%AB%AF/">
+                        <span class="chip bg-color">前端</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">80.2k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "27";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/fangpeng12" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
