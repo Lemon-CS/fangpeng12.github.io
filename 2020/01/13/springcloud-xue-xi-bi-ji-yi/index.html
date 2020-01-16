@@ -598,7 +598,7 @@
 </li>
 <li><p>Hystrix ：熔断器组件 Hystrix 通过控制服务的 API 接口的熔断来转移故障，防止微服务系统发生雪崩效应。另外， Hystrix 能够起到服务限流和服务降级的作用。使用Hystrix Dashboard 组件监控单个服务的熔断器的状态，使用 Turbine 组件可以聚合多，现了断路器的模式。“断路器” 本身是一种开关装置，当某个服务单元发生故障之后，通过断路器的故障监控（类似熔断保险丝），向调用方返回一个符合预期的、可处理的备选响应（FallBack），而不是长时间的等待或者抛出调用方无法处理的异常，这样就保证了服务调用方的线程不会被长时间、不必要地占用，从而避免了故障在分布式系统中的蔓延，乃至雪崩。</p>
 </li>
-<li><p>Zuul 能路由网关组 Netflix Zuul能够起到智能路由和请求过滤的作用，是服务接口统一暴露 关键模块，也是安全验证、权限控制的一道门；Zuul路由是微服务架构的不可或缺的一部分，提供动态路由、监控、弹性、安全等的边缘服务，Zuul 是 Netflix 出品的一个基于 JVM 路由和服务端的负载均衡器。</p>
+<li><p>Zuul ：（路由转发+过滤器）能路由网关组 Netflix Zuul能够起到智能路由和请求过滤的作用，是服务接口统一暴露 关键模块，也是安全验证、权限控制的一道门；Zuul路由是微服务架构的不可或缺的一部分，提供动态路由、监控、弹性、安全等的边缘服务，Zuul 是 Netflix 出品的一个基于 JVM 路由和服务端的负载均衡器。</p>
 </li>
 <li><p>Feign 声明式远程调度组件，Feign 是一个声明式的 Web Service 客户端，它的目的就是让 Web Service 调用更加简单。它整合了 Ribbon 和 Hystrix，从而让我们不再需要显式地使用这两个组件。Feign 还提供了 HTTP 请求的模板，通过编写简单的接口和插入注解，我们就可以定义好 HTTP 请求的参数、格式、地址等信息。接下来，Feign 会完全代理 HTTP 的请求，我们只需要像调用方法一样调用它就可以完成服务请求。</p>
 <p>Feign 具有如下特性：</p>
@@ -1229,7 +1229,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">80.2k</span>&nbsp;字
+                class="white-color">93.3k</span>&nbsp;字
             
             
             
