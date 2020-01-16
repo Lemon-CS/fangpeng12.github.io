@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Kafka学习笔记, 空白格的博客">
-    <meta name="description" content="Kafka学习笔记1-kafka介绍1.1-什么是kafka？Apache Kafka是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分">
+    <meta name="keywords" content="分布式架构基础, 空白格的博客">
+    <meta name="description" content="分布式架构基础1-分布式系统分布式系统是其组件分布在连网的计算机上，组件之间通过传递消息进行通信和动作协调的系统。一个标准的分布式系统在没有任何特定业务逻辑约束的情况下，一般有以下几个特征：
+
+分布性：一个分布式系统中的计算机在空间部署上是">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +15,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Kafka学习笔记 | 空白格的博客</title>
+    <title>分布式架构基础 | 空白格的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -304,13 +306,13 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Kafka学习笔记
+                        分布式架构基础
                     </div>
                 </div>
             </div>
@@ -422,12 +424,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/kafka/">
-                                <span class="chip bg-color">kafka</span>
+                            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
+                                <span class="chip bg-color">分布式</span>
                             </a>
                         
-                            <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                                <span class="chip bg-color">笔记</span>
+                            <a href="/tags/%E6%9E%B6%E6%9E%84/">
+                                <span class="chip bg-color">架构</span>
                             </a>
                         
                     </div>
@@ -438,8 +440,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Kafka%E7%AC%94%E8%AE%B0/" class="post-category">
-                                Kafka笔记
+                            <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" class="post-category">
+                                分布式
                             </a>
                         
                     </div>
@@ -451,7 +453,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2019-12-25
+                    2020-01-16
                 </div>
                 
 
@@ -460,14 +462,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4k
+                    6.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    14 分
+                    22 分
                 </div>
                 
 				
@@ -483,194 +485,102 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="Kafka学习笔记"><a href="#Kafka学习笔记" class="headerlink" title="Kafka学习笔记"></a>Kafka学习笔记</h1><h1 id="1-kafka介绍"><a href="#1-kafka介绍" class="headerlink" title="1-kafka介绍"></a>1-kafka介绍</h1><h2 id="1-1-什么是kafka？"><a href="#1-1-什么是kafka？" class="headerlink" title="1.1-什么是kafka？"></a>1.1-什么是kafka？</h2><p><strong>Apache Kafka</strong>是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分布式的，可划分的，多订阅者,冗余备份的持久性的日志服务。它主要用于处理活跃的流式数据。</p>
-<p>kafka最基本的架构是生产者发布一个消息到Kafka的一个主题（topic），这个主题即是由扮演KafkaServer角色的broker提供，消费者订阅这个主题，然后从中获取消息.</p>
-<h2 id="1-2-kafka特点"><a href="#1-2-kafka特点" class="headerlink" title="1.2-kafka特点"></a>1.2-kafka特点</h2><ul>
-<li><strong>高吞吐量：</strong>Kafka的设计是工作在标准硬件之上，支持每秒数百万的消息</li>
-<li><strong>负载均衡：</strong>通过zookeeper对Broker,Consumer的动态加入与离开进行管理。</li>
-<li><strong>拉取系统：</strong>producer主动向kafka broker以 push方式发送消息，consumer采用pull方式消费消息</li>
-<li><strong>动态扩展：</strong>当需要增加broker结点时，新增的broker会向zookeeper注册，而    consumer会通过zookeeper感知这些          变化，并及时作出调整。</li>
-<li><strong>消息删除策略：</strong>数据文件将会根据broker中的配置要求,保留一定的时间之后删除。  kafka通过这种简单的手段,来释放磁盘空间。</li>
-<li><strong>高性能：</strong>单节点支持上千客户端；</li>
-<li><strong>分布式：</strong>数据副本冗余，流量负载均衡，可扩展；</li>
-</ul>
-<h2 id="1-3-kafka基本概念"><a href="#1-3-kafka基本概念" class="headerlink" title="1.3-kafka基本概念"></a>1.3-kafka基本概念</h2><ul>
-<li><strong>Broker</strong>：Kafka消息服务器，消息中心。一个Broker可以容纳多个Topic。<ul>
-<li><code>其作用简而言之就是接收producer请求并持久化，接收consumer请求并响应消费消息。</code> </li>
-</ul>
-</li>
-<li><strong>Producer</strong>：消息生产者，就是向Kafka broker发消息的客户端。</li>
-<li><strong>Consumer</strong>：消息消费者，向Kafka broker拉取消息的客户端。</li>
-<li><strong>Consumer Group</strong>：每个consumer归属于一个特定的consumer group，一个partition中的消息只会被group中的一个consumer消费; 每个group中consumer消息消费互相独立;<ul>
-<li><code>Kafka引进group的概念，可实现消息的单播和广播。</code></li>
-</ul>
-</li>
-<li><strong>Topic</strong>：Topic为一个逻辑上的概念，每条发布到Kafka集群的消息都有一个类别，这个类别被称为Topic. Producer可以针对某个主题进行生产，Consumer可以针对某个主题进行订阅。</li>
-<li><strong>Partition</strong>：Parition是物理上的概念，每个Topic包含一个或多个Partition。Kafka通过partition对topic的数据文件切片，可以将一个Topic可以分布存储到多个Broker上。</li>
-</ul>
-<h1 id="2-kafka架构"><a href="#2-kafka架构" class="headerlink" title="2-kafka架构"></a>2-kafka架构</h1><h2 id="2-1-kafka部署架构"><a href="#2-1-kafka部署架构" class="headerlink" title="2.1-kafka部署架构"></a>2.1-kafka部署架构</h2><p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84.png" alt="kafka部署架构"></p>
+                <h1 id="分布式架构基础"><a href="#分布式架构基础" class="headerlink" title="分布式架构基础"></a>分布式架构基础</h1><h2 id="1-分布式系统"><a href="#1-分布式系统" class="headerlink" title="1-分布式系统"></a>1-分布式系统</h2><p>分布式系统是其组件分布在连网的计算机上，组件之间通过传递消息进行通信和动作协调的系统。一个标准的分布式系统在没有任何特定业务逻辑约束的情况下，一般有以下几个特征：</p>
 <ul>
-<li>完全的分布式：Producer、Broker、Consumer、zookeeper都是分布式</li>
-<li>一个典型的Kafka集群中包含若干Producer，若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干Consumer Group，以及一个<a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">Zookeeper</a>集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在Consumer Group发生变化时进行rebalance。Producer使用push模式将消息发布到broker，Consumer使用pull模式从broker订阅并消费消息</li>
+<li><strong>分布性</strong>：一个分布式系统中的计算机在空间部署上是可以随意分布的，这些计算机可能处于不同的机柜上，不同的城市的机房中，或者是世界上任何一个角落。同时，机器的分布情况也会随时变动；</li>
+<li><strong>并发性</strong>：在一个计算机网络中，程序运行过程中的并发性操作是非常常见的行为，例如同一个分布式系统的多个节点，可能会并发地操作一些共享的资源，诸如数据库或分布式存储等，如何准确并高效地协调分布式并发操作也成为了分布式系统架构与设计中最大的挑战之一；</li>
+<li><strong>缺乏全局时钟</strong>：分布式系统中多个进程可能在空间上分布式在各处，进程之间通过交换消息来相互协作，密切的协作通常取决于对程序动作发生的时间的共识。但在分布式系统中，各进程与时钟同步所达到的准确性是有限的，即没有一个正确时间的全局概念；</li>
+<li><strong>故障独立性</strong>：组成分布式系统的所有计算机，都有可能发生任何形式的故障。单个模块的故障相对容易预知并设计应对逻辑，但分布式系统可能以新的方式出现故障。网络故障导致互连的计算机的隔离，但它们并不一定会停止运行，而且程序很难判断是网络故障还是因为延迟。同样，当被网络隔离计算程序在异常终止时，也许不能马上通知与它通信的其他组件了解。系统的每个组件会单独地出现故障，而其他组件还在运行。</li>
 </ul>
-<h2 id="2-2-kafka集群架构"><a href="#2-2-kafka集群架构" class="headerlink" title="2.2-kafka集群架构"></a>2.2-kafka集群架构</h2><p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84.png" alt="kafka集群架构"></p>
-<h2 id="2-3-kafka存储结构"><a href="#2-3-kafka存储结构" class="headerlink" title="2.3-kafka存储结构"></a>2.3-kafka存储结构</h2><h3 id="2-3-1-Topic中partition存储分布"><a href="#2-3-1-Topic中partition存储分布" class="headerlink" title="2.3.1-Topic中partition存储分布"></a>2.3.1-Topic中partition存储分布</h3><ul>
-<li><strong>存储根目录</strong>：kafka的Log文件存储在Kafka broker中，其的根目录在server.properties文件中配置(参数 <code>log.dirs=xxx/message-folder</code>)   </li>
-<li><strong>partition目录命名</strong>：在Kafka的Log文件存储中，同一个topic下有多个不同partition，每个partition为一个目录，partiton命名规则为topic名称+有序序号，第一个partiton序号从0开始，序号最大值为partitions数量减1</li>
-</ul>
-<p><strong>例子：</strong></p>
-<p>例如创建1个topic名称分别为report_push, partitions=3，假设有三个broker（Broker1、Broker2、Broker3），那么其存储路径和目录规则可能为：<br>    Broker1根目录下有目录： report_push-0<br>    Broker2根目录下有目录： report_push-1<br>    Broker3根目录下有目录： report_push-2   </p>
-<p><code>partition将均衡的分布在各个broker上，这样有助于提高吞吐量。</code></p>
-<h3 id="2-3-2-partiton中文件存储方式"><a href="#2-3-2-partiton中文件存储方式" class="headerlink" title="2.3.2-partiton中文件存储方式"></a>2.3.2-partiton中文件存储方式</h3><p>每个partition在存储层面是append log文件。任何发布到此partition的消息都会被直接追加到log文件的尾部，每条消息在文件中的位置称为offset（偏移量），offset为一个long型数字，它是唯一标记一条消息。partition是以文件的形式存储在文件系统中。Logs文件根据broker中的配置要求,保留一定时间后删除来释放磁盘空间。</p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/partition.png" alt="partition"></p>
+<p>分布式系统能够实现高可用、高吞吐、大容量存储、海量计算、并行计算等优异能力，天然的分布性和可伸缩等特性，也打破了物理上单机的瓶颈，使其能不断支撑着业务的发展而演进，并推进了云计算、大数据、人工智能等领域的发展。但是正如每个硬币都有两面，分布式系统的复杂性，也使其在设计、研发、运行、维护、安全性等方面都面临更多的挑战。</p>
+<h2 id="2-分布式理论"><a href="#2-分布式理论" class="headerlink" title="2-分布式理论"></a>2-分布式理论</h2><h3 id="2-1-CAP理论"><a href="#2-1-CAP理论" class="headerlink" title="2.1-CAP理论"></a>2.1-CAP理论</h3><p>CAP理论又称CAP定理，指的是在一个分布式系统中， Consistency（一致性）、 Availability（可用性）、Partition tolerance（分区容错性），三者不可得兼。</p>
+<p><img src="/2020/01/16/fen-bu-shi-jia-gou-ji-chu/CAP.png" alt="CAP"></p>
+<p><strong>归纳如下：</strong></p>
 <ul>
-<li><strong>Partition</strong>：<pre><code>Topic 物理上的分组，一个 topic 可以分为多个 partition，每个 partition 是一个有序的队列。       partition 中的每条消息都会被分配一个有序的 id（offset）。</code></pre></li>
-<li>每个partion(目录)相当于一个巨型文件被平均分配到多个大小相等segment(段)数据文件中，segment文件大小由属性log.segment.bytes 指定。但每个段segment file消息数量不一定相等，这种特性方便old segment file快速被删除。</li>
+<li>一致性（<strong>Consistency</strong>）：在分布式系统中的所有数据备份，在同一时刻是否同样的值。等同于所有节点访问同一份最新的数据副本；集群中<strong>所有节点的数据</strong>，<strong>时刻</strong>保持一致。</li>
+<li>可用性（<strong>Availability</strong>）：每一个请求，都一定能够收到一个响应，无论响应成功还是失败。在集群中一部分节点故障后，集群整体是否还能响应客户端的读写请求，对数据更新具备高可用性。</li>
+<li>可扩展性/<strong>分区容忍性</strong>（<strong>Partition-tolerance</strong>）：以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择。</li>
 </ul>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment.png" alt="segment"></p>
-<h3 id="2-3-3-partiton中segment文件存储结构"><a href="#2-3-3-partiton中segment文件存储结构" class="headerlink" title="2.3.3-partiton中segment文件存储结构"></a>2.3.3-partiton中segment文件存储结构</h3><ul>
-<li><strong>Segment file组成：</strong>由2大部分组成，分别为index file和data file，此2个文件一一对应，成对出现，后缀”.index”和“.log”分别表示为segment索引文件、数据文件.</li>
-<li><strong>Segment文件命名规则：</strong>partion全局的第一个segment从0开始，后续每个segment文件名为上一个segment文件最后一条消息的offset值。数值最大为64位long大小，19位数字字符长度，没有数字用0填充。</li>
-</ul>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E6%96%87%E4%BB%B6%E7%BB%84%E6%88%90.png" alt="segment文件组成"></p>
-<h3 id="2-3-4-Segment中message存储结构"><a href="#2-3-4-Segment中message存储结构" class="headerlink" title="2.3.4-Segment中message存储结构"></a>2.3.4-Segment中message存储结构</h3><ul>
-<li><p><strong>Message组成</strong>：每条Message包含了以下三个属性</p>
-<table>
-<thead>
-<tr>
-<th>offset</th>
-<th>对应类型：long</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>MessageSize</td>
-<td>对应类型：int（32）</td>
-</tr>
-<tr>
-<td>data</td>
-<td>是message的具体内容</td>
-</tr>
-</tbody></table>
-</li>
-<li><p><strong>Message消息</strong>：是通信的基本单位，每个 producer 可以向一个 topic（主题）发布一些消息。</p>
-</li>
-<li><p>Kafka中的Message是以topic为基本单位组织的，不同的topic之间是相互独立的。每个topic又可以分成几个不同的partition(每个topic有几个partition是在创建topic时指定的)，每个partition存储一部分Message。</p>
-</li>
-<li><p>一个Segment由多个message组成</p>
-</li>
-<li><p><strong>offset</strong>：每条消息在文件中的位置，它唯一标记一条消息。kafka并没有提供其他额外的索引机制来存储offset，因为在kafka中几 乎不允许对消息进行“随机读写”。</p>
-</li>
-</ul>
-<h3 id="2-3-5-segment索引文件、数据文件的关系"><a href="#2-3-5-segment索引文件、数据文件的关系" class="headerlink" title="2.3.5-segment索引文件、数据文件的关系"></a>2.3.5-segment索引文件、数据文件的关系</h3><ul>
-<li><p><strong>segment索引文件</strong>：由下图中看出，index文件有两列，第一列代表message在log文件中的位置，第二列代表物理偏移量。以索引文件中 元数据3,497为例，依次在数据文件中表示第3个message(在全局partiton表示第368772个message)、以及该消息的物理偏移地址为497。索引文件稀疏索引方式存储，它减少索引文件大小。索引文件被映射到内存中，有助于提高查找速度</p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84.png" alt="segment索引结构"></p>
-</li>
-<li><p><strong>segment数据文件</strong>：由上图了解到segment data file由许多message组成，message物理结构如下图</p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/segment%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png" alt="segment物理结构"></p>
-</li>
-<li><p><strong>Message的查找过程</strong>：</p>
-<p><code>比如：要查找绝对offset为7的Message：</code><br>1、首先是用二分查找确定它是在哪个LogSegment中，自然是在第一个Segment中。</p>
-<p>2、打开这个Segment的index文件，也是用二分查找找到offset小于或者等于指定offset的索引条目中最大的那个offset。自然offset为6的那个索引是我们要找的，通过索引文件我们知道offset为6的Message在数据文件中的物理位置为9807。</p>
-<p>3、打开数据文件，从物理位置为9807的那个地方开始顺序扫描直到找到offset为7的那条Message。</p>
-<p>这套机制是建立在offset是有序的。索引文件被映射到内存中，所以查找的速度还是很快的。</p>
-<p>一句话，Kafka的Message存储采用了分区(partition)，分段(LogSegment)和稀疏索引这几个手段来达到了高效性。</p>
-</li>
-</ul>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/message%E6%9F%A5%E6%89%BE.png" alt="message查找"></p>
-<h3 id="2-3-6-Replication-存储副本"><a href="#2-3-6-Replication-存储副本" class="headerlink" title="2.3.6-Replication 存储副本"></a>2.3.6-Replication 存储副本</h3><p>Kafka从0.8开始提供<code>High Availability机制</code>。</p>
-<p>​    <strong>同一个Partition可能会多个Replication ，这些Replication之间将会选举一个Leader，Producer和Consumer只与这个Leader交互，其它Replica作为Follower从Leader中复制数据。Kafka内部有自己的算法将Replica均匀分布到整个集群，如果某些broker宕机，仍能保持kafka集群的高可用性</strong>。</p>
-<p><code>Kafka分配Replica的算法如下</code>：<br>1、将所Broker（假设共n个Broker和待分配的Partition排序 )<br>2、将第i个Partition分配到第（i mod n个Broker上）<br>3、将第i个Partition的第j个Replica分配到第（(i + j) mode n个Broker上</p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/replication.png" alt="replication"></p>
-<p><code>Kafka 的Leader Election</code><br>      Kafka在ZooKeeper中动态维护了一个<code>ISR</code>（in-sync replicas，这个ISR里的所Replica都跟上了leader，只ISR里的成员才被为Leader的可能），kafka引进Leader的概念是为了保持数据的一致性。</p>
-<h1 id="3-kafka生产和消费"><a href="#3-kafka生产和消费" class="headerlink" title="3-kafka生产和消费"></a>3-kafka生产和消费</h1><h2 id="3-1-kafka生产"><a href="#3-1-kafka生产" class="headerlink" title="3.1-kafka生产"></a>3.1-kafka生产</h2><p><strong>Producer：</strong>消息生产者，就是向Kafka broker发消息的客户端。</p>
-<p>Producer使用<code>push模式</code>将消息发布到broker，<strong>一个topic在集群中可以有多个partition，消息发送到哪个分区上， 由producer客户端决定</strong>， producer端实现“消息均衡分发”，一般可通过如下的<code>路由策略</code>实现：</p>
-<ol>
-<li><p><strong>采用Key Hash算法</strong>:根据消息的key来进行分区的分配，即hash(key) %  numPartitions，系统默认方式。</p>
-</li>
-<li><p><strong>自定义分区策略</strong>：可通过配置partitioner.class来实现自定义分区策略。 该class必须实现kafka.producer.Partitioner接口</p>
-</li>
-<li><p><strong>异步发送：</strong>producer端将多条消息暂且在客户端buffer起来，并将他们批量的发送到broker，因为小数据IO太多，会拖慢整体的网络延迟，批量延迟发送事实上提升了网络效率。可配置linger.ms和batch.size达到异步发送的机制， batch.size是指在客户端缓存多大的数据后发送， linger.ms是指如果缓存的数据大小达不到batch.size,但是缓存的时间达到了linger.ms，照样发送数据到broker。</p>
-</li>
-</ol>
-<h2 id="3-2-kafka消费"><a href="#3-2-kafka消费" class="headerlink" title="3.2-kafka消费"></a>3.2-kafka消费</h2><ul>
-<li><p><strong>Consumer和Consumer Group</strong></p>
-<p>​       每一个consumer归属于一个特定的consumer group，同一Topic的一条消息只能被同一个Consumer Group内的一个Consumer消费，但多个Consumer Group可同时消费这一消息</p>
-</li>
-<li><p><strong>Consumer Group的作用</strong></p>
+<p>CAP原理告诉我们，这三个因素最多只能满足两个，不可能三者兼顾。对于分布式系统来说，分区容错是基本要求，所以必然要放弃一致性。对于大型网站来说，分区容错和可用性的要求更高，所以一般都会选择适当放弃一致性。对应CAP理论，NoSQL追求的是AP，而传统数据库追求的是CA，这也可以解释为什么传统数据库的扩展能力有限的原因。</p>
+<p>也就是说在分布式存储系统中，最多只能实现上面的两点。而由于当前的网络硬件肯定会出现延迟丢包等问题，所以分区容忍性是我们必须需要实现的。所以我们只能在一致性和可用性之间进行权衡。</p>
+<p>任何一个分布式系统，都不能够同时满足一致性，可用性，分区容错性。</p>
+<p><strong>所以在分布式系统可供选择的方案有三种：</strong></p>
 <ul>
-<li>Topic消息的<code>广播</code>（发给所有的Consumer）<pre><code>     如果需要实现广播，只要每个Consumer有一个独立的Group就可以了</code></pre></li>
-<li>Topic消息的<code>单播</code>（发给某一个Consumer）<pre><code>     如果要实现单播只要所有的Consumer在同一个Group里</code></pre></li>
+<li>CP：选择了数据一致性和分区容错性，放弃了可用性。一旦发生网络分区，受影响的服务就需要等待数据一致，因此在等待期间无法对外继续提供服务。</li>
+<li>AP：选择了可用性和分区容错性，放弃了数据（强）一致性。</li>
+<li>CA：放弃分区容错性，加强一致性和可用性，其实就是传统的单机数据库的选择。</li>
 </ul>
-</li>
-</ul>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9.png" alt="kafka消费"></p>
-<p><code>注:同一个group中的consumer个数最好不要超过topic的partition数，如果超过，那么将有consumer处于闲置状态</code></p>
-<h2 id="3-3-Kafka如何保证消息只能被消费一次呢？"><a href="#3-3-Kafka如何保证消息只能被消费一次呢？" class="headerlink" title="3.3-Kafka如何保证消息只能被消费一次呢？"></a>3.3-Kafka如何保证消息只能被消费一次呢？</h2><p>Consumer Group在消费某Topic时，kafka通过一个特殊的topic 即<strong>consumer_offsets记录该消费组Offset消费偏移量，最新Consumer加入并消费某一主题时，将会从可以从</strong>consumer_offsets获取最新的Offset点开始消费。在topic中存储结构如下：</p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E6%B6%88%E8%B4%B9%E8%BF%87%E7%A8%8B.png" alt="kafka消费过程"></p>
-<p><code>注：kafka只能保证同一个Partition中的消息消费是顺序性的，不能保证整个topic中的消息消费的顺序</code></p>
-<h2 id="3-4-kafka集群管理"><a href="#3-4-kafka集群管理" class="headerlink" title="3.4-kafka集群管理"></a>3.4-kafka集群管理</h2><p>Zookeeper在Kafka中<strong>用于存储集群MataData并管理、协调Kafka代理。</strong></p>
-<p><img src="/2019/12/25/kafka-xue-xi-bi-ji/kafka%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86.png" alt="kafka集群管理"></p>
+<p><strong>原因：</strong></p>
 <ul>
-<li><p><strong>Zookeeper在Kafka中的用途:</strong></p>
-<p><strong>用于管理、协调Kafka代理。</strong>每个Kafka代理都通过ZooKeeper协调其它Kafka代理。当Kafka系统中新增了代理或者某个代理故障失效时，ZooKeeper服务将通知生产者和消费者。生产者和消费者据此开始与其它代理协调工作</p>
-<ol>
-<li>kafka使用zookeeper来实现动态的集群扩展，不需要更改客户端（producer和consumer）的配置。<br>broker会在zookeeper注册并保持相关的元数据（topic，partition信息等）更新。</li>
-<li>而客户端会在zookeeper上注册相关的watcher。一旦zookeeper发生变化，客户端能及时感知并作出相应调整。这样就保证了添加或去除broker时，各broker间仍能自动实现负载均衡。    这里的客户端指的是Kafka的消息生产端(Producer)和消息消费端(Consumer)</li>
-<li>Broker端使用zookeeper来注册broker信息,以及监测partition leader存活性.</li>
-<li>Consumer端使用zookeeper用来注册consumer信息,其中包括consumer消费的partition列表等,同时也用来发现broker列表,并和partition leader建立socket连接,并获取消息.</li>
-<li>Zookeer和Producer没有建立关系，只和Brokers、Consumers建立关系以实现负载均衡，即同一个Consumer Group中的Consumers可以实现负载均衡.</li>
-</ol>
-</li>
+<li>CA满足的情况下，P不能满足的原因：<pre><code>    数据同步(C)需要时间，也要正常的时间内响应(A)，那么机器数量就要少，所以P就不满足</code></pre></li>
+<li>CP 满足的情况下，A不能满足的原因：<pre><code>    数据同步(C)需要时间, 机器数量也多(P)，但是同步数据需要时间，所以不能再正常时间内响应，所以A就不满足</code></pre></li>
+<li>AP 满足的情况下，C不能满足的原因：<pre><code>    机器数量也多(P)，正常的时间内响应(A)，那么数据就不能及时同步到其他节点，所以C不满足</code></pre></li>
 </ul>
-<h1 id="4-kafka常见问题"><a href="#4-kafka常见问题" class="headerlink" title="4-kafka常见问题"></a>4-kafka常见问题</h1><h2 id="4-1-如何保证消息的可靠性传输？"><a href="#4-1-如何保证消息的可靠性传输？" class="headerlink" title="4.1-如何保证消息的可靠性传输？"></a>4.1-如何保证消息的可靠性传输？</h2><ol>
-<li>生产者不丢数据</li>
-<li>服务器不丢数据</li>
-<li>消费者不丢数据</li>
-</ol>
+<p><strong>微服务注册中心的选择：</strong></p>
 <ul>
-<li><p><strong>生产者</strong>：如果是同步模式，确认机制设为<code>acks=all</code>，也就是让消息写入leader和所有的副件;如果是异步模式消息发出去，但还没有收到确认的时候,缓冲池已满.在配置文件中设置<code>block.on.buffer.full =true</code>成不限制阻塞超时的时间， 让生产者一直阻塞， 等待缓冲区可用，不能清空，这样也能保证数据不丢失。</p>
+<li>Zookeeper：CP设计，保证了一致性，集群搭建的时候，某个节点失效，则会进行选举行的leader，或者半数以上节点不可用，则无法提供服务，因此可用性没法满足</li>
+<li>Eureka：AP原则，无主从节点，一个节点挂了，自动切换其他节点可以使用，去中心化</li>
+</ul>
+<h3 id="2-2-BASE理论"><a href="#2-2-BASE理论" class="headerlink" title="2.2-BASE理论"></a>2.2-BASE理论</h3><p>BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
+<p>BASE是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency）。</p>
+<p>基于CAP理论，CAP理论不适用于数据库事务（因为更新一些错误的数据而导致数据出现紊乱，无论什么样的数据库高可用方案都是徒劳） ，虽然XA事务可以保证数据库在分布式系统下的ACID特性，但是会带来性能方面的影响。</p>
+<ul>
+<li>基本可用（Basically available）：在分布式系统出现不可预知的故障时，损失系统部分可用性。<ul>
+<li>响应时间上的损失。正常情况下，一个在线搜索引擎需要在0.5秒之内返回给用户相应的查询结果，但由于出现故障，查询结果的响应时间增加了1~2秒。</li>
+<li>系统功能上的损失：正常情况下，在一个电子商务网站上进行购物的时候，消费者几乎能够顺利完成每一笔订单，但是在一些节日大促购物高峰的时候，由于消费者的购物行为激增，为了保护购物系统的稳定性，部分消费者可能会被引导到一个降级页面。</li>
+<li>数据库采用分片模式，把100万用户数据分布在5个实例上，其中一个实例故障了，仍然可以保证80%的可用用户数据。</li>
+</ul>
 </li>
-<li><p><strong>消费者</strong>：确认数据被完成处理之后，再更新offset值， 不要自动提交offset,关闭自动提交offset,<code>enable.auto.commit=false</code></p>
+<li>软状态（Soft-state）：什么是软状态呢？相对于原子性而言，要求多个节点的数据副本都是一致的，这是一种 “硬状态”。软状态指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。</li>
+<li>最终一致性（Eventually-consistent）：最终一致性强调的是所有的数据副本，在经过一段时间的同步之后，最终都能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。</li>
+</ul>
+<p><strong>ACID和BASE的区别与联系</strong>：</p>
+<p>ACID是传统数据库常用的设计理念，追求强一致性模型。BASE支持的是大型分布式系统，提出通过牺牲强一致性获得高可用性，ACID和BASE代表了两种截然相反的设计哲学。</p>
+<p>ACID 是传统数据库系统常用的设计理论，追求强一致性模型。BASE 常用于大型分布式系统，只需要保证最终一致性。在实际的分布式场景中，不同业务单元和组件对一致性的要求是不同的，因此 ACID 和 BASE 往往会结合在一起使用。</p>
+<h2 id="3-分布式系统的主要组成"><a href="#3-分布式系统的主要组成" class="headerlink" title="3-分布式系统的主要组成"></a>3-分布式系统的主要组成</h2><h3 id="3-1-分布式服务"><a href="#3-1-分布式服务" class="headerlink" title="3.1-分布式服务"></a>3.1-分布式服务</h3><p>分布式系统下节点间服务通讯有两种途径，一种是通过 RPC(Remote Procedure Call) 实现两点间通讯，可以设计成同步通讯，也可以是异步的；一种是通过消息中间件实现通信，一般是异步通讯方式。</p>
+<ul>
+<li><p>RPC 调用</p>
+<p>RPC 调用也是分布式环境下常见的通讯方式，有同步的模式，也有异步的模式。同步模式下，客户端发起调用并阻塞当前线程，直到服务端处理完毕返回响应才完成整个调用过程；异步模式下，客户端发起调用后立即返回，并记录当前请求，直到接收到服务端响应后才找到对应的请求进行结果的处理，并完成整个调用过程。</p>
+<p>RPC 调用中一般只有两个角色：客户端和服务端，但在分布式环境下服务端可能有多台机器，他们共同组成一个集群，每台都提供一样的服务。这时就要有一种机制能让客户端将持续不断的请求均衡的分发到所有的服务端，一般将这种机制称为「负载均衡」。负载均衡可以在客户端实现，也可以通过专门的负载均衡设备实现。如果采用客户端负载均衡方案，需要让客户端感知所有服务端的机器地址和端口，需要引入一套「服务发现和集成的体系」，好处是通讯是点对点的，比较高效，且不存在单点。如果使用专门负载均衡设备，则客户端只需感知负载均衡设备的地址，由它来对接所有服务端，并均衡服务请求，这种模式比较简单，但存在性能单点，且延长了请求链路，稳定性也会受影响。无论是客户端还是专门设备做负载聚合，都可以根据不同的场景采用适合的负载均衡策略，常见的策略有随机（Random）、轮询（RoundRobin）、最快连接数（Fastest Connection）、最小连接数（Least Connection）等等。</p>
 </li>
-<li><p><strong>服务器</strong>: follower数据还没有完成同步. leader宕机，重新选择leader </p>
-<p>设置<code>replication. factor</code>太于1，至少每个partition有2个副本<br>设置<code>min . insync. replicas</code>太于1，要求leader感知到至少一个follower跟自己保持联系，确保leader挂了还有一个follower.</p>
+<li><p>消息中间件</p>
+<p>消息中间件一般是独立部署的一组应用程序，负责消息的接收和投递。整个通讯过程是异步的，有消息发布者、消息中间件和消息订阅者三个角色，消息从发布端发出后，会被消息中间件接收并做持久化，消息的消费有两种常见的模式，一种是消息中心主动投递的模式（推模式），一种是订阅者主动拉取的模式（拉模式）。在推模式下，发布者发布消息，消息发到消息中心做持久化，然后被投递到订阅端集群，一般来说会选择在所有订阅者中随机选一台投递，在这种模式下，要求消息订阅者集群的消息消费速度要能跟上发布消息是速度；在拉模式下，消费者根据队列里消息总数来做均分，主动连上消息中间件进行消费，对消费速度没有速度限制，所以一般拉模式的消息中间件会提供更强的消息扛积压能力。</p>
+<p>由于消息被持久化，所以可以做到消息的可靠投递，保证了分布式环境下通讯的可靠达到。在分布式环境下，一个系统可能会在一次事务操作中通过消息的方式去改变其它系统的状态（主要指存储的状态），为了能模拟类似事务的一致性，异步消息可以利用 DB 的持久化来支持事务型消息。事务型消息指的是发布消息的应用系统在本地数据库事务操作序列中发送的消息。此类消息的投递与数据库事务状态保持一致，当事务状态是提交时，消息会被投递到订阅者，当事务状态是回滚时，消息不会被投递到订阅者，这也是分布式环境下消息中间件需要支持的特殊场景。</p>
 </li>
 </ul>
-<h2 id="4-2-如何保证高可用？"><a href="#4-2-如何保证高可用？" class="headerlink" title="4.2-如何保证高可用？"></a>4.2-如何保证高可用？</h2><ol>
-<li><p><strong>分布式</strong></p>
-<p>由多个broker组成，每个broker是一个节点，topic可以人划分为多个partition，每个partition可以存在于不同的broker上。</p>
+<h3 id="3-2-分布式数据存储"><a href="#3-2-分布式数据存储" class="headerlink" title="3.2-分布式数据存储"></a>3.2-分布式数据存储</h3><ol>
+<li><p>分布式缓存</p>
+<p>当传统数据库面临大规模数据访问时，磁盘 I/O 能力往往成为性能瓶颈，从而导致过高的响应延迟，而比较常用的提升性能的手段，是在应用和数据库之间加入一层分布式缓存来提升数据访问性能，分布式缓存将高速内存作为数据对象的存储介质，理想情况下可以获得内存级的读写性能，常见的缓存实现会通过 LRU 算法来缓存访问最多的数据，进而提升缓存效率。</p>
+<p>通过分布式缓存服务器集群，将缓存数据分布到集群多台服务器上可在一定程度上改善缓存的可用性，同时也能起到扩展缓存容量的作用，当一台缓存服务器宕机的时候，只有部分缓存数据丢失，重新从数据库加载这部分数据不会对数据库产生很大影响。</p>
+<p>分布式缓存还具有支持弹性扩展的能力，通过动态增加或减少节点，应对变化的数据访问负载，提供可预测的性能与扩展性，同时也能最大限度地提高资源利用率</p>
+<p>分布式缓存比较典型应用场景包括：</p>
+<p><strong>应用对象缓存</strong>：缓存系统作为 ORM 框架的二级缓存对外提供服务，目的是减轻数据库的负载压力，加速应用访问;</p>
+<p><strong>状态缓存</strong>：缓存包括 Session 会话状态及应用横向扩展时的状态数据等，这类数据一般是难以恢复的，对可用性要求较高，多应用于高用集群;</p>
+<p><strong>并行处理</strong>：通常涉及大量中间计算结果需要共享;</p>
+<p><strong>事件处理</strong>：分布式缓存提供了针对事件流的连续查询 (continuous query) 处理技术，满足实时性需求;</p>
+<p><strong>极限事务处理</strong>：分布式缓存为事务型应用提供高吞吐率、低延时的解决方案，支持高并发事务请求处理，多应用于铁路、金融服务和电等领域。</p>
+<p>通过配置合理容量的分布式缓存，能在提升应用数据访问性能的同时，降低总体拥有成本，因此架构设计上做到合理利用缓存，变得就越来越重要。</p>
 </li>
-<li><p><strong>Replica机制</strong></p>
-<p>每个partition的数据都会同步到其它机器上,形成多个replica副本，所有replica会选举一个leader.生产和消费都和leader打交道。其它 replica就是follower。写的时候，leader会负责把数据同步列所有follower 上去，读的候就直接读leader上的数据。只读写leader保证教据一致性，kafka会均匀地将 一个partition的所有 replica分布在不同的机器上，这样可以提高容错性。</p>
+<li><p>分布式文件系统</p>
+<p>分布式文件系统，是指允许文件通过网络在多台计算机中分散存储的共享文件系统，它通过网络将分布在不同区域的多台计算机连接在一起从而组合成容量更大，处理能力更强的分布式文件存储系统。分布式文件系统很好的解决单台计算机存储和处理能力存在上限的问题，具备大的存储容量和处理能力的扩展能力。</p>
+<p>在分布式文件系统中，客户端并非直接访问底层存储，而是通过网络以特定的通信协议和服务器沟通，进而完成文件存储操作，借由通信协议的设计，可以让客户端和服务器端都能根据访问控制清单或是授权，来限制对于文件系统的访问。由于分布式文件系统的网络接入特性，使得不同用户都能通过网络接入分布式文件系统，实现文件数据的共享，从用户角度看，分布式文件系统与单机文件系统看到的视图是一样的，使用方式也相同。</p>
+<p>分布式文件系统除了能提供比单机文件系统更大的存储容量和处理能力外，通过数据复制与容错，也拥有了本地文件系统所无法具备的数据备份、数据安全等优点，也就是说，即使系统中有一小部分的节点脱机，整体来说系统仍然可以持续运作而不会有数据损失。</p>
 </li>
-</ol>
-<h2 id="4-3-如何避免重复消费？"><a href="#4-3-如何避免重复消费？" class="headerlink" title="4.3-如何避免重复消费？"></a>4.3-如何避免重复消费？</h2><p><strong>情况：</strong>ConSumer消费了数据之后，会把消费过后的消息offset提交一下，表示已经消费过，下次重启后,直接从offset继续消费,有某些异常情况时进程被kill,号致consumer消费了消息，但没来得及提交offset ,重启之后，少数消息会被再次消费一次。</p>
-<p><strong>解决方法:——结合具体的业务</strong></p>
-<ol>
-<li><p>如果消费后写数据库，先查数据库中记录是否存在，如果存在则证明已消费，然后比较时间戳是否是最新的，如果是最新的消息，则更新数据库，否则丢弃。0racle中可以使用Merge实现。</p>
+<li><p>分布式数据库</p>
+<p>随着数据量的高速增长，分布式数据库技术也得到了快速的发展，传统的关系型数据库开始从集中式模型向分布式架构发展。分布式数据库是指利用高速计算机网络将物理上分散的多个数据存储单元连接起来组成一个逻辑上统一的数据库。分布式数据库的基本思想是将原来集中式数据库中的数据分散存储到多个通过网络连接的数据存储节点上，以获取更大的存储容量和更高的并发访问量。</p>
+<p>分布式数据库可以按需增加、减少数据库处理节点，很好地解决了单台数据库的存储和处理能力上限问题；除此之外，分布式数据库往往具备较强的容错能力，通过数据复制、副本冗余，当某个处理节点出现故障时，能够自动恢复，对使用者没有感知。最后，分布式数据库底层采用廉价服务器，相比传统单机数据库使用的高端服务器和高端存储，成本大幅度降低。</p>
+<p>在分布式数据库中，客户端并非直接访问底层的存储系统，而是使用结构化查询语言（SQL语言）访问数据库节点，再由数据库节点的 SQL 引擎翻译成针对底层存储系统的操作。一套分布式数据库往往会服务多个业务，分布式数据库内部支持多个业务之间的隔离，当某个业务出现异常时，只会影响该业务，不会对其它业务造成影响。蚂蚁的 OceanBase 是一个典型的分布式数据库。使用分布式数据库，将大大降低单库故障的发生机率，并简化单库故障的恢复机制。再结合分布式数据中间件在业务维度数据分片和路由、数据源动态调整、应用层高可用容灾、异构数据源适配等能力，将能很好的实现分布式环境下 DB 的高性能访问和高可用。</p>
 </li>
-<li><p>如果是写Redis ,面接Set操作<br>或者给数据一个uuid,消费过的数据uuid保存到Redis中，如果重复则直接丢弃。</p>
-</li>
-</ol>
-<h2 id="4-4-如何保证消息的顺序性？"><a href="#4-4-如何保证消息的顺序性？" class="headerlink" title="4.4-如何保证消息的顺序性？"></a>4.4-如何保证消息的顺序性？</h2><p><strong>情况：</strong>在数据量很大的情况下，如果消费者使用单线程消费处理，而且处理比较耗时的话，那么吞吐量就会很低。改用多个线程并发跑的话，就可能导致消息的顺序乱掉。</p>
-<p><strong>解决方法：</strong></p>
-<ol>
-<li><p>一个topic，一个partition（内部有序），一个consumer，内部单线程消费，</p>
-<p>吞吐量太低，一般不会使用</p>
-</li>
-<li><p>多线程写N个内存队列（queue），具有相同key的数据都存到同一个内存queue；然后对于N个线程，每个线程分别消费一个内存queue即可。</p>
-</li>
-</ol>
-<p><strong>消息积压</strong>——例如消费后要写数据库，但数据库挂掉或者压力很大，消费者hang住，或者是消费者故障，导致消费速度极其慢，此时消息队列会积压大量的消息。</p>
-<ol>
-<li><p>查看kafka消息队列的积压情况</p>
-<p><code>kafka-consumer-groups  --bootstrap-server master：9092</code></p>
-<p><code>--describe --group group-name</code></p>
-<p>a.将现有的consumer 停掉，防止再向队列中写消息。</p>
-<p>b.定位消息积压的原因。</p>
-<p>c.增加消费线程，提高消费速度。</p>
+<li><p>分布式数据中间件</p>
+<p>关系型数据库是经典的持久化解决方案，但在海量业务场景下也会遇到单表的容量瓶颈和单库的性能瓶颈。按照分布式的思想，数据也要拆分，让集中在单点的读写访问分布到多个 DB 服务器上，从而获得容量和性能上的弹性延伸能力。根据业务场景可分为垂直拆分（按业务）、水平拆分（按请求/用户做哈希，或者做区间拆分）、读写拆分等。</p>
+<p>按照垂直拆分后的数据会造成本来单库事务变成跨库事务，很难通过传统数据库的机制来保证 ACID，需要引入一种应用层的，基于服务的事务协调机制。这个下文会有专门阐述。按照水平拆分的数据，需要按照某些业务维度将数据拆分到不同的库表，从而解决数据水平扩展的问题，也提升了整体的 QPS，使数据层具备 TB+/天 的吞吐能力。数据拆分后，每次数据访问需要按照分库分表的规则进行路由，本质上是通过规则对原始 SQL 进行重写，拆分成多条 SQL，并分发给链接多个库的数据源去执行，并汇总结果。由于整个过程都在应用层进行，为屏蔽复杂性，需要将上述逻辑封装一层中间件类库中，并通过标准 JDBC 接口对外暴露接口，让业务透明的完成整个数据库的访问过程。</p>
+<p>通过一层统一的分布式数据中间件，让业务通过标准 SQL 和标准 JDBC 接口就能访问一组理论容量「无限大」的关系型数据库集群，并且具有很好的性能。同时，通过这层中间件，也能实现所有数据库参数的动态调整、路由规则动态调整、数据库分片权重的调整，从而在应用层实现数据库访问的高可用，且不依赖于数据库高可用机制，甚至提供更灵活强大的故障容忍能力。此外，标准 SQL 和 JDBC 屏蔽了底层数据库的实现，使应用具备透明对接异构数据源的能力，实现复杂场景的业务访问和一些双写双读的需求。</p>
 </li>
 </ol>
+<h3 id="3-3-分布式事务"><a href="#3-3-分布式事务" class="headerlink" title="3.3-分布式事务"></a>3.3-分布式事务</h3><p>传统关系型数据库的事务模型必须遵守 ACID 原则。在单数据库模式下，ACID 模型能有效保障数据的完整性，但是在大规模分布式环境下，单库无法承载高并发和海量数据，所以数据会被通过垂直拆分或水平拆分到不同的 DB 中，一个业务往往会跨越多个数据库。在 JavaEE 规范中使用 2PC (2 Phase Commit, 两阶段提交) 来处理跨 DB 环境下的事务问题，但是 2PC 是反可伸缩模式，也就是说，在事务处理过程中，参与者需要一直持有资源直到整个分布式事务结束。这样，当业务规模达到千万级以上时，2PC 的局限性就越来越明显，系统可伸缩性会变得很差。基于 BASE 的思想可以仿照 2PC 的方式，在应用层来实现分布式环境下多个事务协调一致。 在充分保障分布式环境下高可用性、高可靠性的同时兼顾数据一致性的要求，其最大的特点是保证数据最终一致 (Eventually consistent)。</p>
+<p>在分布式事务中，可以简单分成事务发起方和事务参与者两个角色。发起方负责启动分布式事务，触发创建主事务记录。发起方是分布式事务的总体协调者，负责调用参与者的服务，记录相应的事务日志，并感知整个分布式事务状态来决定整个事务是 COMMIT 还是 ROLLBACK。参与者是分布式事务中的一个原子单位，所有参与者都必须定义 prepare、commit、rollback 3个基本接口，并保证其业务数据的幂等性，也必须保证 prepare 中的数据操作能够被提交 (COMMIT) 或者回滚 (ROLLBACK)。</p>
+<p>整个协调过程从发起方开启一个本地事务开始，过程中参与者会显式调用参与方的业务方法，这些显式调用的方法即为一阶段的 prepare 方法，一般参与方会在该方法内锁定资源。这些方法调用可以采用第一小节提到的「消息中间件」，也可以采用「RPC 通讯」。一旦这次本地事务成功，则本地事务提交，发起方会调用第二阶段的真正 commit 方法，来让所有参与方的事务完成第二阶段的提交。本地事务提交失败或者在这之前某个逻辑中失败（可能是本地逻辑异常，也可能参与方一阶段失败），则本地事务失败，发起方会负责完成一阶段的所有回滚操作，避免出现不一致情况。</p>
+<p>在分布式环境下，单点故障是个常态，所以无论是发起方还是参与方都可能在任何一刻不可用，此时需要一个第三方的恢复系统来感知所有的事务状态，并通过定期轮询来发现异常状态的事务记录，并将其恢复至最终一致。</p>
 
             </div>
             <hr/>
@@ -696,7 +606,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/">https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/</a>
+                    <a href="https://fangpeng12.github.io/2020/01/16/fen-bu-shi-jia-gou-ji-chu/">https://fangpeng12.github.io/2020/01/16/fen-bu-shi-jia-gou-ji-chu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -734,12 +644,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/kafka/">
-                                    <span class="chip bg-color">kafka</span>
+                                <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">
+                                    <span class="chip bg-color">分布式</span>
                                 </a>
                             
-                                <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                                    <span class="chip bg-color">笔记</span>
+                                <a href="/tags/%E6%9E%B6%E6%9E%84/">
+                                    <span class="chip bg-color">架构</span>
                                 </a>
                             
                         </div>
@@ -909,82 +819,25 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/01/13/springcloud-xue-xi-bi-ji-yi/">
+                <a href="/2020/01/16/springboot-xue-xi-bi-ji-san/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="SpringCloud学习笔记一">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="SpringBoot学习笔记3">
                         
-                        <span class="card-title">SpringCloud学习笔记一</span>
+                        <span class="card-title">SpringBoot学习笔记3</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            SpringCloud入门学习笔记和微服务架构基础
+                            SpringBoot2.X入门学习笔记和新版本新特性的记录补充——后续部分
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-13
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-16
                         </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/SpringCloud%E7%AC%94%E8%AE%B0/" class="post-category">
-                                    SpringCloud笔记
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                        <span class="chip bg-color">笔记</span>
-                    </a>
-                    
-                    <a href="/tags/SpringCloud/">
-                        <span class="chip bg-color">SpringCloud</span>
-                    </a>
-                    
-                    <a href="/tags/Spring/">
-                        <span class="chip bg-color">Spring</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2019/12/25/springboot-bi-ji-er/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="SpringBoot学习笔记2">
-                        
-                        <span class="card-title">SpringBoot学习笔记2</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            SpringBoot2.X入门学习笔记和新版本新特性的记录
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
-                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1010,6 +863,59 @@
                     
                     <a href="/tags/SpringBoot/">
                         <span class="chip bg-color">SpringBoot</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/01/15/dan-yuan-ce-shi-zhi-junit/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="单元测试之Junit">
+                        
+                        <span class="card-title">单元测试之Junit</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Junit5单元测试1-前言单元测试是软件开发过程中必不可少的一环，但是在平常开发中往往因为项目周期紧，工作量大而被忽略，这样往往导致软件问题层出不穷。线上出现不少问题其实在右单元测试的情况下就可以及时发现和处理，因此培养自己在日常开发中写
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-15
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Junit/" class="post-category">
+                                    Junit
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Junit/">
+                        <span class="chip bg-color">Junit</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">单元测试</span>
                     </a>
                     
                 </div>
