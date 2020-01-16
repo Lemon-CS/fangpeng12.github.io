@@ -518,8 +518,8 @@
 </ul>
 <p><strong>微服务注册中心的选择：</strong></p>
 <ul>
-<li>Zookeeper：CP设计，保证了一致性，集群搭建的时候，某个节点失效，则会进行选举行的leader，或者半数以上节点不可用，则无法提供服务，因此可用性没法满足</li>
-<li>Eureka：AP原则，无主从节点，一个节点挂了，自动切换其他节点可以使用，去中心化</li>
+<li>Zookeeper：CP设计，保证了一致性，集群搭建的时候，某个节点失效，则会进行选举行的leader，或者半数以上节点不可用，则无法提供服务，因此可用性没法满足。如金融行业</li>
+<li>Eureka：AP原则，无主从节点，一个节点挂了，自动切换其他节点可以使用，去中心化。如电商系统</li>
 </ul>
 <h3 id="2-2-BASE理论"><a href="#2-2-BASE理论" class="headerlink" title="2.2-BASE理论"></a>2.2-BASE理论</h3><p>BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
 <p>BASE是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency）。</p>
@@ -1065,7 +1065,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">102.3k</span>&nbsp;字
+                class="white-color">104.1k</span>&nbsp;字
             
             
             

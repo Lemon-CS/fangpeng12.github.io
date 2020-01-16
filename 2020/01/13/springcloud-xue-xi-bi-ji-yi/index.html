@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    6.6k
+                    8.4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    23 分
+                    29 分
                 </div>
                 
 				
@@ -774,6 +774,64 @@
 </ul>
 <p><strong>几大服务注册中心的对比：</strong></p>
 <p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94.png" alt="注册中心对比"></p>
+<h3 id="4-2-SpringCloud微服务核心组件Eureka"><a href="#4-2-SpringCloud微服务核心组件Eureka" class="headerlink" title="4.2-SpringCloud微服务核心组件Eureka"></a>4.2-SpringCloud微服务核心组件Eureka</h3><p>Eureka是Netflix开源的服务发现组件，本身是一个基于REST的服务，包含Server和Client两部分，并且服务端与客户端均采用java编写，所以Eureka主要适用于通过java实现的分布式系统，或是JVM兼容语言构建的系统，Spring Cloud将它集成在子项目Spring Cloud Netflix中。在微服务系统中，我们需要单独创建一个Eureka Server作为注册中心，其他的微服务就相当于客户端，注册到我们的注册中心中。</p>
+<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/Eureka.png" alt="Eureka"></p>
+<pre class=" language-properties"><code class="language-properties">Register(服务注册)：把自己的IP和端口注册给Eureka。
+Renew(服务续约)：发送心跳包，每30秒发送一次。告诉Eureka自己还活着。
+Cancel(服务下线)：当provider关闭时会向Eureka发送消息，把自己从服务列表中删除。防止consumer调用到不存在的服务。
+<span class="token attr-name">Get</span> <span class="token attr-value">Registry(获取服务注册列表)：获取其他服务列表。</span>
+Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
+<span class="token attr-name">Make</span> <span class="token attr-value">Remote Call(远程调用)：完成服务的远程调用。</span></code></pre>
+<p><strong>流程：</strong></p>
+<p>各个微服务启动时，会通过 Eureka Client 向 Eureka Server 注册自己，Eureka Server 会存储该服务的信息</p>
+<p>也就是说，每个微服务的客户端和服务端，都会注册到 Eureka Server，这就衍生出了微服务相互识别的话题</p>
+<ul>
+<li><p>同步：每个 Eureka Server 同时也是 Eureka Client（逻辑上的）<br>　　　多个 Eureka Server 之间通过复制的方式完成服务注册表的同步，形成 Eureka 的高可用</p>
+</li>
+<li><p>识别：Eureka Client 会缓存 Eureka Server 中的信息<br>　　　即使所有 Eureka Server 节点都宕掉，服务消费者仍可使用缓存中的信息找到服务提供者<strong>（笔者已亲测）</strong></p>
+</li>
+<li><p>续约：微服务会周期性（默认30s）地向 Eureka Server 发送心跳以Renew（续约）信息（类似于heartbeat）</p>
+</li>
+<li><p>续期：Eureka Server 会定期（默认60s）执行一次失效服务检测功能<br>　　　它会检查超过一定时间（默认90s）没有Renew的微服务，发现则会注销该微服务节点</p>
+</li>
+<li><p><strong>Eureka服务端</strong></p>
+<p>提供服务注册和发现的能力（通常就是微服务中的注册中心），各个节点启动后，会在Eureka Server中进行注册，这样Eureka Server中的服务注册表中将会存储所有可用服务节点的信息，服务节点的信息可以在前端界面中直观的看到。</p>
+<p>即服务注册中心。它同其他服务注册中心一样，支持高可用配置。依托于强一致性提供良好的服务实例可用性，可以应对多种不同的故障场景。</p>
+<p>Eureka服务端支持集群模式部署，当集群中有分片发生故障的时候，Eureka会自动转入自我保护模式。它允许在分片发生故障的时候继续提供服务的发现和注册，当故障分配恢复时，集群中的其他分片会把他们的状态再次同步回来。集群中的的不同服务注册中心通过异步模式互相复制各自的状态，这也意味着在给定的时间点每个实例关于所有服务的状态可能存在不一致的现象。</p>
+</li>
+<li><p><strong>Eureka客户端</strong></p>
+<p>一个Java客户端，用于简化与 Eureka Server 的交互，<strong>客户端同时也具备一个内置的、使用轮询(round-robin)负载算法的负载均衡器。在应用启动后</strong>，将会向Eureka Server发送心跳,<strong>默认周期为30秒</strong>，如果Eureka Server在多个心跳周期内没有接收到某个节点的心跳，Eureka Server将会从服务注册表中把这个<strong>服务节点移除(默认90秒)</strong>。。</p>
+<p>Eureka客户端，主要处理服务的注册和发现。客户端服务通过注册和参数配置的方式，嵌入在客户端应用程序的代码中。在应用程序启动时，Eureka客户端向服务注册中心注册自身提供的服务，并周期性的发送心跳来更新它的服务租约。同时，他也能从服务端查询当前注册的服务信息并把它们缓存到本地并周期行的刷新服务状态。</p>
+</li>
+<li><p><strong>心跳检测</strong></p>
+<p>在应用启动后，客户端将会向Eureka Server发送心跳（默认为30秒，我们项目配置的是30秒）。Eureka Serber如果在多个心跳周期内没有收到某个微服务节点的心跳，将会剔除该节点（默认90秒，我们项目配置的是90秒）。</p>
+</li>
+<li><p><strong>集群数据同步</strong></p>
+<p>Eureka Server之间通过复制的方式来进行数据同步。</p>
+</li>
+<li><p><strong>客户端缓存功能</strong></p>
+<p>Eureka Client具有缓存功能，即使所有的Eureka Server都挂掉，客户端依然可以利用缓存中的信息消费其他服务的API。</p>
+</li>
+<li><p><strong>清理失效节点</strong></p>
+</li>
+<li><p><strong>自我保护模式</strong></p>
+<p>自我保护模式是指在网络出现异常的情况下，由于Eureka Server无法收到客户端的心跳续约，Eureka Server会判断该节点不可用，但其实该节点可能是正常的，可用的。为了避免误删，Eureka Server引入了自我保护模式。一旦Eureka Server发现当前收到的心跳总次数小于心跳阈值的85%（默认值），就会进入自我保护模式，此时Eureka Server不会清理任何节点。直到Eureka Server收到的心跳总次数大于等于心跳阈值的85%。</p>
+<p>自我保护模式的设计哲学是：在不确定节点是否可用的情况下，尽可能保留节点。</p>
+</li>
+</ul>
+<p><strong>Eureka工作流程：</strong></p>
+<ol>
+<li>Eureka Server 启动成功，等待服务端注册。在启动过程中如果配置了集群，集群之间定时通过 Replicate 同步注册表，每个 Eureka Server 都存在独立完整的服务注册表信息</li>
+<li>Eureka Client 启动时根据配置的 Eureka Server 地址去注册中心注册服务</li>
+<li>Eureka Client 会每 30s 向 Eureka Server 发送一次心跳请求，证明客户端服务正常</li>
+<li>当 Eureka Server 90s 内没有收到 Eureka Client 的心跳，注册中心则认为该节点失效，会注销该实例</li>
+<li>单位时间内 Eureka Server 统计到有大量的 Eureka Client 没有上送心跳，则认为可能为网络异常，进入自我保护机制，不再剔除没有上送心跳的客户端</li>
+<li>当 Eureka Client 心跳请求恢复正常之后，Eureka Server 自动退出自我保护模式</li>
+<li>Eureka Client 定时全量或者增量从注册中心获取服务注册表，并且将获取到的信息缓存到本地</li>
+<li>服务调用时，Eureka Client 会先从本地缓存找寻调取的服务。如果获取不到，先从注册中心刷新注册表，再同步到本地缓存</li>
+<li>Eureka Client 获取到目标服务器信息，发起服务调用</li>
+<li>Eureka Client 程序关闭时向 Eureka Server 发送取消请求，Eureka Server 将实例从注册表中删除</li>
+</ol>
 
             </div>
             <hr/>
@@ -1267,7 +1325,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">102.3k</span>&nbsp;字
+                class="white-color">104.1k</span>&nbsp;字
             
             
             
