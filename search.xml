@@ -65,6 +65,20 @@
         <content type="html"><![CDATA[]]></content>
       
       
+      <categories>
+          
+          <category> 微服务 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 架构 </tag>
+            
+            <tag> 微服务 </tag>
+            
+        </tags>
       
     </entry>
     
@@ -163,7 +177,7 @@
       
       <categories>
           
-          <category> Angular笔记 </category>
+          <category> 前端 </category>
           
       </categories>
       
