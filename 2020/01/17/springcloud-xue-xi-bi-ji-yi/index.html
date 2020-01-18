@@ -4,8 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="SpringCloud学习笔记一, 空白格的博客">
-    <meta name="description" content="title: SpringCloud学习笔记一date: 2020-01-13 20:36:54categories: SpringCloud笔记tags:    - SpringCloud    - 笔记    - Springcover">
+    <meta name="keywords" content="SpringCloud学习笔记1, 空白格的博客">
+    <meta name="description" content="SpringCloud学习笔记1-架构演进和分布式系统基础1.1-单体应用
+把所有的功能集中在同一系统中实现，应用程序的全部功能被一起打包作为单个单元或应用程序
+这个单元可以是JAR、WAR、EAR,或其他一些归档格式，运行在同一个 tom">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +15,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>SpringCloud学习笔记一 | 空白格的博客</title>
+    <title>SpringCloud学习笔记1 | 空白格的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -304,13 +306,13 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        SpringCloud学习笔记一
+                        SpringCloud学习笔记1
                     </div>
                 </div>
             </div>
@@ -420,12 +422,33 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                                <span class="chip bg-color">笔记</span>
+                            </a>
+                        
+                            <a href="/tags/Spring/">
+                                <span class="chip bg-color">Spring</span>
+                            </a>
+                        
+                            <a href="/tags/SpringBoot/">
+                                <span class="chip bg-color">SpringBoot</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/SpringCloud%E7%AC%94%E8%AE%B0/" class="post-category">
+                                SpringCloud笔记
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -434,7 +457,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-01-13
+                    2020-01-17
                 </div>
                 
 
@@ -466,8 +489,7 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>title: SpringCloud学习笔记一<br>date: 2020-01-13 20:36:54<br>categories: SpringCloud笔记<br>tags:<br>    - SpringCloud<br>    - 笔记<br>    - Spring<br>cover: true<br>summary: SpringCloud入门学习笔记和微服务架构基础</p>
-<h1 id="SpringCloud学习笔记"><a href="#SpringCloud学习笔记" class="headerlink" title="SpringCloud学习笔记"></a>SpringCloud学习笔记</h1><h2 id="1-架构演进和分布式系统基础"><a href="#1-架构演进和分布式系统基础" class="headerlink" title="1-架构演进和分布式系统基础"></a>1-架构演进和分布式系统基础</h2><h3 id="1-1-单体应用"><a href="#1-1-单体应用" class="headerlink" title="1.1-单体应用"></a>1.1-单体应用</h3><ol>
+                <h1 id="SpringCloud学习笔记"><a href="#SpringCloud学习笔记" class="headerlink" title="SpringCloud学习笔记"></a>SpringCloud学习笔记</h1><h2 id="1-架构演进和分布式系统基础"><a href="#1-架构演进和分布式系统基础" class="headerlink" title="1-架构演进和分布式系统基础"></a>1-架构演进和分布式系统基础</h2><h3 id="1-1-单体应用"><a href="#1-1-单体应用" class="headerlink" title="1.1-单体应用"></a>1.1-单体应用</h3><ol>
 <li>把所有的功能集中在同一系统中实现，应用程序的全部功能被一起打包作为单个单元或应用程序</li>
 <li>这个单元可以是JAR、WAR、EAR,或其他一些归档格式，运行在同一个 tomcat 进程中</li>
 <li>其全部集成在一个单一的单元.</li>
@@ -553,7 +575,7 @@
 </ul>
 <h3 id="2-2-什么是SpringCloud？"><a href="#2-2-什么是SpringCloud？" class="headerlink" title="2.2-什么是SpringCloud？"></a>2.2-什么是SpringCloud？</h3><p>Spring Cloud是一个基于Spring Boot实现的服务工具治理包，专注于全局的服务治理框架。</p>
 <p>Spring Cloud 是一系列框架的有序集合。<br> 它利用 Spring Boot 的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用 Spring Boot 的开发风格做到一键启动和部署。<br> Spring 并没有重复制造轮子，它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过 Spring Boot 风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/SpringCloud%E7%BB%84%E4%BB%B6%E6%9E%B6%E6%9E%84.png" alt="SpringCloud组件架构"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/SpringCloud%E7%BB%84%E4%BB%B6%E6%9E%B6%E6%9E%84.png" alt="SpringCloud组件架构"></p>
 <ul>
 <li>所有请求都通过API网关来访问内部服务；</li>
 <li>网关接受请求后，从注册中心获取可用服务模块；</li>
@@ -562,7 +584,7 @@
 <li>Hystrix负责处理服务超时熔断；</li>
 <li>Turbine监控服务间的调用和熔断相关指标。</li>
 </ul>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/SpringCloud%E6%B5%81%E7%A8%8B.png" alt="SpringCloud流程"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/SpringCloud%E6%B5%81%E7%A8%8B.png" alt="SpringCloud流程"></p>
 <h2 id="2-3-微服务技术"><a href="#2-3-微服务技术" class="headerlink" title="2.3-微服务技术"></a>2.3-微服务技术</h2><ul>
 <li><p>Spring Cloud Config ：服务配置中心，将所有的服务的配置文件放到本地仓库或者远程仓库，配置中心负责读取仓库的配置文件，其他服务向配置中心读取配置。SpringCloud Config 使得服务的配置统一管理 并可以在不人为重启服务的情况下进行配置文件的刷新。</p>
 </li>
@@ -614,7 +636,7 @@
 <h2 id="3-Dubbo和SpringCloud"><a href="#3-Dubbo和SpringCloud" class="headerlink" title="3-Dubbo和SpringCloud"></a>3-Dubbo和SpringCloud</h2><ol>
 <li><p><strong>dubbo:</strong> zookeeper + dubbo + springmvc/springboot<br>官方地址：<a href="http://dubbo.apache.org/#!/?lang=zh-cn" target="_blank" rel="noopener">http://dubbo.apache.org/#!/?lang=zh-cn</a><br>配套：</p>
 <p>​    通信方式：rpc<br>​    注册中心：zookeper/redis<br>​    配置中心：diamond</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/Dubbo%E7%BB%84%E4%BB%B6.png" alt="Dubbo"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Dubbo%E7%BB%84%E4%BB%B6.png" alt="Dubbo"></p>
 </li>
 <li><p>Dubbo核心组件</p>
 <ul>
@@ -694,7 +716,7 @@
 <p>很明显，Spring Cloud 的功能比 Dubbo 更加强大，涵盖面更广，而且作为 Spring 的拳头项目，它也能够与 Spring Framework、Spring Boot、Spring Data、Spring Batch 等其他 Spring 项目完美融合，这些对于微服务而言是至关重要的。</p>
 </li>
 <li><p>微服务下电商项目模块设计</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E7%94%B5%E5%95%86%E5%BE%AE%E6%9C%8D%E5%8A%A1.png" alt="电商微服务"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E7%94%B5%E5%95%86%E5%BE%AE%E6%9C%8D%E5%8A%A1.png" alt="电商微服务"></p>
 <ul>
 <li>用户服务<ul>
 <li>用户信息接口</li>
@@ -715,7 +737,7 @@
 </li>
 </ol>
 <h2 id="4-SpringCloud核心组件注册中心"><a href="#4-SpringCloud核心组件注册中心" class="headerlink" title="4-SpringCloud核心组件注册中心"></a>4-SpringCloud核心组件注册中心</h2><h3 id="4-1-什么是微服务的注册中心？"><a href="#4-1-什么是微服务的注册中心？" class="headerlink" title="4.1-什么是微服务的注册中心？"></a>4.1-什么是微服务的注册中心？</h3><p>在微服务架构下，主要有三种角色：<strong>服务提供者（RPC Server）</strong>、<strong>服务消费者（RPC Client）</strong>和<strong>服务注册中心（Registry）</strong>，三者的交互关系如下面这张图：</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.png" alt="微服务注册中心"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.png" alt="微服务注册中心"></p>
 <p>RPC Server 提供服务，在启动时，根据服务发布文件 server.xml 中的配置的信息，向 Registry 注册自身服务，并向 Registry 定期发送心跳汇报存活状态。</p>
 <p>RPC Client 调用服务，在启动时，根据服务引用文件 client.xml 中配置的信息，向 Registry 订阅服务，把 Registry 返回的服务节点列表缓存在本地内存中，并与 RPC Sever 建立连接。</p>
 <p>当 RPC Server 节点发生变更时，Registry 会同步变更，RPC Client 感知后会刷新本地内存中缓存的服务节点列表。</p>
@@ -727,18 +749,18 @@
 </li>
 <li><p><strong>数据一致性</strong></p>
 <p>数据一致性是分布式系统永恒的话题，Paxos协议的艰深更让数据一致性成为程序员大牛们吹水的常见话题。不过从协议层面上看，一致性的选型已经很长时间没有新的成员加入了。目前来看基本可以归为两家：一种是基于Leader的非对等部署的单点写一致性，一种是对等部署的多写一致性。当我们选用服务注册中心的时候，并没有一种协议能够覆盖所有场景，例如当注册的服务节点不会定时发送心跳到注册中心时，强一致协议看起来是唯一的选择，因为无法通过心跳来进行数据的补偿注册，第一次注册就必须保证数据不会丢失。而当客户端会定时发送心跳来汇报健康状态时，第一次的注册的成功率并不是非常关键（当然也很关键，只是相对来说我们容忍数据的少量写失败），因为后续还可以通过心跳再把数据补偿上来，此时Paxos协议的单点瓶颈就会不太划算了，这也是Eureka为什么不采用Paxos协议而采用自定义的Renew机制的原因。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="数据一致性"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="数据一致性"></p>
 </li>
 <li><p><strong>负载均衡</strong></p>
 <p>负载均衡严格的来说，并不算是传统注册中心的功能。一般来说服务发现的完整流程应该是先从注册中心获取到服务的实例列表，然后再根据自身的需求，来选择其中的部分实例或者按照一定的流量分配机制来访问不同的服务提供者，因此注册中心本身一般不限定服务消费者的访问策略。<code>Eureka</code>、<code>Zookeeper</code>包括<code>Consul</code>，本身都没有去实现可配置及可扩展的负载均衡机制，Eureka的负载均衡是由ribbon来完成的，而Consul则是由Fabio做负载均衡。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="客户端负载均衡"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="客户端负载均衡"></p>
 <p>服务端的负载均衡，给服务提供者更强的流量控制权，但是无法满足不同的消费者希望使用不同负载均衡策略的需求。而不同负载均衡策略的场景，确实是存在的。而客户端的负载均衡则提供了这种灵活性，并对用户扩展提供更加友好的支持。但是客户端负载均衡策略如果配置不当，可能会导致服务提供者出现热点，或者压根就拿不到任何服务提供者。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="服务端负载均衡"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="服务端负载均衡"></p>
 </li>
 <li><p><strong>健康检查</strong></p>
 <p>Zookeeper和Eureka都实现了一种TTL的机制，就是如果客户端在一定时间内没有向注册中心发送心跳，则会将这个客户端摘除。Eureka做的更好的一点在于它允许在注册服务的时候，自定义检查自身状态的健康检查方法。这在服务实例能够保持心跳上报的场景下，是一种比较好的体验，在Dubbo和SpringCloud这两大体系内，也被培养成用户心智上的默认行为。Nacos也支持这种TTL机制，不过这与ConfigServer在阿里巴巴内部的机制又有一些区别。Nacos目前支持临时实例使用心跳上报方式维持活性，发送心跳的周期默认是5秒，Nacos服务端会在15秒没收到心跳后将实例设置为不健康，在30秒没收到心跳时将这个临时实例摘除。</p>
 <p>客户端健康检查和服务端健康检查有一些不同的关注点。客户端健康检查主要关注客户端上报心跳的方式、服务端摘除不健康客户端的机制。而服务端健康检查，则关注探测客户端的方式、灵敏度及设置客户端健康状态的机制。从实现复杂性来说，服务端探测肯定是要更加复杂的，因为需要服务端根据注册服务配置的健康检查方式，去执行相应的接口，判断相应的返回结果，并做好重试机制和线程池的管理。这与客户端探测，只需要等待心跳，然后刷新TTL是不一样的。同时服务端健康检查无法摘除不健康实例，这意味着只要注册过的服务实例，如果不调用接口主动注销，这些服务实例都需要去维持健康检查的探测任务，而客户端则可以随时摘除不健康实例，减轻服务端的压力。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/Nacos%E7%9A%84%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5.png" alt="Nacos的健康检查"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Nacos%E7%9A%84%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5.png" alt="Nacos的健康检查"></p>
 </li>
 <li><p>性能与容量</p>
 <p>虽然大部分用户用到的性能不高，但是他们仍然希望选用的产品的性能越高越好。影响读写性能的因素很多：一致性协议、机器的配置、集群的规模、存量数据的规模、数据结构及读写逻辑的设计等等。在服务发现的场景中，我们认为读写性能都是非常关键的，但是并非性能越高就越好，因为追求性能往往需要其他方面做出牺牲。Zookeeper在写性能上似乎能达到上万的TPS，这得益于Zookeeper精巧的设计，不过这显然是因为有一系列的前提存在。首先Zookeeper的写逻辑就是进行K-V的写入，内部没有聚合；其次Zookeeper舍弃了服务发现的基本功能如健康检查、友好的查询接口，它在支持这些功能的时候，显然需要增加一些逻辑，甚至弃用现有的数据结构；最后，Paxos协议本身就限制了Zookeeper集群的规模，3、5个节点是不能应对大规模的服务订阅和查询的。</p>
@@ -751,9 +773,9 @@
 </li>
 </ul>
 <p><strong>几大服务注册中心的对比：</strong></p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94.png" alt="注册中心对比"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94.png" alt="注册中心对比"></p>
 <h3 id="4-2-SpringCloud微服务核心组件Eureka"><a href="#4-2-SpringCloud微服务核心组件Eureka" class="headerlink" title="4.2-SpringCloud微服务核心组件Eureka"></a>4.2-SpringCloud微服务核心组件Eureka</h3><p>Eureka是Netflix开源的服务发现组件，本身是一个基于REST的服务，包含Server和Client两部分，并且服务端与客户端均采用java编写，所以Eureka主要适用于通过java实现的分布式系统，或是JVM兼容语言构建的系统，Spring Cloud将它集成在子项目Spring Cloud Netflix中。在微服务系统中，我们需要单独创建一个Eureka Server作为注册中心，其他的微服务就相当于客户端，注册到我们的注册中心中。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/Eureka.png" alt="Eureka"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Eureka.png" alt="Eureka"></p>
 <pre class=" language-properties"><code class="language-properties">Register(服务注册)：把自己的IP和端口注册给Eureka。
 Renew(服务续约)：发送心跳包，每30秒发送一次。告诉Eureka自己还活着。
 Cancel(服务下线)：当provider关闭时会向Eureka发送消息，把自己从服务列表中删除。防止consumer调用到不存在的服务。
@@ -856,7 +878,7 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 <span class="token punctuation">}</span></code></pre>
 </li>
 <li><p>访问注册中心</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E8%AE%BF%E9%97%AE%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.png" alt="访问注册中心"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E8%AE%BF%E9%97%AE%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.png" alt="访问注册中心"></p>
 </li>
 </ol>
 <h3 id="4-4-Eureka-Client搭建商品服务实战"><a href="#4-4-Eureka-Client搭建商品服务实战" class="headerlink" title="4.4-Eureka Client搭建商品服务实战"></a>4.4-Eureka Client搭建商品服务实战</h3><ol>
@@ -977,7 +999,7 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
     <span class="token key atrule">ip-address</span><span class="token punctuation">:</span> 127.0.0.1 <span class="token comment" spellcheck="true"># 指定自己的ip信息，不指定的话会自己寻找</span></code></pre>
 </li>
 <li><p>访问注册中心可以看到我们的商品服务</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1.png" alt="注册商品服务"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1.png" alt="注册商品服务"></p>
 <p>eureka管理后台出现一串红色字体：是警告，说明有服务上线率低</p>
 <pre><code>EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ARE UP WHEN THEY&#39;RE NOT. RENEWALS ARE LESSER THAN THRESHOLD AND HENCE THE INSTANCES ARE NOT BEING EXPIRED JUST TO BE SAFE.</code></pre><p>关闭检查方法：eureka服务端配置文件加入</p>
 <pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
@@ -1107,7 +1129,7 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 <h3 id="5-2-Ribbon"><a href="#5-2-Ribbon" class="headerlink" title="5.2-Ribbon"></a>5.2-Ribbon</h3><ol>
 <li><p>什么是负载均衡？</p>
 <p>负载均衡是微服务架构中必须使用的技术，通过负载均衡来实现系统的高可用、集群扩容等功能。负载均衡可通过硬件设备及软件来实现，硬件比如：F5、Array等，软件比如：LVS、Nginx等。</p>
-<p><img src="/2020/01/13/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="微服务负载均衡"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" alt="微服务负载均衡"></p>
 <p>用户请求先到达负载均衡器（也相当于一个服务），负载均衡器根据负载均衡算法将请求转发到微服务。负载均衡算法有：轮训、随机、加权轮训、加权随机、地址哈希等方法，负载均衡器维护一份服务列表，根据负载均衡算法将请求转发到相应的微服务上，所以负载均衡可以为微服务集群分担请求，降低系统的压力。</p>
 </li>
 <li><p>什么是客户端负载均衡？</p>
@@ -1210,7 +1232,7 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2020/01/13/springcloud-xue-xi-bi-ji-yi/">https://fangpeng12.github.io/2020/01/13/springcloud-xue-xi-bi-ji-yi/</a>
+                    <a href="https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/">https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1247,7 +1269,19 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/%E7%AC%94%E8%AE%B0/">
+                                    <span class="chip bg-color">笔记</span>
+                                </a>
+                            
+                                <a href="/tags/Spring/">
+                                    <span class="chip bg-color">Spring</span>
+                                </a>
+                            
+                                <a href="/tags/SpringBoot/">
+                                    <span class="chip bg-color">SpringBoot</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -1415,29 +1449,26 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/01/15/angular-xue-xi-bi-ji/">
+                <a href="/2020/01/18/html-xue-xi-bi-ji/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Angular学习笔记">
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="HTML学习笔记">
                         
-                        <span class="card-title">Angular学习笔记</span>
+                        <span class="card-title">HTML学习笔记</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Angular学习笔记1-Angular入门1.1-开发环境的搭建
-安装最新版本的NodeJS
-具体安装教程可参照 https://www.cnblogs.com/zhouyu2017/p/6485265.html
-
-设置镜像
-在命令窗口中
+                            HTML学习笔记1-HTML初识超文本标记语言，主要通过HTML标签对网页中的文本、图片、声音等内容进行描述。
+1.1-HTML 标签HTML 标记标签通常被称为 HTML 标签 (HTML tag)。
+HTML 标签是由尖括号包围的关键词
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-15
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-01-18
                         </span>
                         <span class="publish-author">
                             
@@ -1454,16 +1485,12 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                        <span class="chip bg-color">笔记</span>
-                    </a>
-                    
-                    <a href="/tags/Angular/">
-                        <span class="chip bg-color">Angular</span>
-                    </a>
-                    
                     <a href="/tags/%E5%89%8D%E7%AB%AF/">
                         <span class="chip bg-color">前端</span>
+                    </a>
+                    
+                    <a href="/tags/html/">
+                        <span class="chip bg-color">html</span>
                     </a>
                     
                 </div>
@@ -1477,31 +1504,31 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2019/12/25/kafka-xue-xi-bi-ji/">
+                <a href="/2020/01/16/wei-fu-wu-jia-gou-ji-chu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Kafka学习笔记">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="微服务架构基础">
                         
-                        <span class="card-title">Kafka学习笔记</span>
+                        <span class="card-title">微服务架构基础</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Kafka学习笔记1-kafka介绍1.1-什么是kafka？Apache Kafka是一个分布式发布-订阅消息系统，它最初由 LinkedIn 公司开发，使用 Scala语言编写,之后成为 Apache 项目的一部分。Kafka 是一个分
+                            微服务架构基础知识梳理和学习
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2019-12-25
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-16
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Kafka%E7%AC%94%E8%AE%B0/" class="post-category">
-                                    Kafka笔记
+                            <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="post-category">
+                                    微服务
                                 </a>
                             
                             
@@ -1511,12 +1538,12 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/kafka/">
-                        <span class="chip bg-color">kafka</span>
+                    <a href="/tags/%E6%9E%B6%E6%9E%84/">
+                        <span class="chip bg-color">架构</span>
                     </a>
                     
-                    <a href="/tags/%E7%AC%94%E8%AE%B0/">
-                        <span class="chip bg-color">笔记</span>
+                    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
+                        <span class="chip bg-color">微服务</span>
                     </a>
                     
                 </div>
@@ -1666,7 +1693,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">111.6k</span>&nbsp;字
+                class="white-color">111.5k</span>&nbsp;字
             
             
             
