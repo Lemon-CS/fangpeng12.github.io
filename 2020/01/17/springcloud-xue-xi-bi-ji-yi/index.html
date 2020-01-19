@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    13.6k
+                    15k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    49 分
+                    54 分
                 </div>
                 
 				
@@ -1206,6 +1206,98 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 </li>
 </ol>
 </li>
+<li><p>Ribbon修改负载均衡策略</p>
+<p>在application.yml配置文件中加入：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true">#自定义负载均衡策略</span>
+    <span class="token key atrule">product-service</span><span class="token punctuation">:</span>
+      <span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
+        <span class="token key atrule">NFLoadBalancerRuleClassName</span><span class="token punctuation">:</span> com.netflix.loadbalancer.RandomRule</code></pre>
+<p><strong>策略选择：</strong></p>
+<ol>
+<li>如果每个机器配置一样，则建议不修改策略 (推荐)</li>
+<li>如果部分机器配置强，则可以改为 WeightedResponseTimeRule</li>
+</ol>
+</li>
+</ol>
+<h3 id="5-3-微服务调用方式之Feign"><a href="#5-3-微服务调用方式之Feign" class="headerlink" title="5.3-微服务调用方式之Feign"></a>5.3-微服务调用方式之Feign</h3><ol>
+<li><p>Feign是什么？</p>
+<p><strong>Feign是Netflix开发的声明式、模板化的HTTP客户端， Feign可以帮助我们更快捷、优雅地调用HTTP API。</strong></p>
+<p>Feign是一个声明式WebService客户端，使用Feign能让编写WebService客户端更加简单，它的使用方法是定义一个接口，然后在上面添加注解,同时也支持JAX-RS标准的注解。Feign也支持可拔插式的编码器和解码器，Spring Cloud对Feign进行了封装，使其支持了Spring MVC标准注解和HttpMessageConverters.Feign可以与Eureka和Ribbon组合使用以支持负载均衡。</p>
+<p><strong>只需要你创建一个接口，然后在上面添加注解即可。</strong></p>
+<p>Feign 是一种声明式、模板化的 HTTP 客户端。在 Spring Cloud 中使用 Feign，可以做到使用 HTTP 请求访问远程服务，就像调用本地方法一样的，开发者完全感知不到这是在调用远程方法，更感知不到在访问 HTTP 请求。接下来介绍一下 Feign 的特性，具体如下：</p>
+<ul>
+<li>可插拔的注解支持，包括 Feign 注解和AX-RS注解。</li>
+<li>支持可插拔的 HTTP 编码器和解码器。</li>
+<li>支持 Hystrix 和它的 Fallback。</li>
+<li>支持 Ribbon 的负载均衡。</li>
+<li>支持 HTTP 请求和响应的压缩。Feign 是一个声明式的 WebService 客户端，它的目的就是让 Web Service 调用更加简单。它整合了 Ribbon 和 Hystrix，从而不需要开发者针对 Feign 对其进行整合。Feign 还提供了 HTTP 请求的模板，通过编写简单的接口和注解，就可以定义好 HTTP 请求的参数、格式、地址等信息。Feign 会完全代理 HTTP 的请求，在使用过程中我们只需要依赖注入 Bean，然后调用对应的方法传递参数即可。</li>
+</ul>
+</li>
+<li><p>Feign能干什么？</p>
+<p>Feign旨在使编写Java Htpp客户端变得更容易。</p>
+<p>使用Ribbon+RestTemplate时，利用RestTemplate对http请求的封装处理,形成了一套模板化的调用方法.但是在实际开发中,由于对服务依赖的调用可能不止一处，往往一个接口会被多处调用,所以通常都会针对每个微服务自行封装一些客户端类来包装这些依赖服务的调用.所以，Feign在此基础上做了进一步封装,由他来帮助我们定义和实现依赖服务接口的定义。在Feign的实现下，我们只需要创建一个接口并使用注解的方式来配置它(以前是Dao接口上标注Mapper注解，现在是一个微服务接口上面标注一个Feign注解即可),即可完成对服务提供方的接口绑定，简化了使用Spring cloud Ribbon时，自动封装服务调用客户端的开发量。</p>
+</li>
+<li><p>添加Feign依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-openfeign<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+# 注意：新旧版本依赖名称不同</code></pre>
+</li>
+<li><p>添加配置</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true">#feign的配置，连接超时及读取超时配置</span>
+<span class="token key atrule">feign</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">default</span><span class="token punctuation">:</span>
+        <span class="token key atrule">connectTimeout</span><span class="token punctuation">:</span> <span class="token number">5000</span>
+        <span class="token key atrule">readTimeout</span><span class="token punctuation">:</span> <span class="token number">5000</span>
+        <span class="token key atrule">loggerLevel</span><span class="token punctuation">:</span> basic</code></pre>
+</li>
+<li><p>启动类增加注解<code>@EnableFeignClients</code>（开启 Feign 扫描支持）</p>
+</li>
+<li><p>Feign接口编写</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"product-service"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">ProductFeignClient</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"api/v1//product/find"</span><span class="token punctuation">)</span>
+    String <span class="token function">findById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> <span class="token keyword">int</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>Controller</p>
+<pre class=" language-java"><code class="language-java">RestController
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProductController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> ProductFeignClient productFeignClient<span class="token punctuation">;</span>
+
+   <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>"api<span class="token operator">/</span>v1<span class="token comment" spellcheck="true">//product)</span>
+    String <span class="token function">findById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> <span class="token keyword">int</span> id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> productFeignClient<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>Feign工作原理</p>
+<ul>
+<li>在开发微服务应用时，我们会在主程序入口添加 @EnableFeignClients 注解开启对 Feign Client 扫描加载处理。根据 Feign Client 的开发规范，定义接口并加 @FeignClients 注解。</li>
+<li>当程序启动时，会进行包扫描，扫描所有 @FeignClients 的注解的类，并将这些信息注入 Spring IOC 容器中。当定义的 Feign 接口中的方法被调用时，通过JDK的代理的方式，来生成具体的 RequestTemplate。当生成代理时，Feign 会为每个接口方法创建一个 RequetTemplate 对象，该对象封装了 HTTP 请求需要的全部信息，如请求参数名、请求方法等信息都是在这个过程中确定的。</li>
+<li>然后由 RequestTemplate 生成 Request，然后把 Request 交给 Client 去处理，这里指的 Client 可以是 JDK 原生的 URLConnection、Apache 的 Http Client 也可以是 Okhttp。最后 Client 被封装到 LoadBalanceclient 类，这个类结合 Ribbon 负载均衡发起服务之间的调用。</li>
+</ul>
+</li>
+<li><p>@FeignClient 注解</p>
+<ul>
+<li>name：指定 Feign Client 的名称，如果项目使用了 Ribbon，name 属性会作为微服务的名称，用于服务发现。</li>
+<li>url：url 一般用于调试，可以手动指定 @FeignClient 调用的地址。</li>
+<li>decode404：当发生404错误时，如果该字段为 true，会调用 decoder 进行解码，否则抛出 FeignException。</li>
+<li>configuration：Feign 配置类，可以自定义 Feign 的 Encoder、Decoder、LogLevel、Contract。</li>
+<li>fallback：定义容错的处理类，当调用远程接口失败或超时时，会调用对应接口的容错逻辑，fallback 指定的类必须实现 @FeignClient 标记的接口。</li>
+<li>fallbackFactory：工厂类，用于生成 fallback 类示例，通过这个属性我们可以实现每个接口通用的容错逻辑，减少重复的代码。</li>
+<li>path：定义当前 FeignClient 的统一前缀。</li>
+</ul>
+</li>
 </ol>
 
             </div>
@@ -1691,7 +1783,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">111.5k</span>&nbsp;字
+                class="white-color">112.9k</span>&nbsp;字
             
             
             
