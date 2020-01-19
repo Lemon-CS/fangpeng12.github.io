@@ -1298,7 +1298,7 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 <li>path：定义当前 FeignClient 的统一前缀。</li>
 </ul>
 </li>
-<li><p>超市时间配置</p>
+<li><p>超时时间配置</p>
 <p>如果在一个微服务当中对同一个接口同时配置了Hystrix与ribbon两个超时时间，则在接口调用的时候，两个计时器会同时读秒。</p>
 <p>比如，访问一个接口需要2秒，你的ribbon配置的超时时间是3秒，Hystrix配置的超时时间是1秒。</p>
 <p>在这种情况下，程序会回调进入到Hystrix的fallback方法，因为在访问接口的时候，Hystrix与ribbon的两个计时器同时计时，而在Hystrix计时器结束的时候自动停止了访问进行回调，进入fallback方法。</p>
