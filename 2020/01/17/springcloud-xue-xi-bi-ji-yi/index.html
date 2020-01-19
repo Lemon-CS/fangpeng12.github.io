@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    15k
+                    15.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    54 分
+                    57 分
                 </div>
                 
 				
@@ -1298,6 +1298,59 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 <li>path：定义当前 FeignClient 的统一前缀。</li>
 </ul>
 </li>
+<li><p>超市时间配置</p>
+<p>如果在一个微服务当中对同一个接口同时配置了Hystrix与ribbon两个超时时间，则在接口调用的时候，两个计时器会同时读秒。</p>
+<p>比如，访问一个接口需要2秒，你的ribbon配置的超时时间是3秒，Hystrix配置的超时时间是1秒。</p>
+<p>在这种情况下，程序会回调进入到Hystrix的fallback方法，因为在访问接口的时候，Hystrix与ribbon的两个计时器同时计时，而在Hystrix计时器结束的时候自动停止了访问进行回调，进入fallback方法。</p>
+<p><strong>如果没有配置Hystrix的话，访问一个接口需要2秒，你的ribbon配置的超时时间是3秒，Hystrix配置的超时时间是1秒，不会有异常。</strong></p>
+<p>在这个地方建议配置Hystrix的超时时间要大于ribbon的超时时间，否则会在接口调用还未完成的时候直接进入回调方法。</p>
+<p><strong>Hystrix与ribbon的默认请求超时时间都是1秒</strong></p>
+<p>配置如下：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8200</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> testFeign
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>8100/eureka/
+    <span class="token key atrule">register-with-eureka</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">fetch-registry</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token comment" spellcheck="true">###设置feign客户端超时时间</span>
+<span class="token comment" spellcheck="true">###SpringCloud feign 默认开启支持ribbon</span>
+<span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
+  <span class="token comment" spellcheck="true">###指的是建立连接所用的时间，适用于网络状况正常的情况下，两端连接所用的时间。</span>
+  <span class="token key atrule">ReadTimeout</span><span class="token punctuation">:</span> <span class="token number">5000</span>
+  <span class="token comment" spellcheck="true">###指的是建立连接后从服务器读取到可用资源所用的时间。</span>
+  <span class="token key atrule">ConnectTimeout</span><span class="token punctuation">:</span> <span class="token number">5000</span>
+<span class="token comment" spellcheck="true">###配置请求超时时间</span>
+<span class="token key atrule">hystrix</span><span class="token punctuation">:</span>
+  <span class="token key atrule">command</span><span class="token punctuation">:</span>
+    <span class="token key atrule">default</span><span class="token punctuation">:</span>
+      <span class="token key atrule">execution</span><span class="token punctuation">:</span>
+        <span class="token key atrule">isolation</span><span class="token punctuation">:</span>
+          <span class="token key atrule">thread</span><span class="token punctuation">:</span>
+            <span class="token key atrule">timeoutInMilliseconds</span><span class="token punctuation">:</span> <span class="token number">7000</span>
+<span class="token comment" spellcheck="true">###配置具体方法超时时间    </span>
+    <span class="token key atrule">serverMethod</span><span class="token punctuation">:</span>
+      <span class="token key atrule">execution</span><span class="token punctuation">:</span>
+        <span class="token key atrule">isolation</span><span class="token punctuation">:</span>
+          <span class="token key atrule">thread</span><span class="token punctuation">:</span>
+            <span class="token key atrule">timeoutInMilliseconds</span><span class="token punctuation">:</span> <span class="token number">3000</span>
+<span class="token comment" spellcheck="true">###开启Hystrix断路器</span>
+<span class="token key atrule">feign</span><span class="token punctuation">:</span>
+  <span class="token key atrule">hystrix</span><span class="token punctuation">:</span>
+    <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<p>一般情况下 都是 <code>ribbon 的超时时间（&lt;）hystrix的超时时间</code>（因为涉及到ribbon的重试机制） 因为ribbon的重试机制和Feign的重试机制有冲突，所以源码中默认关闭Feign的重试机制。</p>
+</li>
+<li><p><strong>Feign和Ribbon的区别：</strong></p>
+<ul>
+<li>启动类使用的注解不同，Ribbon用的是@RibbonClient，Feign用的是@EnableFeignClients。</li>
+<li>服务的指定位置不同，Ribbon是在@RibbonClient注解上声明，Feign则是在定义抽象方法的接口中使用@FeignClient声明。</li>
+<li>调用方式不同，<strong>Ribbon</strong>需要自己构建http请求，是一个基于 HTTP 和 TCP 客户端 的负载均衡的工具。它可以在客户端配置 <code>RibbonServerList</code>（服务端列表），使用 HttpClient 或 RestTemplate http请求然后使用RestTemplate发送给其他服务，步骤相当繁琐。<strong>Feign</strong>则是在Ribbon的基础上进行了一次改进，采用接口的方式，将需要调用的其他服务的方法定义成抽象方法即可，不需要自己构建http请求。然后就像是调用自身工程的方法调用，而感觉不到是调用远程方法，使得编写 客户端变得非常容易。要注意的是抽象方法的注解、方法签名要和提供服务的方法完全一致。</li>
+</ul>
+</li>
 </ol>
 
             </div>
@@ -1783,7 +1836,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">112.9k</span>&nbsp;字
+                class="white-color">113.6k</span>&nbsp;字
             
             
             
@@ -1815,7 +1868,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var today = new Date();
                     var startYear = "2019";
                     var startMonth = "12";
-                    var startDate = "27";
+                    var startDate = "21";
                     var startHour = "0";
                     var startMinute = "0";
                     var startSecond = "0";
