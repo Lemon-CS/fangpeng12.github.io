@@ -456,14 +456,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    36.1k
+                    50.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    136 分
+                    192 分
                 </div>
                 
 				
@@ -2477,7 +2477,886 @@ computeIfPresent 之后值为：null（这个结果中，可以看出，使用 c
 <h5 id="5-HashMap-8-和-7-有啥区别？"><a href="#5-HashMap-8-和-7-有啥区别？" class="headerlink" title="5.HashMap 8 和 7 有啥区别？"></a>5.HashMap 8 和 7 有啥区别？</h5><p>答：HashMap 8 和 7 的差别太大了，新增了红黑树，修改了底层数据逻辑，修改了 hash 算法，几乎所有底层数组变动的方法都重写了一遍，可以说 Java 8 的 HashMap 几乎重新了一遍。</p>
 <h4 id="2-9-6-总结"><a href="#2-9-6-总结" class="headerlink" title="2.9.6-总结"></a>2.9.6-总结</h4><p>总体来说，List 方面是小改动，HashMap 几乎重写了一套，所有的集合都新增了函数式的方法，比如说 forEach，也新增了很多好用的函数，比如说 getOrDefault，这些函数可以大大减少我们的代码量，让我们把关注点聚焦在业务逻辑的实现上，这其实是一种思想，把繁琐重复的计算逻辑抽取出来，从计算逻辑中扩展出业务逻辑的口子，让使用者只专心关注业务逻辑的实现即可。</p>
 <p>想要了解更多差异，也可直接前往 JDK 8 新特性查看，地址为：<a href="http://openjdk.java.net/projects/jdk8/features#103。" target="_blank" rel="noopener">http://openjdk.java.net/projects/jdk8/features#103。</a></p>
+<h3 id="2-10-简化工作：Guava-Lists-Maps-实际工作运用和源码"><a href="#2-10-简化工作：Guava-Lists-Maps-实际工作运用和源码" class="headerlink" title="2.10-简化工作：Guava Lists Maps 实际工作运用和源码"></a>2.10-简化工作：Guava Lists Maps 实际工作运用和源码</h3><p>在日常工作中，我们经常会使用一些三方的 API 来简化我们的工作，Guava 就是其中一种，Guava 是 Google 开源的技术框架，使用率高，社区活跃度也很高。</p>
+<p>本小节我们从工作中对 Guava 集合的使用入手，然后深入的看下其底层的实现，最后总结其设计思想，感兴趣的同学也可以下载源码学习，GitHub 地址：<a href="https://github.com/google/guava，源码中" target="_blank" rel="noopener">https://github.com/google/guava，源码中</a> guava 的文件夹为其源码。</p>
+<h4 id="2-10-1-运用工厂模式进行初始化"><a href="#2-10-1-运用工厂模式进行初始化" class="headerlink" title="2.10.1-运用工厂模式进行初始化"></a>2.10.1-运用工厂模式进行初始化</h4><p>在集合类初始化方面，Guava 比 Java 原生的 API 更加好用，还发明了很多新的功能，比如说在 JDK 7 之前，我们新建集合类时，声明和初始化都必须写上泛型说明，像这样：<code>List&lt;泛型&gt; list = new ArrayList&lt;泛型&gt;();</code> ， JDK 7 之后有所改变，我们只需要在声明处写上泛型说明，像这样：<code>List&lt;泛型&gt; list = new ArrayList&lt;&gt;();</code>。</p>
+<p>Guava 提供了更加方便的使用姿势，采用了工厂模式，把集合创建的逻辑交给了工厂，开发者无需关注工厂底层是如何创建的，只需要关心，工厂能产生什么，代码于是变成了这样：<code>List&lt;泛型&gt; list = Lists.newArrayList();</code>，Lists 就是 Guava 提供出来的，方便操作 List 的工具类。</p>
+<p>这种写法其实就是一种简单的工厂模式，只需要定义好工厂的入参和出参，就能对外隐藏其内部的创建逻辑，提供更加方便的使用体验。</p>
+<p>当然除了 Lists，Guava 还提供了很多其他实用工具，如 Maps、Sets，接下来我们分别来看下这些常用工具的使用和原理。</p>
+<h4 id="2-10-2-Lists"><a href="#2-10-2-Lists" class="headerlink" title="2.10.2-Lists"></a>2.10.2-Lists</h4><h5 id="1-初始化"><a href="#1-初始化" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>Lists 最大的功能是能帮助我们进行 List 的初始化，比如我们刚说的 newArrayList 这种：</p>
+<pre class=" language-java"><code class="language-java">List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">newArrayList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>E<span class="token operator">></span> ArrayList<span class="token operator">&lt;</span>E<span class="token operator">></span> <span class="token function">newArrayList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// 这种底层是帮助我们写好了泛型，E 代表泛型，表示当前返回的泛型类型和声明的一致即可，在编译的时候，会把泛型 E 转化成我们声明的 String。</span></code></pre>
+<p>如果你清楚 List 的大小，我们也可以这样做：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 可以预估 list 的大小为 20</span>
+List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">newArrayListWithCapacity</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 不太肯定 list 大小是多少，但期望是大小是 20 上下。</span>
+List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">newArrayListWithExpectedSize</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>newArrayListWithCapacity(20) 方法内部实现是：<code>new ArrayList&lt;&gt;(20);</code>，而 newArrayListWithExpectedSize 方法内部实现是对 List 大小有一个计算公式的，计算公式为：<code>5L + arraySize + (arraySize / 10)</code> ，arraySize 表示传进来的值，公式简化下就是 5 + 11/10 * arraySize，因为这个方法表示期望的大小，所以这里取的约是期望值的十分之十一，比传进来的值约大十分之一，所以根据 20 最终计算出来的值是 27。</p>
+<p>Lists 在初始化的时候，还支持传迭代器的入参（只适合小数据量的迭代器的入参），源码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>E<span class="token operator">></span> ArrayList<span class="token operator">&lt;</span>E<span class="token operator">></span> <span class="token function">newArrayList</span><span class="token punctuation">(</span>Iterator<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">E</span><span class="token operator">></span> elements<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ArrayList<span class="token operator">&lt;</span>E<span class="token operator">></span> list <span class="token operator">=</span> <span class="token function">newArrayList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// addAll 方法底层其实通过迭代器进行 for 循环添加</span>
+  Iterators<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span>list<span class="token punctuation">,</span> elements<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> list<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>从 Lists 对 List 初始化进行包装的底层源码来看，底层源码非常简单的，但我们还是愿意使用这种方式的包装，主要是因为这种工厂模式的包装，使我们的使用姿势更加优雅，使用起来更加方便。</p>
+<h5 id="2-分组和反转排序"><a href="#2-分组和反转排序" class="headerlink" title="2.分组和反转排序"></a>2.分组和反转排序</h5><p>除了初始化之外，Lists 还提供了两个比较实用的功能，分组和反转排序功能，我们分别来演示一下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 演示反转排序</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testReverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span>String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"10"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"20"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"30"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"40"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"反转之前："</span><span class="token operator">+</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  list <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"反转之后："</span><span class="token operator">+</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// 打印出来的结果为：</span>
+反转之前：<span class="token punctuation">[</span><span class="token string">"10"</span><span class="token punctuation">,</span><span class="token string">"20"</span><span class="token punctuation">,</span><span class="token string">"30"</span><span class="token punctuation">,</span><span class="token string">"40"</span><span class="token punctuation">]</span>
+反转之后：<span class="token punctuation">[</span><span class="token string">"40"</span><span class="token punctuation">,</span><span class="token string">"30"</span><span class="token punctuation">,</span><span class="token string">"20"</span><span class="token punctuation">,</span><span class="token string">"10"</span><span class="token punctuation">]</span></code></pre>
+<p>reverse 方法底层实现非常巧妙，底层覆写了 List 原生的 get(index) 方法，会把传进来的 index 进行 (size - 1) - index 的计算，使计算得到的索引位置和 index 位置正好相反，这样当我们 get 时，数组索引位置的 index 已经是相反的位置了，达到了反转排序的效果，其实底层并没有进行反转排序，只是在计算相反的索引位置，通过计算相反的索引位置这样简单的设计，得到了反转排序的效果，很精妙。</p>
+<p>在工作中，有时候我们需要把一个大的 list 进行切分，然后再把每份丢给线程池去运行，最后将每份运行的结果汇总，Lists 工具类就提供了一个对 list 进行切分分组的方法，演示 demo 如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 分组</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testPartition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  List<span class="token operator">&lt;</span>String<span class="token operator">></span> list <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span>String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"10"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"20"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"30"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"40"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"分组之前："</span><span class="token operator">+</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   List<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>String<span class="token operator">>></span> list2 <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">partition</span><span class="token punctuation">(</span>list<span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"分组之后："</span><span class="token operator">+</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>list2<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+输出结果为：
+分组之前：<span class="token punctuation">[</span><span class="token string">"10"</span><span class="token punctuation">,</span><span class="token string">"20"</span><span class="token punctuation">,</span><span class="token string">"30"</span><span class="token punctuation">,</span><span class="token string">"40"</span><span class="token punctuation">]</span>
+分组之后：<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">"10"</span><span class="token punctuation">,</span><span class="token string">"20"</span><span class="token punctuation">,</span><span class="token string">"30"</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token punctuation">[</span><span class="token string">"40"</span><span class="token punctuation">]</span><span class="token punctuation">]</span></code></pre>
+<p>partition 方法的第二个参数的意思，你想让分组后的 List 包含几个元素，这个方法的底层实现其实就是 subList 方法。</p>
+<p>有一点需要我们注意的是这两个方法返回的 List 并不是 ArrayList，是自定义的 List，所以对于 ArrayList 的有些功能可能并不支持，使用的时候最好能看下源码，看看底层有无支持。</p>
+<h5 id="3-小结-3"><a href="#3-小结-3" class="headerlink" title="3.小结"></a>3.小结</h5><p>Lists 上述的方法大大的方便了我们进行开发，简化了使用姿势，但其内部实现却非常简单巧妙，比如说 reverse 方法可以输出相反排序的 List，但底层并没有实现排序，只是计算了索引位置的相反值而已，这点值得我们学习。</p>
+<h4 id="2-10-3-Maps"><a href="#2-10-3-Maps" class="headerlink" title="2.10.3-Maps"></a>2.10.3-Maps</h4><h5 id="1-初始化-1"><a href="#1-初始化-1" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>Maps 也是有着各种初始化 Map 的各种方法，原理不说了，和 Lists 类似，我们演示下如何使用：</p>
+<pre class=" language-java"><code class="language-java">Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> hashMap <span class="token operator">=</span> Maps<span class="token punctuation">.</span><span class="token function">newHashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> linkedHashMap <span class="token operator">=</span> Maps<span class="token punctuation">.</span><span class="token function">newLinkedHashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 这里 Map 的初始化大小公式和 HashSet 初始化公式类似，还记得 HashSet 初始化 HashMap 时，经典的计算初始大小的公式么：取最大值（期望的值 / 0.75 + 1，默认值 16），newHashMapWithExpectedSize 方法底层也是这么算的初始化大小的</span>
+Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> withExpectedSizeHashMap <span class="token operator">=</span> Maps<span class="token punctuation">.</span><span class="token function">newHashMapWithExpectedSize</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h5 id="2-difference"><a href="#2-difference" class="headerlink" title="2.difference"></a>2.difference</h5><p>Maps 提供了一个特别有趣也很实用的方法：difference，此方法的目的是比较两个 Map 的差异，入参就是两个 Map，比较之后能够返回四种差异：</p>
+<ol>
+<li>左边 Map 独有 key。</li>
+<li>右边 Map 独有 key。</li>
+<li>左右边 Map 都有 key，并且 value 相等。</li>
+<li>左右边 Map 都有 key，但是 value 不等。</li>
+</ol>
+<p>我们用代码来演示一下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// ImmutableMap.of 也是 Guava 提供初始化 Map 的方法，入参格式为 k1,v1,k2,v2,k3,v3……</span>
+Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> leftMap <span class="token operator">=</span> ImmutableMap<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">,</span><span class="token string">"1"</span><span class="token punctuation">,</span><span class="token string">"2"</span><span class="token punctuation">,</span><span class="token string">"2"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> rightMap <span class="token operator">=</span> ImmutableMap<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">,</span><span class="token string">"2"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">,</span><span class="token string">"30"</span><span class="token punctuation">,</span><span class="token string">"4"</span><span class="token punctuation">,</span><span class="token string">"4"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+MapDifference difference <span class="token operator">=</span> Maps<span class="token punctuation">.</span><span class="token function">difference</span><span class="token punctuation">(</span>leftMap<span class="token punctuation">,</span> rightMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"左边 map 独有 key：{}"</span><span class="token punctuation">,</span>difference<span class="token punctuation">.</span><span class="token function">entriesOnlyOnLeft</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"右边 map 独有 key：{}"</span><span class="token punctuation">,</span>difference<span class="token punctuation">.</span><span class="token function">entriesOnlyOnRight</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"左右边 map 都有 key，并且 value 相等：{}"</span><span class="token punctuation">,</span>difference<span class="token punctuation">.</span><span class="token function">entriesInCommon</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"左右边 map 都有 key，但 value 不等：{}"</span><span class="token punctuation">,</span>difference<span class="token punctuation">.</span><span class="token function">entriesDiffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+最后打印结果为：
+左边 map 独有 key：<span class="token punctuation">{</span><span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">}</span>
+右边 map 独有 key：<span class="token punctuation">{</span><span class="token number">4</span><span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">}</span>
+左右边 map 都有 key，并且 value 相等：<span class="token punctuation">{</span><span class="token number">2</span><span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">}</span>
+左右边 map 都有 key，但 value 不等：<span class="token punctuation">{</span><span class="token number">3</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">}</span></code></pre>
+<p>从这个 demo 我们可以看到此方法的强大威力，我们在工作中经常遇到 Map 或者 List 间比较差异的任务，我们就可以直接使用该方法进行对比，List 可以先转化成 Map。</p>
+<p>而且 difference 底层的实现也算是最优的实现了，只需要循环一遍，就可得到上述四种差异结果，源码解析如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 对比两个 map 的差异</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> <span class="token keyword">void</span> <span class="token function">doDifference</span><span class="token punctuation">(</span>
+    Map<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">K</span><span class="token punctuation">,</span> <span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">V</span><span class="token operator">></span> left<span class="token punctuation">,</span>
+    Map<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">K</span><span class="token punctuation">,</span> <span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">V</span><span class="token operator">></span> right<span class="token punctuation">,</span>
+    Equivalence<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">super</span> V<span class="token operator">></span> valueEquivalence<span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// key 只在左边 map 出现</span>
+    Map<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> onlyOnLeft<span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// key 只在右边 map 出现，调用 doDifference 方法前已经包含了全部右边的值</span>
+    Map<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> onlyOnRight<span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// key 在左右 map 中都出现过，并且 value 都相等</span>
+    Map<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> V<span class="token operator">></span> onBoth<span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// key 在左右 map 中都出现过，但 value 不等</span>
+    Map<span class="token operator">&lt;</span>K<span class="token punctuation">,</span> MapDifference<span class="token punctuation">.</span>ValueDifference<span class="token operator">&lt;</span>V<span class="token operator">>></span> differences<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// 以左边 map 为基准进行循环</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>Entry<span class="token operator">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">K</span><span class="token punctuation">,</span> <span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">V</span><span class="token operator">></span> entry <span class="token operator">:</span> left<span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    K leftKey <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    V leftValue <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 右边 map 包含左边的 key</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>right<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>leftKey<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// onlyOnRight 已经包含全部右边的值 所以需要删除当前 key</span>
+      V rightValue <span class="token operator">=</span> onlyOnRight<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span>leftKey<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">// key 相等，并且 value 值也相等</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>valueEquivalence<span class="token punctuation">.</span><span class="token function">equivalent</span><span class="token punctuation">(</span>leftValue<span class="token punctuation">,</span> rightValue<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        onBoth<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>leftKey<span class="token punctuation">,</span> leftValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">// key 相等，但 value 值不等</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        differences<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>leftKey<span class="token punctuation">,</span> ValueDifferenceImpl<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>leftValue<span class="token punctuation">,</span> rightValue<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 右边 map 不包含左边的 key，就是左边 map 独有的 key</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      onlyOnLeft<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>leftKey<span class="token punctuation">,</span> leftValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这是一种比较优秀的，快速比对的算法，可以好好看下上面的源码，然后把这种算法背下来，或者自己再次实现一次。</p>
+<p>Sets 的使用方式和 Lists 和 Maps 很类似，没有太大的亮点，我们就不说了。</p>
+<h4 id="2-10-4-总结"><a href="#2-10-4-总结" class="headerlink" title="2.10.4-总结"></a>2.10.4-总结</h4><p>这一小节主要都是实战内容，在实际工作中可以用起来。</p>
+<p>在 Guava 对集合的设计中，有两个大点是非常值得我们学习的：</p>
+<ol>
+<li>Lists、Maps 的出现给我们提供了更方便的使用姿势和方法，我们在实际工作中，如果碰到特别繁琐，或者特别难用的 API，我们也可以进行一些包装，使更好用，这个是属于在解决目前的痛点的问题上进行创新，是非常值得提倡的一件事情，往往可以帮助你拿到更好的绩效。</li>
+<li>如果有人问你，List 或者 Map 高效的差异排序算法，完全可以参考 Maps.difference 的内部实现，该方法只使用了一次循环，就可得到所有的相同或不同结果，这种算法在我们工作中也经常被使用。</li>
+</ol>
+<p>了解更多，可以直接前往 Guava 的代码库查看：<a href="https://github.com/google/guava" target="_blank" rel="noopener">https://github.com/google/guava</a></p>
+<h2 id="3-并发集合类"><a href="#3-并发集合类" class="headerlink" title="3-并发集合类"></a>3-并发集合类</h2><h3 id="3-1-CopyOnWriteArrayList-源码解析和设计思路"><a href="#3-1-CopyOnWriteArrayList-源码解析和设计思路" class="headerlink" title="3.1-CopyOnWriteArrayList 源码解析和设计思路"></a>3.1-CopyOnWriteArrayList 源码解析和设计思路</h3><p>在 ArrayList 的类注释上，JDK 就提醒了我们，如果要把 ArrayList 作为共享变量的话，是线程不安全的，推荐我们自己加锁或者使用 Collections.synchronizedList 方法，其实 JDK 还提供了另外一种线程安全的 List，叫做 CopyOnWriteArrayList，这个 List 具有以下特征：</p>
+<ol>
+<li>线程安全的，多线程环境下可以直接使用，无需加锁；</li>
+<li>通过锁 + 数组拷贝 + volatile 关键字保证了线程安全；</li>
+<li>每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功之后再赋值回去。</li>
+</ol>
+<h4 id="3-1-1-整体架构"><a href="#3-1-1-整体架构" class="headerlink" title="3.1.1-整体架构"></a>3.1.1-整体架构</h4><p>从整体架构上来说，CopyOnWriteArrayList 数据结构和 ArrayList 是一致的，底层是个数组，只不过 CopyOnWriteArrayList 在对数组进行操作的时候，基本会分四步走：</p>
+<ol>
+<li>加锁；</li>
+<li>从原数组中拷贝出新数组；</li>
+<li>在新数组上进行操作，并把新数组赋值给数组容器；</li>
+<li>解锁。</li>
+</ol>
+<p>除了加锁之外，CopyOnWriteArrayList 的底层数组还被 volatile 关键字修饰，意思是一旦数组被修改，其它线程立马能够感知到，代码如下：</p>
+<p><code>private transient volatile Object[] array;</code></p>
+<p>整体上来说，CopyOnWriteArrayList 就是利用锁 + 数组拷贝 + volatile 关键字保证了 List 的线程安全。</p>
+<h5 id="1-类注释-2"><a href="#1-类注释-2" class="headerlink" title="1.类注释"></a>1.类注释</h5><p>我们看看从 CopyOnWriteArrayList 的类注释上能得到哪些信息：</p>
+<ol>
+<li>所有的操作都是线程安全的，因为操作都是在新拷贝数组上进行的；</li>
+<li>数组的拷贝虽然有一定的成本，但往往比一般的替代方案效率高；</li>
+<li>迭代过程中，不会影响到原来的数组，也不会抛出 ConcurrentModificationException 异常。</li>
+</ol>
+<p>接着我们来看下 CopyOnWriteArrayList 的核心方法源码。</p>
+<h4 id="3-1-2-新增"><a href="#3-1-2-新增" class="headerlink" title="3.1.2-新增"></a>3.1.2-新增</h4><p>新增有很多种情况，比如说：新增到数组尾部、新增到数组某一个索引位置、批量新增等等，操作的思路还是我们开头说的四步，我们拿新增到数组尾部的方法举例，来看看底层源码的实现：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 添加元素到数组尾部</span>
+<span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">add</span><span class="token punctuation">(</span>E e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">final</span> ReentrantLock lock <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>lock<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 加锁</span>
+    lock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 得到所有的原数组</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> elements <span class="token operator">=</span> <span class="token function">getArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> elements<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 拷贝到新数组里面，新数组的长度是 + 1 的，因为新增会多一个元素</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> newElements <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">copyOf</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 在新数组中进行赋值，新元素直接放在数组的尾部</span>
+        newElements<span class="token punctuation">[</span>len<span class="token punctuation">]</span> <span class="token operator">=</span> e<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 替换掉原来的数组</span>
+        <span class="token function">setArray</span><span class="token punctuation">(</span>newElements<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// finally 里面释放锁，保证即使 try 发生了异常，仍然能够释放锁   </span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+        lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>从源码中，我们发现整个 add 过程都是在持有锁的状态下进行的，通过加锁，来保证同一时刻只能有一个线程能够对同一个数组进行 add 操作。</p>
+<p>除了加锁之外，还会从老数组中创建出一个新数组，然后把老数组的值拷贝到新数组上，这时候就有一个问题：都已经加锁了，为什么需要拷贝数组，而不是在原来数组上面进行操作呢，原因主要为：</p>
+<ol>
+<li>volatile 关键字修饰的是数组，如果我们简单的在原来数组上修改其中某几个元素的值，是无法触发可见性的，我们必须通过修改数组的内存地址才行，也就说要对数组进行重新赋值才行。</li>
+<li>在新的数组上进行拷贝，对老数组没有任何影响，只有新数组完全拷贝完成之后，外部才能访问到，降低了在赋值过程中，老数组数据变动的影响。</li>
+</ol>
+<p>简单 add 操作是直接添加到数组的尾部，接着我们来看下指定位置添加元素的关键源码（部分源码）：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// len：数组的长度、index：插入的位置</span>
+<span class="token keyword">int</span> numMoved <span class="token operator">=</span> len <span class="token operator">-</span> index<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 如果要插入的位置正好等于数组的末尾，直接拷贝数组即可</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>numMoved <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    newElements <span class="token operator">=</span> Arrays<span class="token punctuation">.</span><span class="token function">copyOf</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">else</span> <span class="token punctuation">{</span>
+<span class="token comment" spellcheck="true">// 如果要插入的位置在数组的中间，就需要拷贝 2 次</span>
+<span class="token comment" spellcheck="true">// 第一次从 0 拷贝到 index。</span>
+<span class="token comment" spellcheck="true">// 第二次从 index+1 拷贝到末尾。</span>
+    newElements <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">[</span>len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> newElements<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> index<span class="token punctuation">,</span> newElements<span class="token punctuation">,</span> index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span>
+         numMoved<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// index 索引位置的值是空的，直接赋值即可。</span>
+newElements<span class="token punctuation">[</span>index<span class="token punctuation">]</span> <span class="token operator">=</span> element<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 把新数组的值赋值给数组的容器中</span>
+<span class="token function">setArray</span><span class="token punctuation">(</span>newElements<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>从源码中可以看到，当插入的位置正好处于末尾时，只需要拷贝一次，当插入的位置处于中间时，此时我们会把原数组一分为二，进行两次拷贝操作。</p>
+<p>最后还有个批量新增操作，源码我们就不贴了，底层也是拷贝数组的操作。</p>
+<h5 id="1-小结"><a href="#1-小结" class="headerlink" title="1.小结"></a>1.小结</h5><p>从 add 系列方法可以看出，CopyOnWriteArrayList 通过加锁 + 数组拷贝+ volatile 来保证了线程安全，每一个要素都有着其独特的含义：</p>
+<ol>
+<li>加锁：保证同一时刻数组只能被一个线程操作；</li>
+<li>数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改；</li>
+<li>volatile：值被修改后，其它线程能够立马感知最新值。</li>
+</ol>
+<p>3 个要素缺一不可，比如说我们只使用 1 和 3 ，去掉 2，这样当我们修改数组中某个值时，并不会触发 volatile 的可见特性的，只有当数组内存地址被修改后，才能触发把最新值通知给其他线程的特性。</p>
+<h4 id="3-1-3-删除"><a href="#3-1-3-删除" class="headerlink" title="3.1.3-删除"></a>3.1.3-删除</h4><p>接着我们来看下指定数组索引位置删除的源码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 删除某个索引位置的数据</span>
+<span class="token keyword">public</span> E <span class="token function">remove</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">final</span> ReentrantLock lock <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>lock<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 加锁</span>
+    lock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> elements <span class="token operator">=</span> <span class="token function">getArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> elements<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 先得到老值</span>
+        E oldValue <span class="token operator">=</span> <span class="token function">get</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> numMoved <span class="token operator">=</span> len <span class="token operator">-</span> index <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 如果要删除的数据正好是数组的尾部，直接删除</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>numMoved <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token function">setArray</span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">copyOf</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> len <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 如果删除的数据在数组的中间，分三步走</span>
+            <span class="token comment" spellcheck="true">// 1. 设置新数组的长度减一，因为是减少一个元素</span>
+            <span class="token comment" spellcheck="true">// 2. 从 0 拷贝到数组新位置</span>
+            <span class="token comment" spellcheck="true">// 3. 从新位置拷贝到数组尾部</span>
+            Object<span class="token punctuation">[</span><span class="token punctuation">]</span> newElements <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">[</span>len <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> newElements<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>elements<span class="token punctuation">,</span> index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> newElements<span class="token punctuation">,</span> index<span class="token punctuation">,</span>
+                             numMoved<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">setArray</span><span class="token punctuation">(</span>newElements<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> oldValue<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+        lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>步骤分为三步：</p>
+<ol>
+<li>加锁；</li>
+<li>判断删除索引的位置，从而进行不同策略的拷贝；</li>
+<li>解锁。</li>
+</ol>
+<p>代码整体的结构风格也比较统一：锁 + try finally +数组拷贝，锁被 final 修饰的，保证了在加锁过程中，锁的内存地址肯定不会被修改，finally 保证锁一定能够被释放，数组拷贝是为了删除其中某个位置的元素。</p>
+<h4 id="3-1-4-批量删除"><a href="#3-1-4-批量删除" class="headerlink" title="3.1.4-批量删除"></a>3.1.4-批量删除</h4><p>数组的批量删除很有意思，接下来我们来看下 CopyOnWriteArrayList 的批量删除的实现过程：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 批量删除包含在 c 中的元素</span>
+<span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">removeAll</span><span class="token punctuation">(</span>Collection<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> c<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NullPointerException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">final</span> ReentrantLock lock <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>lock<span class="token punctuation">;</span>
+    lock<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> elements <span class="token operator">=</span> <span class="token function">getArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> elements<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 说明数组有值，数组无值直接返回 false</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// newlen 表示新数组的索引位置，新数组中存在不包含在 c 中的元素</span>
+            <span class="token keyword">int</span> newlen <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            Object<span class="token punctuation">[</span><span class="token punctuation">]</span> temp <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">[</span>len<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 循环，把不包含在 c 里面的元素，放到新数组中</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                Object element <span class="token operator">=</span> elements<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 不包含在 c 中的元素，从 0 开始放到新数组中</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>c<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>element<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    temp<span class="token punctuation">[</span>newlen<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> element<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token comment" spellcheck="true">// 拷贝新数组，变相的删除了不包含在 c 中的元素</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>newlen <span class="token operator">!=</span> len<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token function">setArray</span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">copyOf</span><span class="token punctuation">(</span>temp<span class="token punctuation">,</span> newlen<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+        lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>从源码中，我们可以看到，我们并不会直接对数组中的元素进行挨个删除，而是先对数组中的值进行循环判断，把我们不需要删除的数据放到临时数组中，最后临时数组中的数据就是我们不需要删除的数据。</p>
+<p>不知道大家有木有似曾相识的感觉，ArrayList 的批量删除的思想也是和这个类似的，所以我们在需要删除多个元素的时候，最好都使用这种批量删除的思想，而不是采用在 for 循环中使用单个删除的方法，单个删除的话，在每次删除的时候都会进行一次数组拷贝(删除最后一个元素时不会拷贝)，很消耗性能，也耗时，会导致加锁时间太长，并发大的情况下，会造成大量请求在等待锁，这也会占用一定的内存。</p>
+<h4 id="3-1-5-其他方法"><a href="#3-1-5-其他方法" class="headerlink" title="3.1.5-其他方法"></a>3.1.5-其他方法</h4><h5 id="1-indexOf"><a href="#1-indexOf" class="headerlink" title="1.indexOf"></a>1.indexOf</h5><p>indexOf 方法的主要用处是查找元素在数组中的下标位置，如果元素存在就返回元素的下标位置，元素不存在的话返回 -1，不但支持 null 值的搜索，还支持正向和反向的查找，我们以正向查找为例，通过源码来说明一下其底层的实现方式：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// o：我们需要搜索的元素</span>
+<span class="token comment" spellcheck="true">// elements：我们搜索的目标数组</span>
+<span class="token comment" spellcheck="true">// index：搜索的开始位置</span>
+<span class="token comment" spellcheck="true">// fence：搜索的结束位置</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">indexOf</span><span class="token punctuation">(</span>Object o<span class="token punctuation">,</span> Object<span class="token punctuation">[</span><span class="token punctuation">]</span> elements<span class="token punctuation">,</span>
+                           <span class="token keyword">int</span> index<span class="token punctuation">,</span> <span class="token keyword">int</span> fence<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 支持对 null 的搜索</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>o <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> index<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> fence<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+            <span class="token comment" spellcheck="true">// 找到第一个 null 值，返回下标索引的位置</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>elements<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> null<span class="token punctuation">)</span>
+                <span class="token keyword">return</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 通过 equals 方法来判断元素是否相等</span>
+        <span class="token comment" spellcheck="true">// 如果相等，返回元素的下标位置</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> index<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> fence<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>elements<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>indexOf 方法在 CopyOnWriteArrayList 内部使用也比较广泛，比如在判断元素是否存在时（contains），在删除元素方法中校验元素是否存在时，都会使用到 indexOf 方法，indexOf 方法通过一次 for 循环来查找元素，我们在调用此方法时，需要注意如果找不到元素时，返回的是 -1，所以有可能我们会对这个特殊值进行判断。</p>
+<h5 id="2-迭代"><a href="#2-迭代" class="headerlink" title="2.迭代"></a>2.迭代</h5><p>在 CopyOnWriteArrayList 类注释中，明确说明了，在其迭代过程中，即使数组的原值被改变，也不会抛出 ConcurrentModificationException 异常，其根源在于数组的每次变动，都会生成新的数组，不会影响老数组，这样的话，迭代过程中，根本就不会发生迭代数组的变动，我们截几个图说明一下：</p>
+<ol>
+<li><p>迭代是直接持有原有数组的引用，也就是说迭代过程中，一旦原有数组的值内存地址发生变化，必然会影响到迭代过程，下图源码演示的是 CopyOnWriteArrayList 的迭代方法，我们可以看到迭代器是直接持有原数组的引用：</p>
+<p>![CopyOnWriteArrayList 的迭代方法](CopyOnWriteArrayList 的迭代方法.jpeg)</p>
+</li>
+<li><p>我们写了一个 demo，在 CopyOnWriteArrayList 迭代之后，往 CopyOnWriteArrayList 里面新增值，从下图中可以看到在 CopyOnWriteArrayList 迭代之前，数组的内存地址是 962，请记住这个数字：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/testIterator.jpeg" alt="testIterator"></p>
+</li>
+<li><p>CopyOnWriteArrayList 迭代之后，我们使用 add(“50”) 代码给数组新增一个数据后，数组内存地址发生了变化，内存地址从原来的 962 变成了 968，这是因为 CopyOnWriteArrayList 的 add 操作，会生成新的数组，所以数组的内存地址发生了变化：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/testIterator2.jpeg" alt="testIterator2"></p>
+</li>
+<li><p>迭代继续进行时，我们发现迭代器中的地址仍然是迭代之前引用的地址，是 962，而不是新的数组的内存地址：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/testIterator3.jpeg" alt="testIterator3"></p>
+</li>
+</ol>
+<p>从上面 4 张截图，我们可以得到迭代过程中，即使 CopyOnWriteArrayList 的结构发生变动了，也不会抛出 ConcurrentModificationException 异常的原因：CopyOnWriteArrayList 迭代持有的是老数组的引用，而 CopyOnWriteArrayList 每次的数据变动，都会产生新的数组，对老数组的值不会产生影响，所以迭代也可以正常进行。</p>
+<h4 id="3-1-6-总结"><a href="#3-1-6-总结" class="headerlink" title="3.1.6-总结"></a>3.1.6-总结</h4><p>当我们需要在线程不安全场景下使用 List 时，建议使用 CopyOnWriteArrayList，CopyOnWriteArrayList 通过锁 + 数组拷贝 + volatile 之间的相互配合，实现了 List 的线程安全，我们抛弃 Java 的这种实现，如果让我们自己实现，你又将如何实现呢？</p>
+<h3 id="3-2-ConcurrentHashMap-源码解析和设计思路"><a href="#3-2-ConcurrentHashMap-源码解析和设计思路" class="headerlink" title="3.2-ConcurrentHashMap 源码解析和设计思路"></a>3.2-ConcurrentHashMap 源码解析和设计思路</h3><p>当我们碰到线程不安全场景下，需要使用 Map 的时候，我们第一个想到的 API 估计就是 ConcurrentHashMap，ConcurrentHashMap 内部封装了锁和各种数据结构来保证访问 Map 是线程安全的，接下来我们一一来看下，和 HashMap 相比，多了哪些数据结构，又是如何保证线程安全的。</p>
+<h4 id="3-2-1-类注释"><a href="#3-2-1-类注释" class="headerlink" title="3.2.1-类注释"></a>3.2.1-类注释</h4><p>我们从类注释上大概可以得到如下信息：</p>
+<ol>
+<li>所有的操作都是线程安全的，我们在使用时，无需再加锁；</li>
+<li>多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map；</li>
+<li>迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常；</li>
+<li>除了数组 + 链表 + 红黑树的基本结构外，新增了转移节点，是为了保证扩容时的线程安全的节点；</li>
+<li>提供了很多 Stream 流式方法，比如说：forEach、search、reduce 等等。</li>
+</ol>
+<p>从类注释中，我们可以看出 ConcurrentHashMap 和 HashMap 相比，新增了转移节点的数据结构，至于底层如何实现线程安全，转移节点的具体细节，暂且看不出来，接下来我们细看源码。</p>
+<h4 id="3-2-2-结构"><a href="#3-2-2-结构" class="headerlink" title="3.2.2-结构"></a>3.2.2-结构</h4><p>虽然 ConcurrentHashMap 的底层数据结构，和方法的实现细节和 HashMap 大体一致，但两者在类结构上却没有任何关联，我们看下 ConcurrentHashMap 的类图：</p>
+<p>![ConcurrentHashMap 的类图](ConcurrentHashMap 的类图.jpeg)</p>
+<p>看 ConcurrentHashMap 源码，我们会发现很多方法和代码和 HashMap 很相似，有的同学可能会问，为什么不继承 HashMap 呢？继承的确是个好办法，但尴尬的是，ConcurrentHashMap 都是在方法中间进行一些加锁操作，也就是说加锁把方法切割了，继承就很难解决这个问题。</p>
+<p>ConcurrentHashMap 和 HashMap 两者的相同之处：</p>
+<ol>
+<li>数组、链表结构几乎相同，所以底层对数据结构的操作思路是相同的（只是思路相同，底层实现不同）；</li>
+<li>都实现了 Map 接口，继承了 AbstractMap 抽象类，所以大多数的方法也都是相同的，HashMap 有的方法，ConcurrentHashMap 几乎都有，所以当我们需要从 HashMap 切换到 ConcurrentHashMap 时，无需关心两者之间的兼容问题。</li>
+</ol>
+<p>不同之处：</p>
+<ol>
+<li>红黑树结构略有不同，HashMap 的红黑树中的节点叫做 TreeNode，TreeNode 不仅仅有属性，还维护着红黑树的结构，比如说查找，新增等等；ConcurrentHashMap 中红黑树被拆分成两块，TreeNode 仅仅维护的属性和查找功能，新增了 TreeBin，来维护红黑树结构，并负责根节点的加锁和解锁；</li>
+<li>新增 ForwardingNode （转移）节点，扩容的时候会使用到，通过使用该节点，来保证扩容时的线程安全。</li>
+</ol>
+<h4 id="3-2-3-put"><a href="#3-2-3-put" class="headerlink" title="3.2.3-put"></a>3.2.3-put</h4><p>ConcurrentHashMap 在 put 方法上的整体思路和 HashMap 相同，但在线程安全方面写了很多保障的代码，我们先来看下大体思路：</p>
+<ol>
+<li>如果数组为空，初始化，初始化完成之后，走 2；</li>
+<li>计算当前槽点有没有值，没有值的话，cas 创建，失败继续自旋（for 死循环），直到成功，槽点有值的话，走 3；</li>
+<li>如果槽点是转移节点(正在扩容)，就会一直自旋等待扩容完成之后再新增，不是转移节点走 4；</li>
+<li>槽点有值的，先锁定当前槽点，保证其余线程不能操作，如果是链表，新增值到链表的尾部，如果是红黑树，使用红黑树新增的方法新增；</li>
+<li>新增完成之后 check 需不需要扩容，需要的话去扩容。</li>
+</ol>
+<p>具体源码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">final</span> V <span class="token function">putVal</span><span class="token punctuation">(</span>K key<span class="token punctuation">,</span> V value<span class="token punctuation">,</span> <span class="token keyword">boolean</span> onlyIfAbsent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>key <span class="token operator">==</span> null <span class="token operator">||</span> value <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NullPointerException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//计算hash</span>
+    <span class="token keyword">int</span> hash <span class="token operator">=</span> <span class="token function">spread</span><span class="token punctuation">(</span>key<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> binCount <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> tab <span class="token operator">=</span> table<span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> f<span class="token punctuation">;</span> <span class="token keyword">int</span> n<span class="token punctuation">,</span> i<span class="token punctuation">,</span> fh<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//table是空的，进行初始化</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>tab <span class="token operator">==</span> null <span class="token operator">||</span> <span class="token punctuation">(</span>n <span class="token operator">=</span> tab<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            tab <span class="token operator">=</span> <span class="token function">initTable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//如果当前索引位置没有值，直接创建</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>f <span class="token operator">=</span> <span class="token function">tabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i <span class="token operator">=</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> hash<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//cas 在 i 位置创建新的元素，当 i 位置是空时，即能创建成功，结束for自循，否则继续自旋</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">casTabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">,</span> null<span class="token punctuation">,</span>
+                         <span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">break</span><span class="token punctuation">;</span>                   <span class="token comment" spellcheck="true">// no lock when adding to empty bin</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//如果当前槽点是转移节点，表示该槽点正在扩容，就会一直等待扩容完成</span>
+        <span class="token comment" spellcheck="true">//转移节点的 hash 值是固定的，都是 MOVED</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fh <span class="token operator">=</span> f<span class="token punctuation">.</span>hash<span class="token punctuation">)</span> <span class="token operator">==</span> MOVED<span class="token punctuation">)</span>
+            tab <span class="token operator">=</span> <span class="token function">helpTransfer</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> f<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//槽点上有值的</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            V oldVal <span class="token operator">=</span> null<span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//锁定当前槽点，其余线程不能操作，保证了安全</span>
+            <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>f<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">//这里再次判断 i 索引位置的数据没有被修改</span>
+                <span class="token comment" spellcheck="true">//binCount 被赋值的话，说明走到了修改表的过程里面</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">tabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">)</span> <span class="token operator">==</span> f<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">//链表</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>fh <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        binCount <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> e <span class="token operator">=</span> f<span class="token punctuation">;</span><span class="token punctuation">;</span> <span class="token operator">++</span>binCount<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            K ek<span class="token punctuation">;</span>
+                            <span class="token comment" spellcheck="true">//值有的话，直接返回</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span>hash <span class="token operator">==</span> hash <span class="token operator">&amp;&amp;</span>
+                                <span class="token punctuation">(</span><span class="token punctuation">(</span>ek <span class="token operator">=</span> e<span class="token punctuation">.</span>key<span class="token punctuation">)</span> <span class="token operator">==</span> key <span class="token operator">||</span>
+                                 <span class="token punctuation">(</span>ek <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> key<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>ek<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                                oldVal <span class="token operator">=</span> e<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+                                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>onlyIfAbsent<span class="token punctuation">)</span>
+                                    e<span class="token punctuation">.</span>val <span class="token operator">=</span> value<span class="token punctuation">;</span>
+                                <span class="token keyword">break</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">}</span>
+                            Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> pred <span class="token operator">=</span> e<span class="token punctuation">;</span>
+                            <span class="token comment" spellcheck="true">//把新增的元素赋值到链表的最后，退出自旋</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>e <span class="token operator">=</span> e<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                                pred<span class="token punctuation">.</span>next <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> key<span class="token punctuation">,</span>
+                                                          value<span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                                <span class="token keyword">break</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">}</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span>
+                    <span class="token comment" spellcheck="true">//红黑树，这里没有使用 TreeNode,使用的是 TreeBin，TreeNode 只是红黑树的一个节点</span>
+                    <span class="token comment" spellcheck="true">//TreeBin 持有红黑树的引用，并且会对其加锁，保证其操作的线程安全</span>
+                    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>f <span class="token keyword">instanceof</span> <span class="token class-name">TreeBin</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> p<span class="token punctuation">;</span>
+                        binCount <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+                        <span class="token comment" spellcheck="true">//满足if的话，把老的值给oldVal</span>
+                        <span class="token comment" spellcheck="true">//在putTreeVal方法里面，在给红黑树重新着色旋转的时候</span>
+                        <span class="token comment" spellcheck="true">//会锁住红黑树的根节点</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>TreeBin<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">)</span>f<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">putTreeVal</span><span class="token punctuation">(</span>hash<span class="token punctuation">,</span> key<span class="token punctuation">,</span>
+                                                       value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            oldVal <span class="token operator">=</span> p<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>onlyIfAbsent<span class="token punctuation">)</span>
+                                p<span class="token punctuation">.</span>val <span class="token operator">=</span> value<span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token comment" spellcheck="true">//binCount不为空，并且 oldVal 有值的情况，说明已经新增成功了</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>binCount <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 链表是否需要转化成红黑树</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>binCount <span class="token operator">>=</span> TREEIFY_THRESHOLD<span class="token punctuation">)</span>
+                    <span class="token function">treeifyBin</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>oldVal <span class="token operator">!=</span> null<span class="token punctuation">)</span>
+                    <span class="token keyword">return</span> oldVal<span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">//这一步几乎走不到。槽点已经上锁，只有在红黑树或者链表新增失败的时候</span>
+                <span class="token comment" spellcheck="true">//才会走到这里，这两者新增都是自旋的，几乎不会失败</span>
+                <span class="token keyword">break</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">//check 容器是否需要扩容，如果需要去扩容，调用 transfer 方法去扩容</span>
+    <span class="token comment" spellcheck="true">//如果已经在扩容中了，check有无完成</span>
+    <span class="token function">addCount</span><span class="token punctuation">(</span>1L<span class="token punctuation">,</span> binCount<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>源码中都有非常详细的注释，就不解释了，我们重点说一下，ConcurrentHashMap 在 put 过程中，采用了哪些手段来保证线程安全。</p>
+<h5 id="1-数组初始化时的线程安全"><a href="#1-数组初始化时的线程安全" class="headerlink" title="1.数组初始化时的线程安全"></a>1.数组初始化时的线程安全</h5><p>数组初始化时，首先通过自旋来保证一定可以初始化成功，然后通过 CAS 设置 SIZECTL 变量的值，来保证同一时刻只能有一个线程对数组进行初始化，CAS 成功之后，还会再次判断当前数组是否已经初始化完成，如果已经初始化完成，就不会再次初始化，通过自旋 + CAS + 双重 check 等手段保证了数组初始化时的线程安全，源码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//初始化 table，通过对 sizeCtl 的变量赋值来保证数组只能被初始化一次</span>
+<span class="token keyword">private</span> <span class="token keyword">final</span> Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">initTable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> tab<span class="token punctuation">;</span> <span class="token keyword">int</span> sc<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//通过自旋保证初始化成功</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>tab <span class="token operator">=</span> table<span class="token punctuation">)</span> <span class="token operator">==</span> null <span class="token operator">||</span> tab<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 小于 0 代表有线程正在初始化，释放当前 CPU 的调度权，重新发起锁的竞争</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>sc <span class="token operator">=</span> sizeCtl<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            Thread<span class="token punctuation">.</span><span class="token function">yield</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// lost initialization race; just spin</span>
+        <span class="token comment" spellcheck="true">// CAS 赋值保证当前只有一个线程在初始化，-1 代表当前只有一个线程能初始化</span>
+        <span class="token comment" spellcheck="true">// 保证了数组的初始化的安全性</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>U<span class="token punctuation">.</span><span class="token function">compareAndSwapInt</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> SIZECTL<span class="token punctuation">,</span> sc<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 很有可能执行到这里的时候，table 已经不为空了，这里是双重 check</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>tab <span class="token operator">=</span> table<span class="token punctuation">)</span> <span class="token operator">==</span> null <span class="token operator">||</span> tab<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">// 进行初始化</span>
+                    <span class="token keyword">int</span> n <span class="token operator">=</span> <span class="token punctuation">(</span>sc <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">?</span> sc <span class="token operator">:</span> DEFAULT_CAPACITY<span class="token punctuation">;</span>
+                    <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token string">"unchecked"</span><span class="token punctuation">)</span>
+                    Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> nt <span class="token operator">=</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token punctuation">,</span><span class="token operator">?</span><span class="token operator">></span><span class="token punctuation">[</span>n<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                    table <span class="token operator">=</span> tab <span class="token operator">=</span> nt<span class="token punctuation">;</span>
+                    sc <span class="token operator">=</span> n <span class="token operator">-</span> <span class="token punctuation">(</span>n <span class="token operator">>>></span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                sizeCtl <span class="token operator">=</span> sc<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> tab<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="2-新增槽点值时的线程安全"><a href="#2-新增槽点值时的线程安全" class="headerlink" title="2.新增槽点值时的线程安全"></a>2.新增槽点值时的线程安全</h5><p>此时为了保证线程安全，做了四处优化：</p>
+<ol>
+<li>通过自旋死循环保证一定可以新增成功。</li>
+</ol>
+<p>在新增之前，通过 <code>for (Node[] tab = table;;)</code> 这样的死循环来保证新增一定可以成功，一旦新增成功，就可以退出当前死循环，新增失败的话，会重复新增的步骤，直到新增成功为止。</p>
+<ol start="2">
+<li>当前槽点为空时，通过 CAS 新增。</li>
+</ol>
+<p>Java 这里的写法非常严谨，没有在判断槽点为空的情况下直接赋值，因为在判断槽点为空和赋值的瞬间，很有可能槽点已经被其他线程赋值了，所以我们采用 CAS 算法，能够保证槽点为空的情况下赋值成功，如果恰好槽点已经被其他线程赋值，当前 CAS 操作失败，会再次执行 for 自旋，再走槽点有值的 put 流程，这里就是自旋 + CAS 的结合。</p>
+<ol start="3">
+<li>当前槽点有值，锁住当前槽点。</li>
+</ol>
+<p>put 时，如果当前槽点有值，就是 key 的 hash 冲突的情况，此时槽点上可能是链表或红黑树，我们通过锁住槽点，来保证同一时刻只会有一个线程能对槽点进行修改，截图如下：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/ConcurrentHashMap-hash%E5%86%B2%E7%AA%81.jpeg" alt="ConcurrentHashMap-hash冲突"></p>
+<ol start="4">
+<li><p>红黑树旋转时，锁住红黑树的根节点，保证同一时刻，当前红黑树只能被一个线程旋转。</p>
+<p>代码截图如下：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/ConcurrentHashMap-%E9%94%81%E4%BD%8F%E7%BA%A2%E9%BB%91%E6%A0%91.jpeg" alt="ConcurrentHashMap-锁住红黑树"></p>
+</li>
+</ol>
+<p>通过以上 4 点，保证了在各种情况下的新增（不考虑扩容的情况下），都是线程安全的，通过自旋 + CAS + 锁三大姿势，实现的很巧妙，值得我们借鉴。</p>
+<h5 id="3-扩容时的线程安全"><a href="#3-扩容时的线程安全" class="headerlink" title="3.扩容时的线程安全"></a>3.扩容时的线程安全</h5><p>ConcurrentHashMap 的扩容时机和 HashMap 相同，都是在 put 方法的最后一步检查是否需要扩容，如果需要则进行扩容，但两者扩容的过程完全不同，ConcurrentHashMap 扩容的方法叫做 transfer，从 put 方法的 addCount 方法进去，就能找到 transfer 方法，transfer 方法的主要思路是：</p>
+<ol>
+<li>首先需要把老数组的值全部拷贝到扩容之后的新数组上，先从数组的队尾开始拷贝；</li>
+<li>拷贝数组的槽点时，先把原数组槽点锁住，保证原数组槽点不能操作，成功拷贝到新数组时，把原数组槽点赋值为转移节点；</li>
+<li>这时如果有新数据正好需要 put 到此槽点时，发现槽点为转移节点，就会一直等待，所以在扩容完成之前，该槽点对应的数据是不会发生变化的；</li>
+<li>从数组的尾部拷贝到头部，每拷贝成功一次，就把原数组中的节点设置成转移节点；</li>
+<li>直到所有数组数据都拷贝到新数组时，直接把新数组整个赋值给数组容器，拷贝完成。</li>
+</ol>
+<p>关键源码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 扩容主要分 2 步，第一新建新的空数组，第二移动拷贝每个元素到新数组中去</span>
+<span class="token comment" spellcheck="true">// tab：原数组，nextTab：新数组</span>
+<span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">void</span> <span class="token function">transfer</span><span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> tab<span class="token punctuation">,</span> Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> nextTab<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 老数组的长度</span>
+    <span class="token keyword">int</span> n <span class="token operator">=</span> tab<span class="token punctuation">.</span>length<span class="token punctuation">,</span> stride<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>stride <span class="token operator">=</span> <span class="token punctuation">(</span>NCPU <span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token punctuation">(</span>n <span class="token operator">>>></span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">/</span> NCPU <span class="token operator">:</span> n<span class="token punctuation">)</span> <span class="token operator">&lt;</span> MIN_TRANSFER_STRIDE<span class="token punctuation">)</span>
+        stride <span class="token operator">=</span> MIN_TRANSFER_STRIDE<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// subdivide range</span>
+    <span class="token comment" spellcheck="true">// 如果新数组为空，初始化，大小为原数组的两倍，n &lt;&lt; 1</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nextTab <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>            <span class="token comment" spellcheck="true">// initiating</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token string">"unchecked"</span><span class="token punctuation">)</span>
+            Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> nt <span class="token operator">=</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token punctuation">,</span><span class="token operator">?</span><span class="token operator">></span><span class="token punctuation">[</span>n <span class="token operator">&lt;&lt;</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            nextTab <span class="token operator">=</span> nt<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Throwable</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>      <span class="token comment" spellcheck="true">// try to cope with OOME</span>
+            sizeCtl <span class="token operator">=</span> Integer<span class="token punctuation">.</span>MAX_VALUE<span class="token punctuation">;</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        nextTable <span class="token operator">=</span> nextTab<span class="token punctuation">;</span>
+        transferIndex <span class="token operator">=</span> n<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 新数组的长度</span>
+    <span class="token keyword">int</span> nextn <span class="token operator">=</span> nextTab<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 代表转移节点，如果原数组上是转移节点，说明该节点正在被扩容</span>
+    ForwardingNode<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> fwd <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ForwardingNode</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">(</span>nextTab<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">boolean</span> advance <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token keyword">boolean</span> finishing <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// to ensure sweep before committing nextTab</span>
+    <span class="token comment" spellcheck="true">// 无限自旋，i 的值会从原数组的最大值开始，慢慢递减到 0</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> bound <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> f<span class="token punctuation">;</span> <span class="token keyword">int</span> fh<span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>advance<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> nextIndex<span class="token punctuation">,</span> nextBound<span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 结束循环的标志</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">--</span>i <span class="token operator">>=</span> bound <span class="token operator">||</span> finishing<span class="token punctuation">)</span>
+                advance <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 已经拷贝完成</span>
+            <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>nextIndex <span class="token operator">=</span> transferIndex<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                i <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                advance <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token comment" spellcheck="true">// 每次减少 i 的值</span>
+            <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>U<span class="token punctuation">.</span><span class="token function">compareAndSwapInt</span>
+                     <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> TRANSFERINDEX<span class="token punctuation">,</span> nextIndex<span class="token punctuation">,</span>
+                      nextBound <span class="token operator">=</span> <span class="token punctuation">(</span>nextIndex <span class="token operator">></span> stride <span class="token operator">?</span>
+                                   nextIndex <span class="token operator">-</span> stride <span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                bound <span class="token operator">=</span> nextBound<span class="token punctuation">;</span>
+                i <span class="token operator">=</span> nextIndex <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+                advance <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// if 任意条件满足说明拷贝结束了</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> i <span class="token operator">>=</span> n <span class="token operator">||</span> i <span class="token operator">+</span> n <span class="token operator">>=</span> nextn<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> sc<span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 拷贝结束，直接赋值，因为每次拷贝完一个节点，都在原数组上放转移节点，所以拷贝完成的节点的数据一定不会再发生变化。</span>
+            <span class="token comment" spellcheck="true">// 原数组发现是转移节点，是不会操作的，会一直等待转移节点消失之后在进行操作。</span>
+            <span class="token comment" spellcheck="true">// 也就是说数组节点一旦被标记为转移节点，是不会再发生任何变动的，所以不会有任何线程安全的问题</span>
+            <span class="token comment" spellcheck="true">// 所以此处直接赋值，没有任何问题。</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>finishing<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                nextTable <span class="token operator">=</span> null<span class="token punctuation">;</span>
+                table <span class="token operator">=</span> nextTab<span class="token punctuation">;</span>
+                sizeCtl <span class="token operator">=</span> <span class="token punctuation">(</span>n <span class="token operator">&lt;&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>n <span class="token operator">>>></span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>U<span class="token punctuation">.</span><span class="token function">compareAndSwapInt</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> SIZECTL<span class="token punctuation">,</span> sc <span class="token operator">=</span> sizeCtl<span class="token punctuation">,</span> sc <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>sc <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token function">resizeStamp</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> RESIZE_STAMP_SHIFT<span class="token punctuation">)</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                finishing <span class="token operator">=</span> advance <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                i <span class="token operator">=</span> n<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// recheck before commit</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>f <span class="token operator">=</span> <span class="token function">tabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span>
+            advance <span class="token operator">=</span> <span class="token function">casTabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">,</span> null<span class="token punctuation">,</span> fwd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fh <span class="token operator">=</span> f<span class="token punctuation">.</span>hash<span class="token punctuation">)</span> <span class="token operator">==</span> MOVED<span class="token punctuation">)</span>
+            advance <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// already processed</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>f<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 进行节点的拷贝</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">tabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">)</span> <span class="token operator">==</span> f<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> ln<span class="token punctuation">,</span> hn<span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>fh <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token keyword">int</span> runBit <span class="token operator">=</span> fh <span class="token operator">&amp;</span> n<span class="token punctuation">;</span>
+                        Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> lastRun <span class="token operator">=</span> f<span class="token punctuation">;</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> p <span class="token operator">=</span> f<span class="token punctuation">.</span>next<span class="token punctuation">;</span> p <span class="token operator">!=</span> null<span class="token punctuation">;</span> p <span class="token operator">=</span> p<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            <span class="token keyword">int</span> b <span class="token operator">=</span> p<span class="token punctuation">.</span>hash <span class="token operator">&amp;</span> n<span class="token punctuation">;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span>b <span class="token operator">!=</span> runBit<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                                runBit <span class="token operator">=</span> b<span class="token punctuation">;</span>
+                                lastRun <span class="token operator">=</span> p<span class="token punctuation">;</span>
+                            <span class="token punctuation">}</span>
+                        <span class="token punctuation">}</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>runBit <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            ln <span class="token operator">=</span> lastRun<span class="token punctuation">;</span>
+                            hn <span class="token operator">=</span> null<span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                            hn <span class="token operator">=</span> lastRun<span class="token punctuation">;</span>
+                            ln <span class="token operator">=</span> null<span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                        <span class="token comment" spellcheck="true">// 如果节点只有单个数据，直接拷贝，如果是链表，循环多次组成链表拷贝</span>
+                        <span class="token keyword">for</span> <span class="token punctuation">(</span>Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> p <span class="token operator">=</span> f<span class="token punctuation">;</span> p <span class="token operator">!=</span> lastRun<span class="token punctuation">;</span> p <span class="token operator">=</span> p<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            <span class="token keyword">int</span> ph <span class="token operator">=</span> p<span class="token punctuation">.</span>hash<span class="token punctuation">;</span> K pk <span class="token operator">=</span> p<span class="token punctuation">.</span>key<span class="token punctuation">;</span> V pv <span class="token operator">=</span> p<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+                            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ph <span class="token operator">&amp;</span> n<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                                ln <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">(</span>ph<span class="token punctuation">,</span> pk<span class="token punctuation">,</span> pv<span class="token punctuation">,</span> ln<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token keyword">else</span>
+                                hn <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Node</span><span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">(</span>ph<span class="token punctuation">,</span> pk<span class="token punctuation">,</span> pv<span class="token punctuation">,</span> hn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                        <span class="token comment" spellcheck="true">// 在新数组位置上放置拷贝的值</span>
+                        <span class="token function">setTabAt</span><span class="token punctuation">(</span>nextTab<span class="token punctuation">,</span> i<span class="token punctuation">,</span> ln<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token function">setTabAt</span><span class="token punctuation">(</span>nextTab<span class="token punctuation">,</span> i <span class="token operator">+</span> n<span class="token punctuation">,</span> hn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token comment" spellcheck="true">// 在老数组位置上放上 ForwardingNode 节点</span>
+                        <span class="token comment" spellcheck="true">// put 时，发现是 ForwardingNode 节点，就不会再动这个节点的数据了</span>
+                        <span class="token function">setTabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">,</span> fwd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        advance <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                    <span class="token comment" spellcheck="true">// 红黑树的拷贝</span>
+                    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>f <span class="token keyword">instanceof</span> <span class="token class-name">TreeBin</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token comment" spellcheck="true">// 红黑树的拷贝工作，同 HashMap 的内容，代码忽略</span>
+                        …………
+                        <span class="token comment" spellcheck="true">// 在老数组位置上放上 ForwardingNode 节点</span>
+                        <span class="token function">setTabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> i<span class="token punctuation">,</span> fwd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        advance <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>扩容中的关键点，就是如何保证是线程安全的，小结有如下几点：</p>
+<ol>
+<li>拷贝槽点时，会把原数组的槽点锁住；</li>
+<li>拷贝成功之后，会把原数组的槽点设置成转移节点，这样如果有数据需要 put 到该节点时，发现该槽点是转移节点，会一直等待，直到扩容成功之后，才能继续 put，可以参考 put 方法中的 helpTransfer 方法；</li>
+<li>从尾到头进行拷贝，拷贝成功就把原数组的槽点设置成转移节点。</li>
+<li>等扩容拷贝都完成之后，直接把新数组的值赋值给数组容器，之前等待 put 的数据才能继续 put。</li>
+</ol>
+<p>扩容方法还是很有意思的，通过在原数组上设置转移节点，put 时碰到转移节点时会等待扩容成功之后才能 put 的策略，来保证了整个扩容过程中肯定是线程安全的，因为数组的槽点一旦被设置成转移节点，在没有扩容完成之前，是无法进行操作的。</p>
+<h4 id="3-2-4-get"><a href="#3-2-4-get" class="headerlink" title="3.2.4-get"></a>3.2.4-get</h4><p>ConcurrentHashMap 读的话，就比较简单，先获取数组的下标，然后通过判断数组下标的 key 是否和我们的 key 相等，相等的话直接返回，如果下标的槽点是链表或红黑树的话，分别调用相应的查找数据的方法，整体思路和 HashMap 很像，源码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> V <span class="token function">get</span><span class="token punctuation">(</span>Object key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> tab<span class="token punctuation">;</span> Node<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> e<span class="token punctuation">,</span> p<span class="token punctuation">;</span> <span class="token keyword">int</span> n<span class="token punctuation">,</span> eh<span class="token punctuation">;</span> K ek<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//计算hashcode</span>
+    <span class="token keyword">int</span> h <span class="token operator">=</span> <span class="token function">spread</span><span class="token punctuation">(</span>key<span class="token punctuation">.</span><span class="token function">hashCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//不是空的数组 &amp;&amp; 并且当前索引的槽点数据不是空的</span>
+    <span class="token comment" spellcheck="true">//否则该key对应的值不存在，返回null</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>tab <span class="token operator">=</span> table<span class="token punctuation">)</span> <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>n <span class="token operator">=</span> tab<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span>
+        <span class="token punctuation">(</span>e <span class="token operator">=</span> <span class="token function">tabAt</span><span class="token punctuation">(</span>tab<span class="token punctuation">,</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> h<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//槽点第一个值和key相等，直接返回</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>eh <span class="token operator">=</span> e<span class="token punctuation">.</span>hash<span class="token punctuation">)</span> <span class="token operator">==</span> h<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ek <span class="token operator">=</span> e<span class="token punctuation">.</span>key<span class="token punctuation">)</span> <span class="token operator">==</span> key <span class="token operator">||</span> <span class="token punctuation">(</span>ek <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> key<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>ek<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> e<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//如果是红黑树或者转移节点，使用对应的find方法</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>eh <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token punctuation">(</span>p <span class="token operator">=</span> e<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>h<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> null <span class="token operator">?</span> p<span class="token punctuation">.</span>val <span class="token operator">:</span> null<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//如果是链表，遍历查找</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>e <span class="token operator">=</span> e<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>e<span class="token punctuation">.</span>hash <span class="token operator">==</span> h <span class="token operator">&amp;&amp;</span>
+                <span class="token punctuation">(</span><span class="token punctuation">(</span>ek <span class="token operator">=</span> e<span class="token punctuation">.</span>key<span class="token punctuation">)</span> <span class="token operator">==</span> key <span class="token operator">||</span> <span class="token punctuation">(</span>ek <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> key<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>ek<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> e<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="3-2-5-总结"><a href="#3-2-5-总结" class="headerlink" title="3.2.5-总结"></a>3.2.5-总结</h4><p>本文摘取 ConcurrentHashMap 两个核心的方法讲解了一下，特别是 put 方法，采取了很多手段来保证了线程安全，是平时面试时的重中之重，大家可以尝试 debug 来调试一下源码，其他方法感兴趣的话，可以尝试去 GitHub 上去查看源码。</p>
+<h3 id="3-3-并发-List、Map源码面试题"><a href="#3-3-并发-List、Map源码面试题" class="headerlink" title="3.3-并发 List、Map源码面试题"></a>3.3-并发 List、Map源码面试题</h3><p>并发 List 和 Map 是技术面时常问的问题，问的问题也都比较深入，有很多问题都是面试官自创的，市面上找不到，所以说通过背题的方式，这一关大部分是过不了的，只有我们真正理解了 API 内部的实现，阅读过源码，才能自如应对各种类型的面试题，接着我们来看一下并发 List、Map 源码相关的面试题集。</p>
+<h4 id="3-3-1-CopyOnWriteArrayList-相关"><a href="#3-3-1-CopyOnWriteArrayList-相关" class="headerlink" title="3.3.1-CopyOnWriteArrayList 相关"></a>3.3.1-CopyOnWriteArrayList 相关</h4><h5 id="1-CopyOnWriteArrayList-和-ArrayList-相比有哪些相同点和不同点？"><a href="#1-CopyOnWriteArrayList-和-ArrayList-相比有哪些相同点和不同点？" class="headerlink" title="1.CopyOnWriteArrayList 和 ArrayList 相比有哪些相同点和不同点？"></a>1.CopyOnWriteArrayList 和 ArrayList 相比有哪些相同点和不同点？</h5><p>答：相同点：底层的数据结构是相同的，都是数组的数据结构，提供出来的 API 都是对数组结构进行操作，让我们更好的使用。</p>
+<p>不同点：后者是线程安全的，在多线程环境下使用，无需加锁，可直接使用。</p>
+<h5 id="2-CopyOnWriteArrayList-通过哪些手段实现了线程安全？"><a href="#2-CopyOnWriteArrayList-通过哪些手段实现了线程安全？" class="headerlink" title="2.CopyOnWriteArrayList 通过哪些手段实现了线程安全？"></a>2.CopyOnWriteArrayList 通过哪些手段实现了线程安全？</h5><p>答：主要有：1. 数组容器被 volatile 关键字修饰，保证了数组内存地址被任意线程修改后，都会通知到其他线程；</p>
+<ol>
+<li>对数组的所有修改操作，都进行了加锁，保证了同一时刻，只能有一个线程对数组进行修改，比如我在 add 时，就无法 remove；</li>
+<li>修改过程中对原数组进行了复制，是在新数组上进行修改的，修改过程中，不会对原数组产生任何影响。</li>
+</ol>
+<p>通过以上三点保证了线程安全。</p>
+<h5 id="3-在-add-方法中，对数组进行加锁后，不是已经是线程安全了么，为什么还需要对老数组进行拷贝？"><a href="#3-在-add-方法中，对数组进行加锁后，不是已经是线程安全了么，为什么还需要对老数组进行拷贝？" class="headerlink" title="3.在 add 方法中，对数组进行加锁后，不是已经是线程安全了么，为什么还需要对老数组进行拷贝？"></a>3.在 add 方法中，对数组进行加锁后，不是已经是线程安全了么，为什么还需要对老数组进行拷贝？</h5><p>答：的确，对数组进行加锁后，能够保证同一时刻，只有一个线程能对数组进行 add，在同单核 CPU 下的多线程环境下肯定没有问题，但我们现在的机器都是多核 CPU，如果我们不通过复制拷贝新建数组，修改原数组容器的内存地址的话，是无法触发 volatile 可见性效果的，那么其他 CPU 下的线程就无法感知数组原来已经被修改了，就会引发多核 CPU 下的线程安全问题。</p>
+<p>假设我们不复制拷贝，而是在原来数组上直接修改值，数组的内存地址就不会变，而数组被 volatile 修饰时，必须当数组的内存地址变更时，才能及时的通知到其他线程，内存地址不变，仅仅是数组元素值发生变化时，是无法把数组元素值发生变动的事实，通知到其它线程的。</p>
+<h5 id="4-对老数组进行拷贝，会有性能损耗，我们平时使用需要注意什么么？"><a href="#4-对老数组进行拷贝，会有性能损耗，我们平时使用需要注意什么么？" class="headerlink" title="4.对老数组进行拷贝，会有性能损耗，我们平时使用需要注意什么么？"></a>4.对老数组进行拷贝，会有性能损耗，我们平时使用需要注意什么么？</h5><p>答：主要有：</p>
+<ol>
+<li>在批量操作时，尽量使用 addAll、removeAll 方法，而不要在循环里面使用 add、remove 方法，主要是因为 for 循环里面使用 add 、remove 的方式，在每次操作时，都会进行一次数组的拷贝(甚至多次)，非常耗性能，而 addAll、removeAll 方法底层做了优化，整个操作只会进行一次数组拷贝，由此可见，当批量操作的数据越多时，批量方法的高性能体现的越明显。</li>
+</ol>
+<h5 id="5-为什么-CopyOnWriteArrayList-迭代过程中，数组结构变动，不会抛出ConcurrentModificationException-了"><a href="#5-为什么-CopyOnWriteArrayList-迭代过程中，数组结构变动，不会抛出ConcurrentModificationException-了" class="headerlink" title="5.为什么 CopyOnWriteArrayList 迭代过程中，数组结构变动，不会抛出ConcurrentModificationException 了"></a>5.为什么 CopyOnWriteArrayList 迭代过程中，数组结构变动，不会抛出ConcurrentModificationException 了</h5><p>答：主要是因为 CopyOnWriteArrayList 每次操作时，都会产生新的数组，而迭代时，持有的仍然是老数组的引用，所以我们说的数组结构变动，是用新数组替换了老数组，老数组的结构并没有发生变化，所以不会抛出异常了。</p>
+<h5 id="6-插入的数据正好在-List-的中间，请问两种-List-分别拷贝数组几次？为什么？"><a href="#6-插入的数据正好在-List-的中间，请问两种-List-分别拷贝数组几次？为什么？" class="headerlink" title="6.插入的数据正好在 List 的中间，请问两种 List 分别拷贝数组几次？为什么？"></a>6.插入的数据正好在 List 的中间，请问两种 List 分别拷贝数组几次？为什么？</h5><p>答：ArrayList 只需拷贝一次，假设插入的位置是 2，只需要把位置 2 （包含 2）后面的数据都往后移动一位即可，所以拷贝一次。</p>
+<p>CopyOnWriteArrayList 拷贝两次，因为 CopyOnWriteArrayList 多了把老数组的数据拷贝到新数组上这一步，可能有的同学会想到这种方式：先把老数组拷贝到新数组，再把 2 后面的数据往后移动一位，这的确是一种拷贝的方式，但 CopyOnWriteArrayList 底层实现更加灵活，而是：把老数组 0 到 2 的数据拷贝到新数组上，预留出新数组 2 的位置，再把老数组 3～ 最后的数据拷贝到新数组上，这种拷贝方式可以减少我们拷贝的数据，虽然是两次拷贝，但拷贝的数据却仍然是老数组的大小，设计的非常巧妙。</p>
+<h4 id="3-3-2-ConcurrentHashMap-相关"><a href="#3-3-2-ConcurrentHashMap-相关" class="headerlink" title="3.3.2-ConcurrentHashMap 相关"></a>3.3.2-ConcurrentHashMap 相关</h4><h5 id="1-ConcurrentHashMap-和-HashMap-的相同点和不同点"><a href="#1-ConcurrentHashMap-和-HashMap-的相同点和不同点" class="headerlink" title="1.ConcurrentHashMap 和 HashMap 的相同点和不同点"></a>1.ConcurrentHashMap 和 HashMap 的相同点和不同点</h5><p>答：</p>
+<p>相同点：</p>
+<ul>
+<li>都是数组 + 链表 +红黑树的数据结构，所以基本操作的思想相同；</li>
+<li>都实现了 Map 接口，继承了 AbstractMap 抽象类，所以两者的方法大多都是相似的，可以互相切换。</li>
+</ul>
+<p>不同点：</p>
+<ul>
+<li>ConcurrentHashMap 是线程安全的，在多线程环境下，无需加锁，可直接使用；</li>
+<li>数据结构上，ConcurrentHashMap 多了转移节点，主要用于保证扩容时的线程安全。</li>
+</ul>
+<h5 id="2-ConcurrentHashMap-通过哪些手段保证了线程安全。"><a href="#2-ConcurrentHashMap-通过哪些手段保证了线程安全。" class="headerlink" title="2.ConcurrentHashMap 通过哪些手段保证了线程安全。"></a>2.ConcurrentHashMap 通过哪些手段保证了线程安全。</h5><p>答：主要有以下几点：</p>
+<ol>
+<li>储存 Map 数据的数组被 volatile 关键字修饰，一旦被修改，立马就能通知其他线程，因为是数组，所以需要改变其内存值，才能真正的发挥出 volatile 的可见特性；</li>
+<li>put 时，如果计算出来的数组下标索引没有值的话，采用无限 for 循环 + CAS 算法，来保证一定可以新增成功，又不会覆盖其他线程 put 进去的值；</li>
+<li>如果 put 的节点正好在扩容，会等待扩容完成之后，再进行 put ，保证了在扩容时，老数组的值不会发生变化；</li>
+<li>对数组的槽点进行操作时，会先锁住槽点，保证只有当前线程才能对槽点上的链表或红黑树进行操作；</li>
+<li>红黑树旋转时，会锁住根节点，保证旋转时的线程安全。</li>
+</ol>
+<h5 id="3-描述一下-CAS-算法在-ConcurrentHashMap-中的应用？"><a href="#3-描述一下-CAS-算法在-ConcurrentHashMap-中的应用？" class="headerlink" title="3.描述一下 CAS 算法在 ConcurrentHashMap 中的应用？"></a>3.描述一下 CAS 算法在 ConcurrentHashMap 中的应用？</h5><p>答：CAS 其实是一种乐观锁，一般有三个值，分别为：赋值对象，原值，新值，在执行的时候，会先判断内存中的值是否和原值相等，相等的话把新值赋值给对象，否则赋值失败，整个过程都是原子性操作，没有线程安全问题。</p>
+<p>ConcurrentHashMap 的 put 方法中，有使用到 CAS ，是结合无限 for 循环一起使用的，步骤如下：</p>
+<ol>
+<li>计算出数组索引下标，拿出下标对应的原值；</li>
+<li>CAS 覆盖当前下标的值，赋值时，如果发现内存值和 1 拿出来的原值相等，执行赋值，退出循环，否则不赋值，转到 3；</li>
+<li>进行下一次 for 循环，重复执行 1，2，直到成功为止。</li>
+</ol>
+<p>可以看到这样做的好处，第一是不会盲目的覆盖原值，第二是一定可以赋值成功。</p>
+<h5 id="4-ConcurrentHashMap-是如何发现当前槽点正在扩容的。"><a href="#4-ConcurrentHashMap-是如何发现当前槽点正在扩容的。" class="headerlink" title="4.ConcurrentHashMap 是如何发现当前槽点正在扩容的。"></a>4.ConcurrentHashMap 是如何发现当前槽点正在扩容的。</h5><p>答：ConcurrentHashMap 新增了一个节点类型，叫做转移节点，当我们发现当前槽点是转移节点时（转移节点的 hash 值是 -1），即表示 Map 正在进行扩容。</p>
+<h5 id="5-发现槽点正在扩容时，put-操作会怎么办？"><a href="#5-发现槽点正在扩容时，put-操作会怎么办？" class="headerlink" title="5.发现槽点正在扩容时，put 操作会怎么办？"></a>5.发现槽点正在扩容时，put 操作会怎么办？</h5><p>答：无限 for 循环，或者走到扩容方法中去，帮助扩容，一直等待扩容完成之后，再执行 put 操作。</p>
+<h5 id="6-两种-Map-扩容时，有啥区别？"><a href="#6-两种-Map-扩容时，有啥区别？" class="headerlink" title="6.两种 Map 扩容时，有啥区别？"></a>6.两种 Map 扩容时，有啥区别？</h5><p>答：区别很大，HashMap 是直接在老数据上面进行扩容，多线程环境下，会有线程安全的问题，而 ConcurrentHashMap 就不太一样，扩容过程是这样的：</p>
+<ol>
+<li>从数组的队尾开始拷贝；</li>
+<li>拷贝数组的槽点时，先把原数组槽点锁住，拷贝成功到新数组时，把原数组槽点赋值为转移节点；</li>
+<li>从数组的尾部拷贝到头部，每拷贝成功一次，就把原数组的槽点设置成转移节点；</li>
+<li>直到所有数组数据都拷贝到新数组时，直接把新数组整个赋值给数组容器，拷贝完成。</li>
+</ol>
+<p>简单来说，通过扩容时给槽点加锁，和发现槽点正在扩容就等待的策略，保证了 ConcurrentHashMap 可以慢慢一个一个槽点的转移，保证了扩容时的线程安全，转移节点比较重要，平时问的人也比较多。</p>
+<h5 id="7-ConcurrentHashMap-在-Java-7-和-8-中关于线程安全的做法有啥不同？"><a href="#7-ConcurrentHashMap-在-Java-7-和-8-中关于线程安全的做法有啥不同？" class="headerlink" title="7.ConcurrentHashMap 在 Java 7 和 8 中关于线程安全的做法有啥不同？"></a>7.ConcurrentHashMap 在 Java 7 和 8 中关于线程安全的做法有啥不同？</h5><p>答：非常不一样，拿 put 方法为例，Java 7 的做法是：</p>
+<ol>
+<li>把数组进行分段，找到当前 key 对应的是那一段；</li>
+<li>将当前段锁住，然后再根据 hash 寻找对应的值，进行赋值操作。</li>
+</ol>
+<p>Java 7 的做法比较简单，缺点也很明显，就是当我们需要 put 数据时，我们会锁住改该数据对应的某一段，这一段数据可能会有很多，比如我只想 put 一个值，锁住的却是一段数据，导致这一段的其他数据都不能进行写入操作，大大的降低了并发性的效率。Java 8 解决了这个问题，从锁住某一段，修改成锁住某一个槽点，提高了并发效率。</p>
+<p>不仅仅是 put，删除也是，仅仅是锁住当前槽点，缩小了锁的范围，增大了效率。</p>
+<h4 id="3-3-3-总结"><a href="#3-3-3-总结" class="headerlink" title="3.3.3-总结"></a>3.3.3-总结</h4><p>因为目前大多数公司都已经在使用 Java 8 了，所以大部分面试内容还是以 Java 8 的 API 为主，特别是 CopyOnWriteArrayList 和 ConcurrentHashMap 两个 API，文章毕竟篇幅有限，建议大家多多阅读剩余源码。</p>
+<h3 id="3-4-场景集合：并发-List、Map的应用场景"><a href="#3-4-场景集合：并发-List、Map的应用场景" class="headerlink" title="3.4-场景集合：并发 List、Map的应用场景"></a>3.4-场景集合：并发 List、Map的应用场景</h3><p>并发 List、Map 使用最多的就是 CopyOnWriteArrayList 和 ConcurrentHashMap，在考虑 API 时，我们也无需迟疑，这两个并发类在安全和性能方面都很好，我们都可以直接使用。</p>
+<p>并发的场景很多，但归根结底其实就是共享变量被多个线程同时访问，也就是说 CopyOnWriteArrayList 或 ConcurrentHashMap 会被作为共享变量，本节我们会以流程引擎为案例，现身说法，增加一下大家的工作经验积累。</p>
+<p>流程引擎在实际工作中经常被使用，其主要功能就是对我们需要完成的事情，进行编排和组装，比如在淘宝下单流程中，我们一共会执行 20 个 Spring Bean，流程引擎就可以帮助我们调起 20 个 Spring Bean，并帮助我们去执行，本文介绍的重点在于如何使用 Map + List 来设计流程引擎的数据结构，以及其中需要注意到的线程安全的问题。</p>
+<h4 id="3-4-1-嵌套-Map，简单流程引擎"><a href="#3-4-1-嵌套-Map，简单流程引擎" class="headerlink" title="3.4.1-嵌套 Map，简单流程引擎"></a>3.4.1-嵌套 Map，简单流程引擎</h4><p>市面上有很多流程引擎，比如说 Activiti、Flowable、Camunda 等等，功能非常齐全，但我们本小节只实现一种最最简单的流程引擎，只要能对我们需要完成的事情进行编排，并能依次的调用就行。</p>
+<h5 id="1-流程引擎设计思路"><a href="#1-流程引擎设计思路" class="headerlink" title="1.流程引擎设计思路"></a>1.流程引擎设计思路</h5><p>我们认为每个流程都会做 4 个阶段的事情，阶段主要是指在整个流程中，大概可以分为几个大的步骤，每个阶段可以等同为大的步骤，分别如下：</p>
+<ol>
+<li>参数校验，主要是对流程的入参数进行校验；</li>
+<li>业务校验，主要是对当前流程中的业务进行逻辑校验；</li>
+<li>事务中落库，主要把数据落库，控制事务；</li>
+<li>事务后事件，我们在数据落库，事务提交之后，可能会做一些其他事情，比如说发消息出来等等。</li>
+</ol>
+<p>以上每个大的阶段，都会做一些粒度较细的事情，比如说业务校验，我们可能会对两个业务对象进行校验，那么此时业务校验阶段就会做两件事情，每件具体的事情，我们叫做领域行为，在实际项目中，一个领域行为一般都是一个 Spring Bean。</p>
+<p>综上所述，流程引擎嵌套数据结构就是：流程 -&gt; 阶段 -&gt; 领域行为，前者对应后者，都是一对一或者一对多的关系。</p>
+<p>我们以在淘宝上买东西时，下单为例，下单指的是我们在淘宝选择好了商品和优惠券后，点击购买按钮时触发的动作。</p>
+<p>为了方便举例，我们假设在淘宝上买电视和电影票，在后端，会分别对应着两个下单流程，我们画图示意一下：</p>
+<p><img src="/2020/02/02/jdk-yuan-ma-xiang-jie/%E6%B7%98%E5%AE%9D%E4%B8%8B%E5%8D%95%E6%B5%81%E7%A8%8B.jpeg" alt="淘宝下单流程"></p>
+<p>上图中，左右两个黑色长方形大框代表着两个流程，流程下面有多个阶段，阶段用蓝色表示，每个阶段下面有多个领域行为，用红色表示。</p>
+<p>可以看到两个流程中，都包含有四个阶段，阶段都是相同的，但每个阶段中的领域行为，有的相同，有的却是特有的。</p>
+<p>三个概念，每个概念层层嵌套，整体组装起来，用来表示一个流程，那么这个数据结构，我们应该如何表示呢？</p>
+<p>使用 Map + List 即可！</p>
+<h5 id="2-数据结构的定义"><a href="#2-数据结构的定义" class="headerlink" title="2.数据结构的定义"></a>2.数据结构的定义</h5><p>流程的数据结构定义分成两步：</p>
+<ol>
+<li>定义出阶段、领域行为基础概念；</li>
+<li>把阶段、领域行为、流程概念组合起来，定义出流程的数据结构。</li>
+</ol>
+<p>首先给阶段定义一个枚举，如下 StageEnum 代表流程中的阶段或步骤：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">enum</span> StageEnum <span class="token punctuation">{</span>
+  <span class="token function">PARAM_VALID</span><span class="token punctuation">(</span><span class="token string">"PARAM_VALID"</span><span class="token punctuation">,</span> <span class="token string">"参数校验"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
 
+  <span class="token function">BUSINESS_VALID</span><span class="token punctuation">(</span><span class="token string">"BUSINESS_VALID"</span><span class="token punctuation">,</span> <span class="token string">"业务校验"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+  <span class="token function">IN_TRANSACTION</span><span class="token punctuation">(</span><span class="token string">"IN_TRANSACTION"</span><span class="token punctuation">,</span> <span class="token string">"事务中落库"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+  <span class="token function">AFTER_TRANSACTION</span><span class="token punctuation">(</span><span class="token string">"AFTER_TRANSACTION"</span><span class="token punctuation">,</span> <span class="token string">"事务后事件"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">;</span>
+
+  <span class="token keyword">private</span> String code<span class="token punctuation">;</span>
+  <span class="token keyword">private</span> String desc<span class="token punctuation">;</span>
+
+  <span class="token function">StageEnum</span><span class="token punctuation">(</span>String code<span class="token punctuation">,</span> String desc<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>code <span class="token operator">=</span> code<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>desc <span class="token operator">=</span> desc<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>领域行为我们无需定义，目前通用的技术框架都是 Spring Boot，领域行为都是 Spring Bean，为了简单起见，我们给领域行为定义了一个接口，每个领域行为都要实现这个接口，方便我们编排，接口如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * 领域行为
+ * author  wenhe
+ * date 2019/8/11
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">DomainAbilityBean</span> <span class="token punctuation">{</span>
+
+  <span class="token comment" spellcheck="true">/**
+   * 领域行为的方法入口
+   */</span>
+  FlowContent <span class="token function">invoke</span><span class="token punctuation">(</span>FlowContent content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>接着我们使用 Map + List 来定义流程，定义如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * 第一个 key 是流程的名字
+ * 第二个 map 的 key 是阶段，为 StageEnum 枚举，值为多个领域行为的集合
+ */</span>
+Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Map<span class="token operator">&lt;</span>StageEnum<span class="token punctuation">,</span>List<span class="token operator">&lt;</span>DomainAbilityBean<span class="token operator">>>></span> flowMap</code></pre>
+<p>至此，我们定义出了，简单流程引擎的数据结构，流程引擎看着很复杂，利用 Map + List 的组合，就巧妙的定义好了。</p>
+<h4 id="3-4-2-容器初始化时，本地缓存使用"><a href="#3-4-2-容器初始化时，本地缓存使用" class="headerlink" title="3.4.2-容器初始化时，本地缓存使用"></a>3.4.2-容器初始化时，本地缓存使用</h4><p>我们定义好 Map 后，我们就需要去使用他，我们使用的大体步骤为：</p>
+<ol>
+<li>项目启动时，把所有的流程信息初始化到 flowMap(刚刚定义的流程的数据结构叫做 flowMap) 中去，可能是从数据库中加载，也可能是从 xml 文件中加载；</li>
+<li>查找流程时，直接从 flowMap 中获取即可。</li>
+</ol>
+<h5 id="1-初始化-2"><a href="#1-初始化-2" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>以上两步最为关键的点就是 flowMap 必须是可以随时访问到的，所有我们会把 flowMap 作为共享变量使用，也就是会被 static final 关键字所修饰，我们首先来 mock 一下把所有信息初始化到 flowMap 中去的代码，如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FlowCenter</span> <span class="token punctuation">{</span>
+
+  <span class="token comment" spellcheck="true">/**
+   * flowMap 是共享变量，方便访问，并且是 ConcurrentHashMap
+   */</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Map<span class="token operator">&lt;</span>StageEnum<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>DomainAbilityBean<span class="token operator">>>></span> flowMap
+      <span class="token operator">=</span> Maps<span class="token punctuation">.</span><span class="token function">newConcurrentMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment" spellcheck="true">/**
+   * PostConstruct 注解的意思就是
+   * 在容器启动成功之后，执行 init 方法，初始化 flowMap
+   */</span>
+  <span class="token annotation punctuation">@PostConstruct</span>
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 初始化 flowMap，可能是从数据库，或者 xml 文件中加载 map</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>以上代码，关键地方在于三点：</p>
+<ol>
+<li>flowMap 被 static final 修饰，是个共享变量，方便访问；</li>
+<li>flowMap 是 ConcurrentHashMap，所以我们所有的操作都无需加锁，比如我们在 init 方法中，对 flowMap 进行初始化，就无需加锁，因为 ConcurrentHashMap 本身已经保证了线程安全；</li>
+<li>这里我们初始化的时机是在容器启动的时候，在实际的工作中，我们经常在容器启动的时候，把不会经常发生变动的数据，放到类似 List、Map 这样的共享变量中，这样当我们频繁要使用的时候，直接从内存中读取即可。</li>
+</ol>
+<h5 id="2-使用"><a href="#2-使用" class="headerlink" title="2.使用"></a>2.使用</h5><p>那我们实际使用的时候，只需要告诉 flowMap 当前是那个流程的那个阶段，就可以返回该流程该阶段下面的所有领域行为了，我们写了一个流程引擎使用的工具类入口，如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 流程引擎对外的 API</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FlowStart</span> <span class="token punctuation">{</span>
+
+  <span class="token comment" spellcheck="true">/**
+   * 流程引擎开始
+   *
+   * @param flowName 流程的名字
+   */</span>
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">start</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">invokeParamValid</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">invokeBusinessValid</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">invokeInTramsactionValid</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">invokeAfterTramsactionValid</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">// 执行参数校验</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">invokeParamValid</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">stageInvoke</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> StageEnum<span class="token punctuation">.</span>PARAM_VALID<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">// 执行业务校验</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">invokeBusinessValid</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">stageInvoke</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> StageEnum<span class="token punctuation">.</span>BUSINESS_VALID<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">// 执行事务中</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">invokeInTramsactionValid</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">stageInvoke</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> StageEnum<span class="token punctuation">.</span>IN_TRANSACTION<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">// 执行事务后</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">invokeAfterTramsactionValid</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">stageInvoke</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> StageEnum<span class="token punctuation">.</span>AFTER_TRANSACTION<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment" spellcheck="true">// 批量执行 Spring Bean</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">stageInvoke</span><span class="token punctuation">(</span>String flowName<span class="token punctuation">,</span> StageEnum stage<span class="token punctuation">,</span> FlowContent content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    List<span class="token operator">&lt;</span>DomainAbilityBean<span class="token operator">></span>
+        domainAbilitys <span class="token operator">=</span>
+        FlowCenter<span class="token punctuation">.</span>flowMap<span class="token punctuation">.</span><span class="token function">getOrDefault</span><span class="token punctuation">(</span>flowName<span class="token punctuation">,</span> Maps<span class="token punctuation">.</span><span class="token function">newHashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>stage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>domainAbilitys<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span><span class="token string">"找不到该流程对应的领域行为"</span> <span class="token operator">+</span> flowName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>DomainAbilityBean domainAbility <span class="token operator">:</span> domainAbilitys<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      domainAbility<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>从代码中可以看到，我们在流程引擎的入口，只要根据参数校验、业务校验、事务中、事务后四个阶段，从 flowMap 中得到领域行为的集合，然后对领域行为进行顺序执行即可。</p>
+<p>我们在使用时，直接使用上述类的 start 方法即可。</p>
+<p>当然以上演示的流程引擎只是一个大的框架，还有很多地方需要改进的地方，比如如何找到 flowName，如何初始化 flowMap，但这些都不是本节重点，本节主要想通过流程引擎案例来说明几点：</p>
+<ol>
+<li>把 List 和 Map 作为共享变量非常常见，就像咱们这种项目启动时，从数据库中把数据捞出来，然后封装成 List 或 Map 的结构，这样做的优点就是节约资源，不用每次用的时候都去查数据库，直接从内存中获取即可；</li>
+<li>并发场景下，我们可以放心的使用 CopyOnWriteArrayList 和 ConcurrentHashMap 两个并发类，首先用 static final 对两者进行修饰，使其成为共享变量，接着在写入或者查询的时候，无需加锁，两个 API 内部已经实现了加锁的功能了；</li>
+<li>有一点需要澄清一下，就是 CopyOnWriteArrayList 和 ConcurrentHashMap 只能作为单机的共享变量，如果是分布式系统，多台机器的情况下，这样做不行了，需要使用分布式缓存了。</li>
+</ol>
+<h4 id="3-4-3-总结"><a href="#3-4-3-总结" class="headerlink" title="3.4.3-总结"></a>3.4.3-总结</h4><p>本节内容，以流程引擎为例，说明了如何使用 Map + List 的嵌套结构设计流程引擎，以及在并发情况下，如何安全的使用 List 和 Map。</p>
+<p>本案列是高并发项目的真实案例，感兴趣的同学可以在此流程引擎框架基础上进行细节补充，实现可运行的流程引擎。</p>
+<h2 id="4-队列"><a href="#4-队列" class="headerlink" title="4-队列"></a>4-队列</h2>
             </div>
             <hr/>
 
@@ -2951,7 +3830,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">149.7k</span>&nbsp;字
+                class="white-color">164.5k</span>&nbsp;字
             
             
             
