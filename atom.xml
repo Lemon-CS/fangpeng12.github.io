@@ -66,9 +66,9 @@
       <category term="前端" scheme="https://fangpeng12.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
     
     
-      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
-    
       <category term="css" scheme="https://fangpeng12.github.io/tags/css/"/>
+    
+      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
     
   </entry>
   
@@ -106,7 +106,7 @@
     <link href="https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/"/>
     <id>https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/</id>
     <published>2020-01-17T14:09:50.000Z</published>
-    <updated>2020-01-19T14:27:40.895Z</updated>
+    <updated>2020-02-05T09:09:10.135Z</updated>
     
     <summary type="html">
     
@@ -126,9 +126,9 @@
     
       <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
     
-      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
-    
       <category term="SpringBoot" scheme="https://fangpeng12.github.io/tags/SpringBoot/"/>
+    
+      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
     
   </entry>
   
@@ -150,29 +150,6 @@
       <category term="架构" scheme="https://fangpeng12.github.io/tags/%E6%9E%B6%E6%9E%84/"/>
     
       <category term="微服务" scheme="https://fangpeng12.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringBoot学习笔记3</title>
-    <link href="https://fangpeng12.github.io/2020/01/16/springboot-xue-xi-bi-ji-san/"/>
-    <id>https://fangpeng12.github.io/2020/01/16/springboot-xue-xi-bi-ji-san/</id>
-    <published>2020-01-16T14:09:50.000Z</published>
-    <updated>2020-01-19T14:27:51.183Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;8-SpringBoot整合Redis&quot;&gt;&lt;a href=&quot;#8-SpringBoot整合Redis&quot; class=&quot;headerlink&quot; title=&quot;8-SpringBoot整合Redis&quot;&gt;&lt;/a&gt;8-SpringBoot整合Redis&lt;/h1&gt;&lt;h2
-        
-      
-    
-    </summary>
-    
-    
     
   </entry>
   
@@ -257,11 +234,11 @@
       <category term="前端" scheme="https://fangpeng12.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
     
     
+      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
       <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
     
       <category term="Angular" scheme="https://fangpeng12.github.io/tags/Angular/"/>
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
     
   </entry>
   
@@ -319,9 +296,9 @@
     
       <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
     
-      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
-    
       <category term="SpringBoot" scheme="https://fangpeng12.github.io/tags/SpringBoot/"/>
+    
+      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
     
   </entry>
   
@@ -350,9 +327,9 @@
     
       <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
     
-      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
-    
       <category term="SpringBoot" scheme="https://fangpeng12.github.io/tags/SpringBoot/"/>
+    
+      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
     
   </entry>
   
