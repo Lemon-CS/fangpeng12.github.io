@@ -462,14 +462,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    63.6k
+                    83.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    261 分
+                    338 分
                 </div>
                 
 				
@@ -2938,7 +2938,8 @@ public static void notEmpty(Object[] array, String message) {
 <p>另外我们可以查看序列化后的字节流的字符表示形式：</p>
 <p>序列化后的字符：</p>
 <blockquote>
-<p>��ur&amp;[Lcom.imooc.basic.learn_enum.CoinEnum;ċ���&gt;��xpr#com.imooc.basic.learn_enum.CoinEnumxrjava.lang.EnumxptPENNYqtNICKELqtDIMEq~tQUARTER</p>
+<p>��ur&amp;[Lcom.imooc.basic.learn_enum.CoinEnum;ċ���&gt;��xpr</p>
+<p>#com.imooc.basic.learn_enum.CoinEnumxrjava.lang.EnumxptPENNYqtNICKELqtDIMEq~tQUARTER</p>
 </blockquote>
 <p>大致可以看出，序列化后的数据中主要包含<strong>枚举的类型</strong>和<strong>枚举名称</strong>。</p>
 <p>我们了解了枚举的序列化和反序列化的原理后我们再思考：<strong>为什么接口返回值不允许使用枚举类型或者包含枚举类型的 POJO 对象？</strong></p>
@@ -6140,6 +6141,1285 @@ java.util.concurrent.ForkJoinPool#externalPush</code></pre><p>…</p>
 <h4 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h4><p>本文重点介绍了 Java 学习和工作中常用的软件、插件、网站等。熟练地使用这些工具，将有助于提高我的开发效率和编程体验。</p>
 <p>肯定还有很多好用的插件和软件，由于篇幅有限就不在这里一一介绍，欢迎大家留言分享。</p>
 <p>希望通过本小节的介绍能够助力大家的学习和进阶。</p>
+<h2 id="2-异常日志"><a href="#2-异常日志" class="headerlink" title="2-异常日志"></a>2-异常日志</h2><h3 id="2-1-一些异常处理建议"><a href="#2-1-一些异常处理建议" class="headerlink" title="2.1-一些异常处理建议"></a>2.1-一些异常处理建议</h3><h4 id="2-1-1-前言"><a href="#2-1-1-前言" class="headerlink" title="2.1.1-前言"></a>2.1.1-前言</h4><p>《手册》的异常处理规约对异常的处理方式提出了一些指导规范<a href="https://www.imooc.com/read/55/article/1155#fn1" target="_blank" rel="noopener">1</a>，如：</p>
+<blockquote>
+<p>【强制】异常不要用来做流程控制，条件控制。</p>
+<p>【强制】有 try 块放到了事务代码中，catch 异常后，如果需要回滚事务，一定要注意手动回滚事务。</p>
+</blockquote>
+<p>常规try - catch 捕捉异常非常简单，相信大家都很熟悉，这里就不作展开。</p>
+<p>本节重点讲述一些异常处理姿势不正确导致的各种 BUG， 并给出一些异常处理的建议。</p>
+<h4 id="2-1-2-要不要”吞掉”异常？"><a href="#2-1-2-要不要”吞掉”异常？" class="headerlink" title="2.1.2-要不要”吞掉”异常？"></a>2.1.2-要不要”吞掉”异常？</h4><p>在实际开发中关于异常的一个重要问题是：要不要“吞掉”异常。</p>
+<p>所谓 “吞掉” 异常是指：处理后不再将异常传给上层。其中包括 catch 到异常并处理（打印日志、发通知等）后不再扔给上层；捕捉到异常后给上层返回 null 值等行为。</p>
+<p>其中 “<strong>有 try 块放到了事务代码中，catch 异常后，如果需要回滚事务，一定要注意手动回 滚事务</strong>。” 就属于其中一例。</p>
+<p><strong>那么为什么要手动回滚呢？</strong></p>
+<p>我们看下事务的执行入口：</p>
+<pre><code>TransactionInterceptor#invoke</code></pre><p>调用到了这里 <code>TransactionAspectSupport#invokeWithinTransaction</code> ：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+     * General delegate for around-advice-based subclasses, delegating to several other template
+     * methods on this class. Able to handle {@link CallbackPreferringPlatformTransactionManager}
+     * as well as regular {@link PlatformTransactionManager} implementations.
+     * @param method the Method being invoked
+     * @param targetClass the target class that we're invoking the method on
+     * @param invocation the callback to use for proceeding with the target invocation
+     * @return the return value of the method, if any
+     * @throws Throwable propagated from the target invocation
+     */</span>
+    <span class="token annotation punctuation">@Nullable</span>
+    <span class="token keyword">protected</span> Object <span class="token function">invokeWithinTransaction</span><span class="token punctuation">(</span>Method method<span class="token punctuation">,</span> <span class="token annotation punctuation">@Nullable</span> Class<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> targetClass<span class="token punctuation">,</span>
+            <span class="token keyword">final</span> InvocationCallback invocation<span class="token punctuation">)</span> <span class="token keyword">throws</span> Throwable <span class="token punctuation">{</span>
+
+        <span class="token comment" spellcheck="true">// If the transaction attribute is null, the method is non-transactional.</span>
+        TransactionAttributeSource tas <span class="token operator">=</span> <span class="token function">getTransactionAttributeSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> TransactionAttribute txAttr <span class="token operator">=</span> <span class="token punctuation">(</span>tas <span class="token operator">!=</span> null <span class="token operator">?</span> tas<span class="token punctuation">.</span><span class="token function">getTransactionAttribute</span><span class="token punctuation">(</span>method<span class="token punctuation">,</span> targetClass<span class="token punctuation">)</span> <span class="token operator">:</span> null<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> PlatformTransactionManager tm <span class="token operator">=</span> <span class="token function">determineTransactionManager</span><span class="token punctuation">(</span>txAttr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">final</span> String joinpointIdentification <span class="token operator">=</span> <span class="token function">methodIdentification</span><span class="token punctuation">(</span>method<span class="token punctuation">,</span> targetClass<span class="token punctuation">,</span> txAttr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>txAttr <span class="token operator">==</span> null <span class="token operator">||</span> <span class="token operator">!</span><span class="token punctuation">(</span>tm <span class="token keyword">instanceof</span> <span class="token class-name">CallbackPreferringPlatformTransactionManager</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// Standard transaction demarcation with getTransaction and commit/rollback calls.</span>
+            TransactionInfo txInfo <span class="token operator">=</span> <span class="token function">createTransactionIfNecessary</span><span class="token punctuation">(</span>tm<span class="token punctuation">,</span> txAttr<span class="token punctuation">,</span> joinpointIdentification<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            Object retVal <span class="token operator">=</span> null<span class="token punctuation">;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// This is an around advice: Invoke the next interceptor in the chain.</span>
+                <span class="token comment" spellcheck="true">// This will normally result in a target object being invoked.</span>
+                retVal <span class="token operator">=</span> invocation<span class="token punctuation">.</span><span class="token function">proceedWithInvocation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Throwable</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// target invocation exception</span>
+                <span class="token function">completeTransactionAfterThrowing</span><span class="token punctuation">(</span>txInfo<span class="token punctuation">,</span> ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">throw</span> ex<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                <span class="token function">cleanupTransactionInfo</span><span class="token punctuation">(</span>txInfo<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token function">commitTransactionAfterReturning</span><span class="token punctuation">(</span>txInfo<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> retVal<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">// 省略</span>
+
+    <span class="token punctuation">}</span></code></pre>
+<p>带 @Transaction 注解的事务函数中捕获到异常后，执行如下代码：</p>
+<pre><code>TransactionAspectSupport#completeTransactionAfterThrowing
+/**
+ * Handle a throwable, completing the transaction.
+ * We may commit or roll back, depending on the configuration.
+ * @param txInfo information about the current transaction
+ * @param ex throwable encountered
+ */
+protected void completeTransactionAfterThrowing(@Nullable TransactionInfo txInfo, Throwable ex) {
+   if (txInfo != null &amp;&amp; txInfo.getTransactionStatus() != null) {
+      if (logger.isTraceEnabled()) {
+         logger.trace(&quot;Completing transaction for [&quot; + txInfo.getJoinpointIdentification() +
+               &quot;] after exception: &quot; + ex);
+      }
+      if (txInfo.transactionAttribute != null &amp;&amp; txInfo.transactionAttribute.rollbackOn(ex)) {
+         try {
+            txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());
+         }
+         catch (TransactionSystemException ex2) {
+            logger.error(&quot;Application exception overridden by rollback exception&quot;, ex);
+            ex2.initApplicationException(ex);
+            throw ex2;
+         }
+         catch (RuntimeException | Error ex2) {
+            logger.error(&quot;Application exception overridden by rollback exception&quot;, ex);
+            throw ex2;
+         }
+      }
+      else {
+         // We don&#39;t roll back on this exception.
+         // Will still roll back if TransactionStatus.isRollbackOnly() is true.
+         try {
+            txInfo.getTransactionManager().commit(txInfo.getTransactionStatus());
+         }
+         catch (TransactionSystemException ex2) {
+            logger.error(&quot;Application exception overridden by commit exception&quot;, ex);
+            ex2.initApplicationException(ex);
+            throw ex2;
+         }
+         catch (RuntimeException | Error ex2) {
+            logger.error(&quot;Application exception overridden by commit exception&quot;, ex);
+            throw ex2;
+         }
+      }
+   }
+}</code></pre><p>可以看到，如果设置了事务属性且当前异常满足 rollbackOn 指定的异常（默认为 RuntimeException 类型及其的子类以及Error 及其子类），则会将当前事务回滚，否则提交。</p>
+<p>因此如果 catch 异常后没有再次将异常抛出或者不手动回滚，将会导致事务提交。</p>
+<p><strong>在封装二方接口很多人也会选择 “吞掉” 异常</strong>，示意代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoClient</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> XXServcie xxServcie<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> XXInfo <span class="token function">someMethod</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> xxServcie<span class="token punctuation">.</span><span class="token function">getXXInfo</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span><span class="token string">"调用xx服务异常，参数:{}"</span><span class="token punctuation">,</span> id<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>当调用发生异常时打印异常信息后直接返回 null。</p>
+<p>此时如果上层调用方直接拿到返回值对象未做判空处理直接使用其属性，很容易报 NPE。</p>
+<p>另外由于此处 “吞掉” 了二方接口的异常，有些业务异常中包含的错误原因（如包含xxx敏感词汇、标题不能超过20个字等）无法传给上层再封装给前端，可能会造成出错后用户懵逼，增加很多用户咨询。</p>
+<p>比如用户输入了某个敏感词汇，调用二方接口时 “吞掉” 了敏感词汇的业务异常提示（输入中包含 xx敏感词），用户通过技术支持咨询，开发人员要查日志才能知道具体的错误原因（如果此处没打印日志，可能连日志都没得查），非常低效。</p>
+<p>开发中要根据具体业务场景慎重确定是否要“吞掉” 异常，一个 “不经意” 的写法可能会造成很多线上咨询甚至线上 BUG。</p>
+<h4 id="2-1-3-循环中的异常处理问题"><a href="#2-1-3-循环中的异常处理问题" class="headerlink" title="2.1.3-循环中的异常处理问题"></a>2.1.3-循环中的异常处理问题</h4><p><strong>【参考】特别注意循环的代码异常处理的对程序的影响。</strong></p>
+<p>我们先看下面的例子：</p>
+<pre class=" language-java"><code class="language-java">   <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+
+        List<span class="token operator">&lt;</span>String<span class="token operator">></span> data <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"ab"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"abcd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 远程方法调用</span>
+            String result <span class="token operator">=</span> <span class="token function">doSomeRemoteInvoke</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+     <span class="token comment" spellcheck="true">// 后续代码</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>在写代码时这种场景非常常见，需要注意的是如果不对循环代码进行捕捉，如果循环中出现异常，后续代码则无法执行。</p>
+<p>但是如果在 for 循环外部捕捉异常，虽然for循环后如果有代码依然可以执行，但是列表中的非最后一个元素作为参数调用 <code>doSomeRemoteInvoke</code> 出现异常，后续数据无法继续执行。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">try</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 远程方法调用（可能出现异常）</span>
+        String result <span class="token operator">=</span> <span class="token function">doSomeRemoteInvoke</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"程序出错，参数data:{},错误详情"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>因此需要对 for 循环代码内对可能出现的异常进行捕捉：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 远程方法调用（可能出现异常）</span>
+        String result <span class="token operator">=</span> <span class="token function">doSomeRemoteInvoke</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"程序出错，参数data:{},错误详情"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>我们再看下面一个例子，思考两个问题：</p>
+<p>分别调用两个函数 <code>pirntList1</code> 和 <code>printList2</code> 输出的结果有何不同？</p>
+<p>哪个不需要捕捉异常也不会造成中间有一个出错后续处理中断？</p>
+<p>代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ExceptionDemo</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+
+        ExecutorService executorService <span class="token operator">=</span> Executors<span class="token punctuation">.</span><span class="token function">newSingleThreadExecutor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>String<span class="token operator">></span> data <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"ab"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"abcd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token function">printList1</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> executorService<span class="token punctuation">)</span><span class="token punctuation">;</span>
+       <span class="token comment" spellcheck="true">// printList2(data, executorService);</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">printList1</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">,</span> ExecutorService executorService<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            executorService<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 模拟中间报错</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">printList2</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">,</span> ExecutorService executorService<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        executorService<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 模拟中间报错</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>让我们来分析这两个函数的区别</strong>：</p>
+<p>在函数 <code>pirntList1</code> 中和上面的代码非常相似，for 循环在线程池执行代码外部，每次循环调用线程池去执行判断和打印语句。</p>
+<p>此时依次传入 a、ab、abc、abcd 四个字符串；当执行到 ab 时会抛出 <code>IllegalArgumentException</code>，此时线程池中的唯一的线程销毁；当执行到 abc 字符串时，再次在线程池中执行，线程池创建新的线程来执行，依然可以正常执行。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/IllegalArgumentException1.jpeg" alt="IllegalArgumentException1"></p>
+<p>而在函数 <code>pirntList2</code> 中 for 循环在 线程池 <code>execute</code> 参数的lambda表达式内，所有的循环执行都在同一个线程内。当执行到 ab 字符串时，抛出了异常，导致整个线程销毁，无法继续执行。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/IllegalArgumentException2.jpeg" alt="IllegalArgumentException2"></p>
+<p>因此为了不让一个数据出错导致后续的代码都无法执行，如果采用第二种方式来执行可以对代码做出如下修改：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">printList2</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">,</span> ExecutorService executorService<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    executorService<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>String str <span class="token operator">:</span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 模拟中间报错</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+
+                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"-->"</span> <span class="token operator">+</span> str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"程序出错，参数data:{},错误详情"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>在实际业务开发过程中，这种问题比较隐蔽，尤其是在异步线程中执行时，如果不加留意，很容易出现上面所描述的问题。</p>
+<h4 id="2-1-4-补充"><a href="#2-1-4-补充" class="headerlink" title="2.1.4-补充"></a>2.1.4-补充</h4><p><strong>【建议】慎重思考是否“吞掉” 异常，在二方服务封装时，如捕捉异常，应打印出查询参数和异常详情。</strong></p>
+<p>实际开发中，一般都不会吞掉异常，遇到 “吞掉” 异常的场景要慎重思考是否合理。</p>
+<p>另外，正如第二部分给出的范例所示，如果调用二方接口出现异常没有打印日志，将对排查问题造成很大的困难。</p>
+<p><strong>【建议】要理解好受检异常和非受检异常的区别，避免误用。</strong></p>
+<p>Java 中的异常主要分为两类：受检异常和非受检异常。</p>
+<p>根据 JLS 异常部分的<a href="https://docs.oracle.com/javase/specs/jls/se9/html/jls-11.html#jls-11.1" target="_blank" rel="noopener">相关描述</a>，我们可知受检异常主要指编译时强制检查的异常，包括非受检异常之外的其他 <code>Throwable</code> 的子类；非受检异常主要指编译器免检异常，通常包括运行时异常类和 Error相关类。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%BC%82%E5%B8%B8%E7%B1%BB%E5%9B%BE.jpeg" alt="异常类图"></p>
+<p>Error 和 Exception 都是 Throwable的子类。 RuntimeException 和其子类都属于运行时异常。Error 类和其子类都属于错误类。RuntimeException 及其子类 和 Error类及其子类 属于非受检异常，除此之外的 其他 Throwable 子类属于受检异常。</p>
+<p>大家可以使用 IDEA 自带的类图功能，绘制出自己感兴趣的异常类型，通过上述原则分析其是否属于受检异常。</p>
+<p>通常开发中自定义的业务异常（BusinessException）属于非受检异常，会定义为 RuntimeException 的子类。</p>
+<p>有些朋友可能会将业务异常定义为受检异常，导致底层抛出后上层调用每层都要被迫处理它。</p>
+<p><strong>【建议】努力使失败保持原子性。</strong></p>
+<p>正如《Effective Java》第 3 版 第 76条 努力使失败保持原子性[^2] 所提到的那样。</p>
+<p>我们可以在函数核心代码执行前对参数进行检查，对不满足的条件抛出适当的异常。</p>
+<p>实际开发中通常可以使用 <code>com.google.common.base.Preconditions</code> 或者 <code>org.apache.commons.lang3.Validate</code> 第三方库提供的参数检查工具类来实现。</p>
+<p><strong>【建议】如果忽略异常，请给出理由</strong></p>
+<p>如果 catch 住异常却没有进行编写任何处理代码，请在注释中给出充分的理由，避免其他人产生困惑，避免留坑。</p>
+<p>大家可以参考 <code>org.springframework.context.support.AbstractApplicationContext#close</code> 源码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">synchronized</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>startupShutdownMonitor<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">doClose</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">// If we registered a JVM shutdown hook, we don't need it anymore now:</span>
+      <span class="token comment" spellcheck="true">// We've already explicitly closed the context.</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>shutdownHook <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+         <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            Runtime<span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">removeShutdownHook</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>shutdownHook<span class="token punctuation">)</span><span class="token punctuation">;</span>
+         <span class="token punctuation">}</span>
+         <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IllegalStateException</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// ignore - VM is already shutting down</span>
+         <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>上面的源码捕捉到 <code>IllegalStateException</code> 异常以后没有处理，给出了处理方式和原因: 忽略此异常，因为虚拟机已经正在关闭。</p>
+<h4 id="2-1-5-总结"><a href="#2-1-5-总结" class="headerlink" title="2.1.5-总结"></a>2.1.5-总结</h4><p>本节主要讲异常的一些处理建议，包括是否要 “吞掉” 异常，循环中的异常处理，以及一些补充建议。希望大家可以重视异常，少趟坑。</p>
+<p>下一节我们将讲解打印日志的目的，该打印哪些日志，不该打印哪些日志以及忘记打印日志该怎么办等问题。</p>
+<h3 id="2-2-日志学习和使用的正确姿势"><a href="#2-2-日志学习和使用的正确姿势" class="headerlink" title="2.2-日志学习和使用的正确姿势"></a>2.2-日志学习和使用的正确姿势</h3><h4 id="2-2-1-前言"><a href="#2-2-1-前言" class="headerlink" title="2.2.1-前言"></a>2.2.1-前言</h4><p>日志虽然表面看起来很简单，却非常重要，日志是我们排查问题的非常重要的手段。我们不仅要掌握日志的基本用法，更要懂得不该在哪里打日志，该在哪些地方打日志，并思考忘记打日志怎么办。</p>
+<p>《手册》第 26 到 27 页，提出了很多日志规约 <a href="https://www.imooc.com/read/55/article/1156#fn1" target="_blank" rel="noopener">1</a>，其中比较重要的有：</p>
+<blockquote>
+<p>【强制】应用中不要直接使用日志系统的 API，而是应该依赖日志架构 SLF4J 中的 API，使用门面模式的日志架构，有利于维护各个类的日志处理方式统一。</p>
+<p>【强制】日志至少要保留 15 天，因为有些异常具备以 “周” 为频次的特点。</p>
+<p>【强制】避免重复打印日志，浪费磁盘空间，务必在 log4j.xml 中设置 additivity =false。</p>
+<p>【强制】异常信息应该包括两类信息：案发现场信息和异常堆栈信息。</p>
+<p>等。</p>
+</blockquote>
+<p>看到这些我们该思考下面几个问题：</p>
+<ul>
+<li>我们门面模式的是什么？它的使用场景和优势是什么？</li>
+<li>为什么会重复打日志？</li>
+<li>不该在哪里打日志？</li>
+<li>该在哪些地方打日志呢？</li>
+<li>如果忘记打日志却着急排查问题怎么办？</li>
+</ul>
+<p>只有主动去思考和日志规约相关的问题，这样才能知其然，才能学得更多更深入，在使用时才能更灵活。</p>
+<p>本节将带领大家学习和分析这些问题。</p>
+<h4 id="2-2-2-学习日志"><a href="#2-2-2-学习日志" class="headerlink" title="2.2.2-学习日志"></a>2.2.2-学习日志</h4><h5 id="1-日志是什么？为什么要打印日志？"><a href="#1-日志是什么？为什么要打印日志？" class="headerlink" title="1. 日志是什么？为什么要打印日志？"></a>1. 日志是什么？为什么要打印日志？</h5><p><strong>日志文件是什么？</strong></p>
+<p>计算机领域，日志文件是记录发生在运行中的操作系统或其他软件中的事件或消息的文件。</p>
+<p><strong>为什么要打印日志？</strong></p>
+<p>打印日志的主要目的是为了监测系统状态、方便测试、方便排查问题。</p>
+<p>当测试时遇到和预计不符的情况，看日志是解决问题的最常用手段。设想一下如果没有日志，线上出现问题排查起来是不是更困难？</p>
+<p>很多监控系统都是通过监控日志来预警，很多线上问题通过日志来排查，很多测试人员依靠日志来辅助测试。</p>
+<h5 id="2-门面模式"><a href="#2-门面模式" class="headerlink" title="2. 门面模式"></a>2. 门面模式</h5><p>很多同学可能有这样的一种体会：专门去学设计模式，看会了也容易忘。其实带着问题学知识，印象会更加深刻。</p>
+<p>比如此日志规约章节就涉及到了门面模式，那么这就是我们学习和理解门面模式的好机会。</p>
+<p>学习设计模式我们主要思考以下几个问题：</p>
+<ul>
+<li>为什么会出现这种设计模式？</li>
+<li>这种设计模式的核心思想是什么？</li>
+<li>这种设计模式的使用场景有哪些？</li>
+<li>这种设计模式的优缺点有哪些？</li>
+</ul>
+<p>那么我们依次来回答这几个问题，我们可以参考《设计模式之禅》，可以参考<a href="https://www.runoob.com/design-pattern/facade-pattern.html" target="_blank" rel="noopener">菜鸟教程</a>，甚至直接通过搜索博客。</p>
+<h6 id="2-1-门面设计模式是为了解决什么问题呢？"><a href="#2-1-门面设计模式是为了解决什么问题呢？" class="headerlink" title="2.1 门面设计模式是为了解决什么问题呢？"></a>2.1 门面设计模式是为了解决什么问题呢？</h6><p>《代码整洁之道》第二章 有意义的命名，讲到：命名要名副其实。</p>
+<blockquote>
+<p>我们想要强调，这件事很严肃。选一个好名字要花时间，但是生下来的时间比花费的时间多。注意命名，而且一旦发现有更好的名称，就换掉旧的。这么做，读你代码的人（包括你自己）都会更开心。</p>
+</blockquote>
+<p>同样地，对于门面设计模式，顾名思义，是为了隐藏系统的复杂性，向使用方提供统一的可以访问系统的接口。</p>
+<h6 id="2-2-门面模式的核心思想是什么？"><a href="#2-2-门面模式的核心思想是什么？" class="headerlink" title="2.2 门面模式的核心思想是什么？"></a>2.2 门面模式的核心思想是什么？</h6><p>门面设计模式在客户端和复杂的系统之间加一层，在这一层将调用的顺序和依赖的关系调整好。</p>
+<h6 id="2-3-门面模式的主要使用场景有哪些？"><a href="#2-3-门面模式的主要使用场景有哪些？" class="headerlink" title="2.3 门面模式的主要使用场景有哪些？"></a>2.3 门面模式的主要使用场景有哪些？</h6><p>为复杂的子系统提供外界访问的模块。</p>
+<p>预防低水平的开发人员带来的风险。</p>
+<h6 id="2-4-门面模式的优缺点分别是什么？"><a href="#2-4-门面模式的优缺点分别是什么？" class="headerlink" title="2.4 门面模式的优缺点分别是什么？"></a>2.4 门面模式的优缺点分别是什么？</h6><p><strong>优点</strong>：减少了系统的相互依赖；提高了灵活性和安全性。</p>
+<p><strong>缺点</strong>：不符合开闭原则，如果接口要修改无法通过继承和覆写来解决，只能修改门面代码，影响面比较大。</p>
+<h6 id="2-5-再回到为什么应用应该依赖使用日志架构-SLF4J-中的-API，使用门面设计模式的日志架构？"><a href="#2-5-再回到为什么应用应该依赖使用日志架构-SLF4J-中的-API，使用门面设计模式的日志架构？" class="headerlink" title="2.5 再回到为什么应用应该依赖使用日志架构 SLF4J 中的 API，使用门面设计模式的日志架构？"></a>2.5 再回到为什么应用应该依赖使用日志架构 SLF4J 中的 API，使用门面设计模式的日志架构？</h6><p>SLF4J 的全称为： The Simple Logging Facade for Java， 即 Java 简单日志门面。</p>
+<p>使用 SLF4J 编写代码，开发人员不需要关注不同的日志框架的差异，各日志框架对 SLF4J 做适配。由于没有具体依赖某个日志框架，如果系统出于安全、性能等原因想更换另外一个新的日志框架就轻而易举。</p>
+<p>关于门面设计模式的具体编码，大家可以参考《设计模式之禅》的 23 章：门面模式。</p>
+<h5 id="3-日志级别"><a href="#3-日志级别" class="headerlink" title="3. 日志级别"></a>3. 日志级别</h5><h6 id="3-1-日志级别规范"><a href="#3-1-日志级别规范" class="headerlink" title="3.1 日志级别规范"></a>3.1 日志级别规范</h6><p>常用的日志级别分为：ERROR、WARN、INFO、DEBUG、TRACE。</p>
+<p><strong>ERROR 日志</strong>的使用场景是：影响到程序正常运行或影响到当前请求正常运行的异常情况。比如打开配置失败、调用二方或者三方库抛出异常等。</p>
+<p><strong>WARN 日志</strong> 的使用场景是：不应该出现，但是不影响程序正常运行，不影响请求正常执行的情况。如找不到某个配置但是使用了默认配置，比如某些业务异常。</p>
+<p><strong>INFO 日志</strong>的使用场景是：需要了解的普通信息，比如接口的参数和返回值，异步任务的执行时间和任务内容等。</p>
+<p><strong>DEBUG 日志</strong>的使用场景是：所有调试阶段想了解的信息。比如无法进行远程 DEBUG 时，添加 DEBUG 日志在待研究的函数的某些位置打印参数和中间数据等。</p>
+<p>如 Spring <code>org.springframework.boot.SpringApplication#load</code> 函数就用到了 DEBUG 日志：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * Load beans into the application context.
+ * @param context the context to load beans into
+ * @param sources the sources to load
+ */</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">load</span><span class="token punctuation">(</span>ApplicationContext context<span class="token punctuation">,</span> Object<span class="token punctuation">[</span><span class="token punctuation">]</span> sources<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>logger<span class="token punctuation">.</span><span class="token function">isDebugEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"Loading source "</span> <span class="token operator">+</span> StringUtils<span class="token punctuation">.</span><span class="token function">arrayToCommaDelimitedString</span><span class="token punctuation">(</span>sources<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   BeanDefinitionLoader loader <span class="token operator">=</span> <span class="token function">createBeanDefinitionLoader</span><span class="token punctuation">(</span><span class="token function">getBeanDefinitionRegistry</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">,</span> sources<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>beanNameGenerator <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      loader<span class="token punctuation">.</span><span class="token function">setBeanNameGenerator</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>beanNameGenerator<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>resourceLoader <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      loader<span class="token punctuation">.</span><span class="token function">setResourceLoader</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>resourceLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>environment <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      loader<span class="token punctuation">.</span><span class="token function">setEnvironment</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>environment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   loader<span class="token punctuation">.</span><span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>TRACE 日志</strong> 的使用场景是：非常详细的系统运行信息，比如某个中间件读取配置，启动完成等。</p>
+<p>如 Spring 源码中，<code>org.springframework.boot.env.RandomValuePropertySource#getProperty</code> 就打印了 TRACE 级别的日志：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Object <span class="token function">getProperty</span><span class="token punctuation">(</span>String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>name<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span>PREFIX<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>logger<span class="token punctuation">.</span><span class="token function">isTraceEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">"Generating random property for '"</span> <span class="token operator">+</span> name <span class="token operator">+</span> <span class="token string">"'"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">return</span> <span class="token function">getRandomValue</span><span class="token punctuation">(</span>name<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>PREFIX<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>实际业务开发中 TRACE 级别的日志很少使用。</p>
+<p>另外通过上面两个例子，我们看到调用打印语句前，都会先判断该级别的日志是否开启。大家可以先思考下为什么这么做？文章后半部将重点对此进行解释。</p>
+<h6 id="3-2-规范的日志级别"><a href="#3-2-规范的日志级别" class="headerlink" title="3.2 规范的日志级别"></a>3.2 规范的日志级别</h6><p>规范打日志可以让根据日志定位问题的同学能够抓住重点，比如优先关注错误日志，其次是警告。</p>
+<p>【推荐】在自测或提测之后上线前一定要注意 warn 级别以上的日志，特别是 error 日志。</p>
+<p>通常我们会将 ERROR 日志专门输出到一个 error.log 文件。调试时通过 <code>tail -f error.log</code> 随时监控出现的错误日志。</p>
+<p>希望大家<strong>一定</strong>要养成这种好习惯。通过这种习惯，可以尽可能早地发现问题，避免悲剧。</p>
+<blockquote>
+<p>有些报错虽然影响实际的功能，但是由于不影响主流程，很多人就没在意。</p>
+<p>实际开发中，由于习惯查看错误日志，某次自测时发现某个刚上线的功能的某项配置错误，导致某项功能后台启动失败，及时反馈给该服务的负责人，收到了点赞。</p>
+</blockquote>
+<h6 id="3-3-不规范日志级别带来的问题"><a href="#3-3-不规范日志级别带来的问题" class="headerlink" title="3.3 不规范日志级别带来的问题"></a>3.3 不规范日志级别带来的问题</h6><p>日志级别看似非常简单，但是很多人可能会打错日志级别，给调试和定位问题带来很大不便。</p>
+<p>比如在实际开发中，发现一个<strong>功能失败，开发人员居然打印的是 info 级别日志</strong>！</p>
+<p>某项功能失败，却找不到任何错误和警告级别的日志，坑队友…</p>
+<p>还有将严重的错误打印 WARN 级别日志，导致没有及早引起重视出现故障。</p>
+<h4 id="2-2-3-举例"><a href="#2-2-3-举例" class="headerlink" title="2.2.3-举例"></a>2.2.3-举例</h4><p>日志的最基本用法比较简单，大家自行学习，这里就不再举例了。这里举两个例子来说明如何学习日志相关知识，如何分析相关问题。</p>
+<h5 id="1-叠加性如何理解？"><a href="#1-叠加性如何理解？" class="headerlink" title="1. 叠加性如何理解？"></a>1. 叠加性如何理解？</h5><p>前面提到：为了避免重复打印日志，浪费磁盘空间，务必在 <code>log4j.xml</code> 中设置 <code>additivity =false</code>。</p>
+<p><strong>那么为什么会重复打印日志呢？</strong></p>
+<p>我们分别从官方文档、源码的角度对该问题进行学习。</p>
+<h6 id="1-1-官方文档大法"><a href="#1-1-官方文档大法" class="headerlink" title="1.1 官方文档大法"></a>1.1 官方文档大法</h6><p>这类问题我们需要从官方文档或者源码层面去寻找答案。</p>
+<p>在 <a href="http://logging.apache.org/log4j/2.x/manual/configuration.html" target="_blank" rel="noopener">log4j 的官方手册的 “配置” 章节</a> 中的一个案例：</p>
+<p><code>MyApp</code> 类：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">import</span> com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Logger<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>LogManager<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyApp</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Logger logger <span class="token operator">=</span> LogManager<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>MyApp<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">final</span> String<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        logger<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">"Entering application."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Bar bar <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Bar</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>bar<span class="token punctuation">.</span><span class="token function">doIt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Didn't do it."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        logger<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">"Exiting application."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p><code>Bar</code> 类：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>foo<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Logger<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>LogManager<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Bar</span> <span class="token punctuation">{</span>
+  <span class="token keyword">static</span> <span class="token keyword">final</span> Logger logger <span class="token operator">=</span> LogManager<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>Bar<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">doIt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    logger<span class="token punctuation">.</span><span class="token function">entry</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Did it again!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> logger<span class="token punctuation">.</span><span class="token function">exit</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如果配置如下：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Configuration</span> <span class="token attr-name">status</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>WARN<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Appenders</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Console</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span> <span class="token attr-name">target</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>SYSTEM_OUT<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PatternLayout</span> <span class="token attr-name">pattern</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Console</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Appenders</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Loggers</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Logger</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.foo.Bar<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>trace<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppenderRef</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Logger</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Root</span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>error<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppenderRef</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Root</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Loggers</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Configuration</span><span class="token punctuation">></span></span></code></pre>
+<p>会输出这样的结果：</p>
+<pre class=" language-java"><code class="language-java"><span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.226</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> TRACE com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Enter
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.226</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> TRACE com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Enter
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.229</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> ERROR com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Did it again<span class="token operator">!</span>
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.229</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> ERROR com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Did it again<span class="token operator">!</span>
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.229</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> TRACE com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Exit <span class="token function">with</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.229</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> TRACE com<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>Bar <span class="token operator">-</span> Exit <span class="token function">with</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
+<span class="token number">15</span><span class="token operator">:</span><span class="token number">12</span><span class="token operator">:</span><span class="token number">13.230</span> <span class="token punctuation">[</span>main<span class="token punctuation">]</span> ERROR MyApp <span class="token operator">-</span> Didn't <span class="token keyword">do</span> it<span class="token punctuation">.</span></code></pre>
+<p>通过该范例和文档的描述，我们可以看到 <code>com.foo.Bar</code> 的消息都输出了两次。</p>
+<p>这是因为第一次是使用到了 <code>com.foo.Bar</code> 这个 logger，然后又用到了它的父 logger。</p>
+<p>日志事件被传递到 root logger 的 appender ，被写到了 console 中，导致两次输出， 这就是所谓的叠加性。</p>
+<p>叠加性是一个非常方便的特性，低层次的 logger 甚至都不需要配置 appender，就可以输出。但是很多情况下并不希望有这种默认的行为，那么可以通过设置 logger 的 additivity 属性为 false 来关闭叠加性。</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Configuration</span> <span class="token attr-name">status</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>WARN<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Appenders</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Console</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span> <span class="token attr-name">target</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>SYSTEM_OUT<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PatternLayout</span> <span class="token attr-name">pattern</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Console</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Appenders</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Loggers</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Logger</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.foo.Bar<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>trace<span class="token punctuation">"</span></span> <span class="token attr-name">additivity</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppenderRef</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Logger</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Root</span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>error<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppenderRef</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Console<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Root</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Loggers</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Configuration</span><span class="token punctuation">></span></span></code></pre>
+<p><strong>那么 logback 是否也提供了类似的设置呢？</strong></p>
+<p>我们查看官方手册的 <a href="https://logback.qos.ch/manual/architecture.html" target="_blank" rel="noopener">Appenders and Layouts”</a> 章节提到：</p>
+<blockquote>
+<p>一个 logger 可以被关联到多个 appender 上，对于 logger 的每个启用了的记录请求，都将被发送到 logger 里的全部 appender 及更高层次的 appender 中。换句话说，appender 叠加地继承了 logger 的层次等级。如果 root 日志有一个控制台 console ，那么所有启动的日志至少都会输出到控制台中。如果 root 下还有一个叫 L 的 logger，它含有一个文件 appender，那么 L 和 L 的子层次 Logger 的所有日志都将会打印到控制台和文件中。</p>
+<p>将 logger 的 additivity 属性设置为 false ，则可以取消这种默认的 appender 累加行为。</p>
+</blockquote>
+<p>另外关于 Appender 的叠加性还有如下描述：</p>
+<p>Appender 叠加性的含义是：Logger L 的日志的输出会发送给 L 及其祖先的全部 appender。</p>
+<p>然而，如果 Logger L 的某个祖先 Logger P 设置叠加标识为 false，那么，Logger L 的输出会发送给 Logger L 和 Logger P (含 P) 的所有 appender，但是不会发送给 Logger P 的任何祖先的 appender。</p>
+<p>这一点和 log4j 非常相似。</p>
+<h6 id="1-2-源码模式"><a href="#1-2-源码模式" class="headerlink" title="1.2 源码模式"></a>1.2 源码模式</h6><p>我们如果使用 log4j（logback 会略有不同，但是思路都是相似的），通过断点调试我们发现代码的核心源码如下：</p>
+<pre><code>org.apache.logging.log4j.core.config.LoggerConfig#log
+protected void log(final LogEvent event, final LoggerConfigPredicate predicate) {
+    if (!isFiltered(event)) {
+        processLogEvent(event, predicate);
+    }
+}</code></pre><p><code>processLogEvent</code> 函数源码:</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">processLogEvent</span><span class="token punctuation">(</span><span class="token keyword">final</span> LogEvent event<span class="token punctuation">,</span> <span class="token keyword">final</span> LoggerConfigPredicate predicate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   event<span class="token punctuation">.</span><span class="token function">setIncludeLocation</span><span class="token punctuation">(</span><span class="token function">isIncludeLocation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>predicate<span class="token punctuation">.</span><span class="token function">allow</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+       <span class="token function">callAppenders</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 调用 appender 写出日志</span>
+   <span class="token punctuation">}</span>
+  <span class="token function">logParent</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> predicate<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 让父 logger 记录日志</span>
+<span class="token punctuation">}</span></code></pre>
+<p>其中的 <code>callAppenders</code> 函数源码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">callAppenders</span><span class="token punctuation">(</span><span class="token keyword">final</span> LogEvent event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">final</span> AppenderControl<span class="token punctuation">[</span><span class="token punctuation">]</span> controls <span class="token operator">=</span> appenders<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//noinspection ForLoopReplaceableByForEach</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> controls<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        controls<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">callAppender</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如果 additive 为 true 且 parent Logger 不为 null，则调用 parent 的 log 函数。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">logParent</span><span class="token punctuation">(</span><span class="token keyword">final</span> LogEvent event<span class="token punctuation">,</span> <span class="token keyword">final</span> LoggerConfigPredicate predicate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>additive <span class="token operator">&amp;&amp;</span> parent <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+        parent<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> predicate<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 调用父日志继续打印</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>从这几个核心函数我们可以看出，如果 additive 为 false，则不会传递，parent Logger 不会继续记录日志。</p>
+<p>很多人学到此可能会有些不以为意，因为很多人加入团队后一般都是维护现有的项目，没有机会去配置日志，也没注意去观察日志文件的区别。</p>
+<p>然而在工作中的确发现有的服务 root 日志超大，很多日志被重复打印，造成了资源的浪费的情况。</p>
+<h5 id="2-为什么推荐使用占位符方式打印日志？"><a href="#2-为什么推荐使用占位符方式打印日志？" class="headerlink" title="2. 为什么推荐使用占位符方式打印日志？"></a>2. 为什么推荐使用占位符方式打印日志？</h5><p>《手册》中规定有一条关于占位符的规定：</p>
+<blockquote>
+<p>【强制】在日志输出时，字符串变量之间的拼接使用占位符的方式</p>
+<p>说明：因为 String 字符串拼接会使用 StringBuilder 的 append () 方式，有一定的性能损耗。使用占位符可以有效提高性能。</p>
+</blockquote>
+<p>很多人会把这一段话当做说服自己或者别人使用占位符的依据，然后就没然后了…</p>
+<p>如果我们遇到类似的新问题，或者我们没看到《手册》中这条规定，我们如何学习和分析？</p>
+<ul>
+<li><strong>我们怎么知道 “String 字符串拼接会使用 StringBuilder 的 append () 方式”？</strong></li>
+<li>俗话说：“尽信书不如无书”。规约中这种说法严谨吗？真的都是使用这一种方式拼接字符串的吗？</li>
+</ul>
+<p>我们写一个简单的 DEMO:</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LogDemo</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"慕课"</span> <span class="token operator">+</span> <span class="token string">"专栏"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">second</span><span class="token punctuation">(</span>String website<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"慕课网"</span> <span class="token operator">+</span> website<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">third</span><span class="token punctuation">(</span>String website<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>log<span class="token punctuation">.</span><span class="token function">isDebugEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"慕课网"</span> <span class="token operator">+</span> website<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>对源码编译然后反汇编，得到下面反汇编代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">com<span class="token punctuation">.</span>imooc<span class="token punctuation">.</span>basic<span class="token punctuation">.</span>log<span class="token punctuation">.</span>LogDemo</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> com<span class="token punctuation">.</span>imooc<span class="token punctuation">.</span>basic<span class="token punctuation">.</span>log<span class="token punctuation">.</span><span class="token function">LogDemo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Code<span class="token operator">:</span>
+       <span class="token number">0</span><span class="token operator">:</span> aload_0
+       <span class="token number">1</span><span class="token operator">:</span> invokespecial #<span class="token number">1</span>                  <span class="token comment" spellcheck="true">// Method java/lang/Object."&lt;init>":()V</span>
+       <span class="token number">4</span><span class="token operator">:</span> <span class="token keyword">return</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Code<span class="token operator">:</span>
+       <span class="token number">0</span><span class="token operator">:</span> getstatic     #<span class="token number">2</span>                  <span class="token comment" spellcheck="true">// Field log:Lorg/slf4j/Logger;</span>
+       <span class="token number">3</span><span class="token operator">:</span> ldc           #<span class="token number">3</span>                  <span class="token comment" spellcheck="true">// String 慕课专栏</span>
+       <span class="token number">5</span><span class="token operator">:</span> invokeinterface #<span class="token number">4</span><span class="token punctuation">,</span>  <span class="token number">2</span>            <span class="token comment" spellcheck="true">// InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V</span>
+      <span class="token number">10</span><span class="token operator">:</span> <span class="token keyword">return</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">second</span><span class="token punctuation">(</span>java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>String<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Code<span class="token operator">:</span>
+       <span class="token number">0</span><span class="token operator">:</span> getstatic     #<span class="token number">2</span>                  <span class="token comment" spellcheck="true">// Field log:Lorg/slf4j/Logger;</span>
+       <span class="token number">3</span><span class="token operator">:</span> <span class="token keyword">new</span>           #<span class="token number">5</span>                  <span class="token comment" spellcheck="true">// class java/lang/StringBuilder</span>
+       <span class="token number">6</span><span class="token operator">:</span> dup
+       <span class="token number">7</span><span class="token operator">:</span> invokespecial #<span class="token number">6</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder."&lt;init>":()V</span>
+      <span class="token number">10</span><span class="token operator">:</span> ldc           #<span class="token number">7</span>                  <span class="token comment" spellcheck="true">// String 慕课网</span>
+      <span class="token number">12</span><span class="token operator">:</span> invokevirtual #<span class="token number">8</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span>
+      <span class="token number">15</span><span class="token operator">:</span> aload_1
+      <span class="token number">16</span><span class="token operator">:</span> invokevirtual #<span class="token number">8</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span>
+      <span class="token number">19</span><span class="token operator">:</span> invokevirtual #<span class="token number">9</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span>
+      <span class="token number">22</span><span class="token operator">:</span> invokeinterface #<span class="token number">4</span><span class="token punctuation">,</span>  <span class="token number">2</span>            <span class="token comment" spellcheck="true">// InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V</span>
+      <span class="token number">27</span><span class="token operator">:</span> <span class="token keyword">return</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">third</span><span class="token punctuation">(</span>java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>String<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Code<span class="token operator">:</span>
+       <span class="token number">0</span><span class="token operator">:</span> getstatic     #<span class="token number">2</span>                  <span class="token comment" spellcheck="true">// Field log:Lorg/slf4j/Logger;</span>
+       <span class="token number">3</span><span class="token operator">:</span> invokeinterface #<span class="token number">10</span><span class="token punctuation">,</span>  <span class="token number">1</span>           <span class="token comment" spellcheck="true">// InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z</span>
+       <span class="token number">8</span><span class="token operator">:</span> ifeq          <span class="token number">38</span>
+      <span class="token number">11</span><span class="token operator">:</span> getstatic     #<span class="token number">2</span>                  <span class="token comment" spellcheck="true">// Field log:Lorg/slf4j/Logger;</span>
+      <span class="token number">14</span><span class="token operator">:</span> <span class="token keyword">new</span>           #<span class="token number">5</span>                  <span class="token comment" spellcheck="true">// class java/lang/StringBuilder</span>
+      <span class="token number">17</span><span class="token operator">:</span> dup
+      <span class="token number">18</span><span class="token operator">:</span> invokespecial #<span class="token number">6</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder."&lt;init>":()V</span>
+      <span class="token number">21</span><span class="token operator">:</span> ldc           #<span class="token number">7</span>                  <span class="token comment" spellcheck="true">// String 慕课网</span>
+      <span class="token number">23</span><span class="token operator">:</span> invokevirtual #<span class="token number">8</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span>
+      <span class="token number">26</span><span class="token operator">:</span> aload_1
+      <span class="token number">27</span><span class="token operator">:</span> invokevirtual #<span class="token number">8</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span>
+      <span class="token number">30</span><span class="token operator">:</span> invokevirtual #<span class="token number">9</span>                  <span class="token comment" spellcheck="true">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span>
+      <span class="token number">33</span><span class="token operator">:</span> invokeinterface #<span class="token number">4</span><span class="token punctuation">,</span>  <span class="token number">2</span>            <span class="token comment" spellcheck="true">// InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V</span>
+      <span class="token number">38</span><span class="token operator">:</span> <span class="token keyword">return</span>
+
+  <span class="token keyword">static</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    Code<span class="token operator">:</span>
+       <span class="token number">0</span><span class="token operator">:</span> ldc           #<span class="token number">11</span>                 <span class="token comment" spellcheck="true">// class com/imooc/basic/log/LogDemo</span>
+       <span class="token number">2</span><span class="token operator">:</span> invokestatic  #<span class="token number">12</span>                 <span class="token comment" spellcheck="true">// Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;</span>
+       <span class="token number">5</span><span class="token operator">:</span> putstatic     #<span class="token number">2</span>                  <span class="token comment" spellcheck="true">// Field log:Lorg/slf4j/Logger;</span>
+       <span class="token number">8</span><span class="token operator">:</span> <span class="token keyword">return</span>
+<span class="token punctuation">}</span></code></pre>
+<p>通过上述反汇编后的代码，我们发现：</p>
+<p>如果源码中直接将两个字符串字面量进行拼接，编译时期就会生成新的字符串，并不是通过 StringBuilder 构造的。</p>
+<p>上述反汇编后的代码，可以逆向 “翻译” 为：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LogDemo</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"慕课专栏"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">second</span><span class="token punctuation">(</span>String website<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        StringBuilder builder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        builder<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"慕课网"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        builder<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>website<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String result <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">third</span><span class="token punctuation">(</span>String website<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>log<span class="token punctuation">.</span><span class="token function">isDebugEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        StringBuilder builder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        builder<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"慕课网"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        builder<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>website<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String result <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>通过反汇编后的代码和上述逆向 “还原” 的 Java 代码，我们可以清楚地知道：如果不加上 <code>log.isDebugEnabled()</code> 判断，会因为字符串拼接造成不必要的资源损耗。</p>
+<p>但是如果每个日志打印都加上这种判断，代码非常不优雅，因此常见的实现了 <code>org.slf4j.Logger</code> 接口的日志框架提供了占位符日志打印方法。</p>
+<p>使用占位符的方式，底层会先使用判断逻辑，再去拼接字符串（具体大家可以通过断点调试或者阅读源码来验证），从而避免了不必要的字符串拼接。</p>
+<h4 id="2-2-4-不要在哪里打日志？"><a href="#2-2-4-不要在哪里打日志？" class="headerlink" title="2.2.4-不要在哪里打日志？"></a>2.2.4-不要在哪里打日志？</h4><p><strong>【强制】不要用 <code>System.out.println</code> 代替日志框架</strong></p>
+<p>很多人，尤其是新手喜欢通过打印语句而不是日志系统来打印日志排查错误。在本地调试的场景下，这种情况更加普遍。这是一个非常不专业且很 low 的行为。</p>
+<p>以 Tomcat 为例， 使用 <code>System.out.println</code> 函数语句将信息输出到 <code>catalina.out</code> 文件中，该文件会被清理，否则影响性能。文件的 IO 操作非常耗时，而该函数底层使用了 <code>java.io.PrintStream#println(java.lang.Object)</code> 内部使用了同步代码块，非常影响性能。</p>
+<p>由于没有输出级别的概念，很多忘记删除的调试打印语句可能都被输出到输出文件中。如果是必须要打印日志的场景，请用日志框架打印。对于暂时性的本地或者测试服务器上排错，建议使用 IDE 的本地或者远程调试功能。</p>
+<p>在调试器中可以看到参数的值，看到调用栈，可以通过表达式查看变量的属性等，功能更加强大。</p>
+<p><strong>【强制】不要打印敏感信息，如果需要打印可以考虑对敏感信息脱敏处理</strong></p>
+<p>很多开发人员没有安全意识，将用户的密码和个人资料、商品的名称和价格等信息在未脱敏的情况下通过日志框架打印到日志文件中。这些都是很大的安全隐患，容易出现安全事故。因此不要打印敏感信息或者将敏感信息进行脱敏后再打印。</p>
+<p><strong>【推荐】除非业务需要，尽量不要打印大文本 (含富文本)。如果要打印可以截取前 M 个字符。</strong></p>
+<p>大家都知道 I/O 操作非常耗时，在高并发场景下，如果同步打印大文本日志非常影响性能。</p>
+<p>另外，很多大文本对排查问题帮助不大，打印该信息的意义不大，因此尽量避免打印该内容或只截取一部分关键信息。</p>
+<p>如果公司内容有封装的相关注解，可以在大文本上加上忽略的注解。如果没有尽量避免调用 JSON 转字符串的函数将整个对象打印，可以重写 toString 方法忽略或截取大文本字段的一部分。</p>
+<h4 id="2-2-5-该在哪里打印日志？"><a href="#2-2-5-该在哪里打印日志？" class="headerlink" title="2.2.5-该在哪里打印日志？"></a>2.2.5-该在哪里打印日志？</h4><p>大家写代码时，都会接触到打日志的场景。大多数同学不是不会打印日志，而是不知道在哪打日志。打印日志没有章法，很容易遇到问题才发现没有日志，再去补日志去排查问题，非常浪费时间。</p>
+<p><strong>那么大家是否深入思考过应该在哪里打印日志呢？</strong></p>
+<p>下面给出一些个人建议：</p>
+<p>【推荐】<strong>用切面或 Filter 在 dubbo 或 Controller 层做切面来打印调用的参数、返回值和响应时间以及捕捉和打印异常日志。</strong></p>
+<p>通过统一的日志，将参数和返回值，以及响应时间做切面，当出现问题时，可以极大地辅助我们排查，也能够帮助我们了解接口的响应情况。</p>
+<p>可以使用日志框架如 CAT，做统一的 traceId, 方便定位整条调用链路。</p>
+<p><strong>【推荐】在依赖的二方或三方接口的参数、返回值和异常处打印日志。</strong></p>
+<p>依赖的二方和三方接口对接最容易出错，可以将其请求的参数和接口返回值以及异常信息等通过日志打印输出，方便分析和排查问题。</p>
+<p>一般也会使用切面统一打印，或者通过使用支持日志注解的框架来对某些接口的参数和返回值打印日志。</p>
+<p><strong>【推荐】 在接收消息的地方打印日志。</strong></p>
+<p>我们测试或者排查问题时，如果涉及到消息队列，最先要查的是有没有收到消息，因此接收到消息的地方打印日志比较有用。</p>
+<p><strong>【推荐】 在定时任务的开始和结束的地方。</strong></p>
+<p>和上面的条目很类似，在定时任务的开始和结束的地方打印日志也很重要。</p>
+<p>如果线上某个任务没有执行或者开始但是没有结束，可以通过日志快速排查问题。</p>
+<p><strong>【推荐】 在异步任务的开始和结束的地方。</strong></p>
+<p>异步任务如果出错，很难排查。在任务开始和结束的地方打印一些关键参数对排查问题有很大的帮助。</p>
+<p>在异步任务的异常捕捉地方打印日志也至关重要，将是分析问题的关键。</p>
+<p><strong>【推荐】面向测试打印日志。</strong></p>
+<p>所谓的<strong>面向测试打印日志</strong>是指：方便测试人员测试开发人员代码而提供的测试。</p>
+<p>此日志的级别一般为 DEBUG，一般仅在测试环境可用。</p>
+<p>有些测试人员并不会拉取你的代码或者编写单元测试，而只对你的编码进行功能性测试。</p>
+<p>此时，测试人员构造测试用例对你的接口进行验证时只能观察到接口的返回值，如果你能提供其中的核心计算函数的日志，将极大方便测试人员去验证功能。</p>
+<h4 id="2-2-6-忘记打日志又着急排查问题怎么办？"><a href="#2-2-6-忘记打日志又着急排查问题怎么办？" class="headerlink" title="2.2.6-忘记打日志又着急排查问题怎么办？"></a>2.2.6-忘记打日志又着急排查问题怎么办？</h4><p>在开发中我们可能会遇到一种非常尴尬的问题，一个问题本地无法复现，需要去生产环境排查问题。</p>
+<p><strong>但是我们在关键的函数上没有打印日志，肿么办？</strong> 在线等，急…</p>
+<p>加上日志后重新发布代价比较大，而且无法快速及时地排查分析问题。</p>
+<p>此时我们可以借助 Alibaba Java 诊断利器 <a href="https://github.com/alibaba/arthas" target="_blank" rel="noopener">Arthas</a> 。</p>
+<p>安装非常简单，请参考 <a href="https://alibaba.github.io/arthas/install-detail.html" target="_blank" rel="noopener">Arthas Install</a>, 一两行命令搞定！启动后选择所要监控的 Java 进程即可进。</p>
+<p>如下图所示，我们可以通过 <code>java -jar arthas-bbot.jar</code> 启动 arthas。</p>
+<p>启动后它会检测已经存在的 java 进程（下图显示有 3 个），选择我们需要研究的进程序号（此处为 1）回车即可。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/arthas.jpeg" alt="arthas"></p>
+<p>自此，我们就可以使用其 <a href="https://alibaba.github.io/arthas/watch.html" target="_blank" rel="noopener">watch 命令</a>来观察返回值、抛出的异常、入参等。</p>
+<p><strong>查询出参和返回值</strong></p>
+<pre><code>watch 类路径 函数名 &quot;{params,returnObj}&quot; -x 2</code></pre><p>如输入：watch demo.MathGame primeFactors “{params,returnObj}” -x 2</p>
+<pre class=" language-java"><code class="language-java">Press Q or Ctrl<span class="token operator">+</span>C to abort<span class="token punctuation">.</span>
+<span class="token function">Affect</span><span class="token punctuation">(</span><span class="token keyword">class</span><span class="token operator">-</span>cnt<span class="token operator">:</span><span class="token number">1</span> <span class="token punctuation">,</span> method<span class="token operator">-</span>cnt<span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">)</span> cost in <span class="token number">68</span> ms<span class="token punctuation">.</span>
+ts<span class="token operator">=</span><span class="token number">2019</span><span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span><span class="token number">09</span> <span class="token number">22</span><span class="token operator">:</span><span class="token number">14</span><span class="token operator">:</span><span class="token number">05</span><span class="token punctuation">;</span> <span class="token punctuation">[</span>cost<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">.</span>149321ms<span class="token punctuation">]</span> result<span class="token operator">=</span><span class="token annotation punctuation">@ArrayList</span><span class="token punctuation">[</span>
+    <span class="token annotation punctuation">@Object</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">[</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">70214</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token annotation punctuation">@ArrayList</span><span class="token punctuation">[</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">35107</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+ts<span class="token operator">=</span><span class="token number">2019</span><span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span><span class="token number">09</span> <span class="token number">22</span><span class="token operator">:</span><span class="token number">14</span><span class="token operator">:</span><span class="token number">06</span><span class="token punctuation">;</span> <span class="token punctuation">[</span>cost<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">.</span>200091ms<span class="token punctuation">]</span> result<span class="token operator">=</span><span class="token annotation punctuation">@ArrayList</span><span class="token punctuation">[</span>
+    <span class="token annotation punctuation">@Object</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">[</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">119344</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token annotation punctuation">@ArrayList</span><span class="token punctuation">[</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token number">7459</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+<p>可以试试观察到 <code>MathGame</code> 类的 <code>primeFactors</code> 函数调用的出参和返回值。</p>
+<p><strong>查看异常信息</strong></p>
+<p>格式如下：<code>watch 类路径 函数名 &quot;{params[0],throwExp}&quot; -e -x 2</code></p>
+<p>使用 watch demo.MathGame primeFactors “{params [0],throwExp}” -e -x 2 可以抓取到官方案例的该函数调用的异常信息:</p>
+<pre class=" language-java"><code class="language-java">ts<span class="token operator">=</span><span class="token number">2019</span><span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span><span class="token number">09</span> <span class="token number">22</span><span class="token operator">:</span><span class="token number">18</span><span class="token operator">:</span><span class="token number">36</span><span class="token punctuation">;</span> <span class="token punctuation">[</span>cost<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">.</span>211415ms<span class="token punctuation">]</span> result<span class="token operator">=</span><span class="token annotation punctuation">@ArrayList</span><span class="token punctuation">[</span>
+    <span class="token annotation punctuation">@Integer</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">26077</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>IllegalArgumentException<span class="token operator">:</span> number is<span class="token operator">:</span> <span class="token operator">-</span><span class="token number">26077</span><span class="token punctuation">,</span> need <span class="token operator">>=</span> <span class="token number">2</span>
+    at demo<span class="token punctuation">.</span>MathGame<span class="token punctuation">.</span><span class="token function">primeFactors</span><span class="token punctuation">(</span>MathGame<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">46</span><span class="token punctuation">)</span>
+    at demo<span class="token punctuation">.</span>MathGame<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>MathGame<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">24</span><span class="token punctuation">)</span>
+    at demo<span class="token punctuation">.</span>MathGame<span class="token punctuation">.</span><span class="token function">main</span><span class="token punctuation">(</span>MathGame<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">16</span><span class="token punctuation">)</span>
+<span class="token punctuation">,</span>
+<span class="token punctuation">]</span></code></pre>
+<p>watch 命令还支持条件表达式，支持根据耗进行过滤等强大功能，建议大家一定要敢于尝试，通过官方案例或自己项目代码去训练。</p>
+<h4 id="2-2-7-常见错误日志形式"><a href="#2-2-7-常见错误日志形式" class="headerlink" title="2.2.7-常见错误日志形式"></a>2.2.7-常见错误日志形式</h4><p>下面给出实际开发中的典型误用的几种情况：</p>
+<p><strong>用打印语句或者 <code>e.printStackTrace()</code> 打印日志</strong></p>
+<p>这两种打印方式非常不专业，容易造成日志丢失，污染控制日志级别，甚至还可能造成其他问题。</p>
+<p><strong>占位符误用</strong></p>
+<pre class=" language-java"><code class="language-java">log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"错误信息为={}"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>对应的函数签名为：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">info</span><span class="token punctuation">(</span>String msg<span class="token punctuation">,</span> Throwable t<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>最终导致占位符被当做普通字符串处理。</p>
+<p><strong>参数格式错误</strong></p>
+<pre class=" language-java"><code class="language-java">log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span> user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">""</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>此时实际对应的函数为：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">info</span><span class="token punctuation">(</span>String format<span class="token punctuation">,</span> Object arg<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>由于第一个 format 参数没有格式化占位符，导致第二个参数打印不出来。</p>
+<p><strong>空指针异常</strong></p>
+<p>实际开发中，还有一些同学居然会这么写</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">if</span> <span class="token punctuation">(</span>result <span class="token operator">==</span> null <span class="token operator">||</span> result<span class="token punctuation">.</span><span class="token function">getData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"result={},resultData:{}"</span><span class="token punctuation">,</span> result<span class="token punctuation">,</span> result<span class="token punctuation">.</span><span class="token function">getData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如果 result == null 为 true，难道不会报空指针异常吗？</p>
+<p>还有很多花式踩坑姿势，这里就不一一列举了，也欢迎大家留言补充。</p>
+<p>建议大家一定要注重 IDE 的警告；开发时日志的函数有较多重载方法，没把握时可以点到源码中核对；多使用 findbugs 来检查代码。</p>
+<h4 id="2-2-8-总结"><a href="#2-2-8-总结" class="headerlink" title="2.2.8-总结"></a>2.2.8-总结</h4><p>本节我们我们重点分析了如何学习日志规约，思考了为何要打印日志，并讲述了不该在哪里打印日志，该在哪里打印日志的问题。还介绍了如果没有日志还需要紧急排查问题，大家可以使用 arthas 来实现；最后给出了常见的日志形式。</p>
+<p>希望大家在学习和开发过程中多思考，多实战，能够够举一反三。</p>
+<p>建议大家多读读 log4j 和 logback 的官方手册和源码，更系统地学习日志的用法、理解日志的原理。</p>
+<p>下一节我们将学习单元测试相关知识。</p>
+<h4 id="2-2-9-思考"><a href="#2-2-9-思考" class="headerlink" title="2.2.9-思考"></a>2.2.9-思考</h4><p>1、为什么 Spring 中会有下面代码这种先判断后打印日志的情况，而不直接使用占位符方式打印日志呢？</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">if</span> <span class="token punctuation">(</span>logger<span class="token punctuation">.</span><span class="token function">isDebugEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   logger<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span>
+         <span class="token string">"Loading source "</span> <span class="token operator">+</span> StringUtils<span class="token punctuation">.</span><span class="token function">arrayToCommaDelimitedString</span><span class="token punctuation">(</span>sources<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>2、学习 <code>System.out.println</code> 的源码</p>
+<h2 id="3-单元测试"><a href="#3-单元测试" class="headerlink" title="3-单元测试"></a>3-单元测试</h2><h3 id="3-1-单元测试的知识储备"><a href="#3-1-单元测试的知识储备" class="headerlink" title="3.1-单元测试的知识储备"></a>3.1-单元测试的知识储备</h3><h4 id="3-1-1-前言"><a href="#3-1-1-前言" class="headerlink" title="3.1.1-前言"></a>3.1.1-前言</h4><p>单元测试作为编码质量的重要保障手段，是编码的一个非常重要的环节。</p>
+<p>《手册》 第三部分对单元测试进行了描述 <a href="https://www.imooc.com/read/55/article/1157#fn1" target="_blank" rel="noopener">1</a>，包括：单元测试必须遵守自动化、独立性和可重复性原则；单元测试的粒度一般是方法级别，最多也是类级别；核心业务、核心应用。核心模块的增量代码确保单元测试通过等。</p>
+<p>那么接下来我们思考几个问题：</p>
+<ul>
+<li>什么是单元测试？</li>
+<li>为什么要编写单元测试？</li>
+<li>什么是好的单元测试？</li>
+<li>单元测试的常用框架有哪些？</li>
+</ul>
+<p>这些都是本节将探讨的重点内容。</p>
+<h4 id="3-1-2-单元测试相关概念"><a href="#3-1-2-单元测试相关概念" class="headerlink" title="3.1.2-单元测试相关概念"></a>3.1.2-单元测试相关概念</h4><h5 id="1-单元测试和集成测试"><a href="#1-单元测试和集成测试" class="headerlink" title="1. 单元测试和集成测试"></a>1. 单元测试和集成测试</h5><p>很多人一直在写单元测试，却不知道单元测试和集成测试的区别，认为：“使用能够编写单元测试的框架编写的测试就是单元测试”，这种认识是不全面的。</p>
+<p>接下来，我们先了解单元测试和集成测试的概念和主要区别。</p>
+<p>《单元测试的艺术》 第一章 单元测试的基础对集成测试和单元测试进行了描述 <a href="https://www.imooc.com/read/55/article/1157#fn2" target="_blank" rel="noopener">2</a>：</p>
+<p><strong>单元测试</strong>：</p>
+<blockquote>
+<p>一个单元测试是一段代码，这段代码调用一个工作单元，并检验该工作单元的一个具体的最终结果。</p>
+<p>如果关于这个最终结果的假设是错误的，单元测试就失败了。</p>
+<p>一个单元测试的范围可以小到一个方法，大到一个类。</p>
+</blockquote>
+<p><strong>集成测试</strong>：</p>
+<blockquote>
+<p>“任何测试，如果它运行速度不快，结果不稳定，或者要用到被测试单元的一个或者多个真实依赖，我就认为它是集成测试。”</p>
+<p>集成测试是对一个工作单元进行测试，这个测试对被测试的工作单元没有完全控制，并使用单元的一个或多个真实依赖物，例如时间、网络、数据库、线程或随机数产生器等。</p>
+</blockquote>
+<p><strong>两者的主要联系和区别</strong>：</p>
+<p>集成测试和单元测试同样都很重要，都是验证系统功能的重要手段。</p>
+<p>但是集成测试运行通常更慢，很难编写，很难做到自动化，需要配置，通常一次测试的东西过多。</p>
+<p>集成测试会使用真实的依赖，而单元测试则把被测试的单元和其依赖隔离，以保证单元测试的高度稳定，还可以轻易控制和模拟被测试单元的行为方面。</p>
+<p>因此<strong>单元测试和集成测试最主要的区别之一就是测试中是否依赖 “真实环境”</strong>。</p>
+<h5 id="2-单元测试的重要性"><a href="#2-单元测试的重要性" class="headerlink" title="2. 单元测试的重要性"></a>2. 单元测试的重要性</h5><p>很多人经常以 “时间紧，任务重” 或者 “单元测试没用” 为借口来拒绝编写单元测试。</p>
+<p>但是 BUG 在软件的生命周期越早阶段发现，付出的代价越少。</p>
+<p>单元测试可以让很多 BUG 在编码阶段就能够及时发现并解决，而不需要交给测试人员兜底，如果测试人员兜底失败，可能造成线上故障。</p>
+<p>有了单元测试作保障，我们还可以放心对函数进行重构，如果重构代码导致单元测试运行失败，则说明重构的代码有问题。</p>
+<p><strong>长远来看，单元测试对编码的益处（如提高代码质量和避免 BUG）远比编写单元测试的投入所花费的代价要大的多。</strong></p>
+<h5 id="3-单元测试的方法"><a href="#3-单元测试的方法" class="headerlink" title="3. 单元测试的方法"></a>3. 单元测试的方法</h5><p>从我个人的理解来看，编写单元测试通常有两种方法，包括传统的单测方法和测试驱动开发，两种略有不同。</p>
+<p><strong>单元测试的传统方法</strong>大致流程如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E4%BC%A0%E7%BB%9F%E6%B5%81%E7%A8%8B.jpeg" alt="单元测试的传统流程"></p>
+<p>在国内，很多团队采用传统的方式，即先编写好代码，然后再编写单元测试来验证该段代码是否正确。</p>
+<p>也有一些团队采用如下图所示的方式，即先编写单元测试，然后编写代码让通过测试。这种开发方式被称为<strong>测试驱动开发（Test-Driven Development, TDD）</strong>。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B.jpeg" alt="测试驱动开发流程"></p>
+<p>TDD 体现了 “以终为始” 的思想，即先制定目标，然后去验证是否实现了目标，而不是先做再去 “思考目标”。</p>
+<p><strong>实践 TDD 的关键步骤</strong></p>
+<ol>
+<li>编写一个失败的测试来证明产品中代码和功能的缺陷；</li>
+<li>编写符合测试预期的产品代码，使测试通过；</li>
+<li>重构代码。</li>
+</ol>
+<p>虽然 TDD 更 “出名”，具体采用哪种方法主要看团队约定和个人编程习惯。</p>
+<p>由于团队没有强制约定，或者开发前参数不容易确定等原因，传统的单元测试方法依然被很多开发人员采用。</p>
+<h5 id="4-何为优秀的单元测试？"><a href="#4-何为优秀的单元测试？" class="headerlink" title="4. 何为优秀的单元测试？"></a>4. 何为优秀的单元测试？</h5><p>既然要编写单元测试，那么好的单元测试标准是什么呢？</p>
+<p>参考众多单元测试相关资料，我们得总结出优秀的单元测试应该具有以下几个特征：</p>
+<blockquote>
+<p>满足功能：被检验的函数或类的逻辑行为满足预期功能；</p>
+<p>满足 AIR 原则：单元测试应该可以自动执行；单元测试的用例之间要保持彼此独立；单元测试可以重复执行。</p>
+<p>优秀的单元测试还应该具有编写容易，运行快速的特点。</p>
+</blockquote>
+<p>在学习和开发过程中，看到很多人依然通过打印语句输出结果，通过 “肉眼” 来测试，这样如果对被测试的类或函数做出修改而无法满足功能要求，单元测试也会运行通过，就失去了单元测试的意义。</p>
+<p>因此，建议大家在学习和工作开发过程中要遵循上述指导原则，编写出优秀的单元测试。</p>
+<h4 id="3-1-3-Java-单元测试工具"><a href="#3-1-3-Java-单元测试工具" class="headerlink" title="3.1.3-Java 单元测试工具"></a>3.1.3-Java 单元测试工具</h4><p><strong>常用的 Java 单元测试有: JUnit、TestNG</strong>。</p>
+<p>TestNG 受 JUnit 和 NUnit 的启发，功能相似，但是比 JUnit 更强大。TestNG 不只为单元测试而设计，其框架的设计目标是支持单元测试、公共能测试，端对端测试，集成测试等。</p>
+<p>JUnit 具体用法比较简单，如果想系统学习可<a href="https://junit.org/junit5/docs/current/user-guide/****" target="_blank" rel="noopener">官方使用指南</a>，参考《JUnit 实战 (第 2 版)》, TestNG 和 JUnit 非常相似，如果想深入学习，首推 <a href="https://testng.org/doc/documentation-main.html" target="_blank" rel="noopener">TestNG 官方文档</a>。</p>
+<p><strong>主流的 Java mock 框架有: Mockito, JMockit, Easy Mock 。</strong></p>
+<p>根据《What are the best mock framteworks for Java》一文 <a href="https://www.imooc.com/read/55/article/1157#fn3" target="_blank" rel="noopener">3</a>，我们可以看到三者的特点和优劣。</p>
+<p>Mockito 简洁易用，有 PowerMock 拓展，允许静态函数测试，社区强大，对结果的验证和异常处理非常简洁、灵活。缺点是框架本身不支持 static 和 private 函数的 mock。</p>
+<p>JMockit 简单易用；可以 mock “一切”，包括 final 类， final/private/static 函数，而其他 mock 框架往往只支持其中一部分；缺点是社区支持不够活跃，3 个 contributers 介乎只有一个在干活，学习曲线比较陡峭。</p>
+<p>Easy Mock 上手简单，文档清晰；同样的社区较小，导致更多人选择其它的 mock 框架。</p>
+<p><strong>还有很多其他配合单元测试的框架</strong>，如强大的构造随机 Java 对象的 <a href="https://github.com/j-easy/easy-random" target="_blank" rel="noopener">Easy Random</a> ，构造随机字符串的 <a href="https://github.com/DiUS/java-faker" target="_blank" rel="noopener">Java Faker</a> 等。</p>
+<h4 id="3-1-4-总结"><a href="#3-1-4-总结" class="headerlink" title="3.1.4-总结"></a>3.1.4-总结</h4><p>本节主要介绍了单元测试的概念、单元测试和集成测试的区别以及单元测试的必要性、主要步骤、主要框架等。</p>
+<p>希望通过本节的学习，大家对单元测试能够有一个初步的理解。</p>
+<p>下一节我们将介绍单元测试的范例。</p>
+<h3 id="3-2-单元测试构造数据的正确姿势"><a href="#3-2-单元测试构造数据的正确姿势" class="headerlink" title="3.2-单元测试构造数据的正确姿势"></a>3.2-单元测试构造数据的正确姿势</h3><h4 id="3-2-1-前言"><a href="#3-2-1-前言" class="headerlink" title="3.2.1-前言"></a>3.2.1-前言</h4><p>前面讲到了单元测试的概念和好处，讲到了 Java 单元测试常用框架。</p>
+<p>写过很多单元测试的朋友会发现，单元测试的重要环节就是构造测试数据，单元测试构造测试数据往往非常耗时，这也是很多人不喜欢写单元测试的重要原因之一。</p>
+<p>因此本节将重点讲述有哪些单元测试中构造数据的方式，各种构造测试数据方式的优劣以及实际开发中该如何选择。</p>
+<h4 id="3-2-2-构造单测数据的方式"><a href="#3-2-2-构造单测数据的方式" class="headerlink" title="3.2.2-构造单测数据的方式"></a>3.2.2-构造单测数据的方式</h4><h5 id="1-手动"><a href="#1-手动" class="headerlink" title="1. 手动"></a>1. 手动</h5><p>所谓手动构造单元测试工具，是指在测试类或者函数中<strong>直接声明测试数据，或在初始化函数中填充数据：</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> mockStrList<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Before</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    mockStrList <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">final</span> <span class="token keyword">int</span> size <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mockStrList<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"something"</span> <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>还可以在测试类中<strong>编写私有 <code>mock</code> 数据的函数</strong>来实现:</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> UserDO <span class="token function">mockUserDO</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    UserDO userDO <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">UserDO</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userDO<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span>0L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userDO<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span><span class="token string">"测试"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userDO<span class="token punctuation">.</span><span class="token function">setAge</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userDO<span class="token punctuation">.</span><span class="token function">setNickName</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userDO<span class="token punctuation">.</span><span class="token function">setBirthDay</span><span class="token punctuation">(</span>Date<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>Instant<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> userDO<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>上述手动构造测试对象，当属性较多时，容易出错而且占据源码空间，而且不太优雅。</p>
+<h5 id="2-半自动"><a href="#2-半自动" class="headerlink" title="2. 半自动"></a>2. 半自动</h5><p>当所要构造的数据为复杂对象(属性较多的对象)时，手动构造对象非常耗时，而且属性设置容易遗漏。</p>
+<p>所谓半自动是指使用插件自动填充所要构造对象的属性。</p>
+<p>比如:可以使用 <strong>“Generate All setters”</strong> IDEA 插件，选择 ”generate all setter with default value“ 填充默认值，效率提高很多。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/generate-all-setter-with-default-value.jpeg" alt="generate-all-setter-with-default-value"></p>
+<p>生成如下代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> PdfData <span class="token function">mockPdfData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 使用插件填充PdfData</span>
+    PdfData pdfData <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PdfData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfData<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfData<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span><span class="token string">"some"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfData<span class="token punctuation">.</span><span class="token function">setWaterMark</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfData<span class="token punctuation">.</span><span class="token function">setPages</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 再次使用一次插件，填充PdfAttribute</span>
+    PdfAttribute pdfAttribute <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PdfAttribute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfAttribute<span class="token punctuation">.</span><span class="token function">setWeight</span><span class="token punctuation">(</span>1024L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfAttribute<span class="token punctuation">.</span><span class="token function">setHeight</span><span class="token punctuation">(</span>512L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pdfData<span class="token punctuation">.</span><span class="token function">setPdfAttribute</span><span class="token punctuation">(</span>pdfAttribute<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> pdfData<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>还有一种非常常见的”半自动“构造测试数据的方式，<strong>采用 JSON 序列化和反序列化方式</strong>。</p>
+<p>将构造的对象通过 JSON 序列化到 JSON 文件里，使用时反序列化为Java对象即可：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testPdfData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 构造测试数据</span>
+    PdfData pdfData <span class="token operator">=</span> ResourceUtil<span class="token punctuation">.</span><span class="token function">parseJson</span><span class="token punctuation">(</span>PdfData<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token string">"/data/pdfData.json"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"构造的数据:{}"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 测试export 函数</span>
+    Boolean export <span class="token operator">=</span> PdfUtil<span class="token punctuation">.</span><span class="token function">export</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Assert<span class="token punctuation">.</span><span class="token function">assertTrue</span><span class="token punctuation">(</span>export<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="3-自动"><a href="#3-自动" class="headerlink" title="3. 自动"></a>3. 自动</h5><p>半自动的方式构造单元测试数据效率仍然不够高，而且缺乏灵活性，比如需要构造随机属性的对象，需要构造不同属性的 N 个对象，就会造成编码复杂度陡增。</p>
+<p>因此， java-faker 和 easy-random 应运而生。</p>
+<h6 id="3-1-java-faker"><a href="#3-1-java-faker" class="headerlink" title="3.1 java-faker"></a>3.1 java-faker</h6><p>Java 构造测试数据中最常见的一种场景是：构造字符串。</p>
+<p>如果想随机构造人名、地名、天气、学校、颜色、职业，甚至符合某正则表达式的字符串等，肿么办？</p>
+<p>java-faker 是不二之选。</p>
+<p>源码地址： <a href="https://github.com/DiUS/java-faker" target="_blank" rel="noopener">https://github.com/DiUS/java-faker</a></p>
+<p>基本用法如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FakeTest</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token comment" spellcheck="true">// 指定语言</span>
+        Faker faker <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Faker</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Locale</span><span class="token punctuation">(</span><span class="token string">"zh-CN"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 姓名</span>
+        String name <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fullName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String firstName <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">firstName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String lastName <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">lastName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>lastName <span class="token operator">+</span> firstName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 街道</span>
+        String streetAddress <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">address</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">streetAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>streetAddress<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 颜色</span>
+        Color color <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">color</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>color<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"-->"</span> <span class="token operator">+</span> color<span class="token punctuation">.</span><span class="token function">hex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 大学</span>
+        University university <span class="token operator">=</span> faker<span class="token punctuation">.</span><span class="token function">university</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>university<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"-->"</span> <span class="token operator">+</span> university<span class="token punctuation">.</span><span class="token function">prefix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">":"</span><span class="token operator">+</span>university<span class="token punctuation">.</span><span class="token function">suffix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>另外特别建议大家通过 Codota 的方式来查看其他开源项目中该类或者函数的用法：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E9%80%9A%E8%BF%87Codota%E6%9D%A5%E6%9F%A5%E7%9C%8B%E7%B1%BB%E5%92%8C%E6%96%B9%E6%B3%95.jpeg" alt="通过Codota来查看类和方法"></p>
+<p>还可以下载源码后查看核心类的核心函数来了解主要功能。</p>
+<p>也可以通过源码提供的单元测试代码来学习更多用法，还可以通过调试来验证一些效果：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E8%B0%83%E8%AF%95java-faker.jpeg" alt="调试java-faker"></p>
+<h6 id="3-2-easy-random"><a href="#3-2-easy-random" class="headerlink" title="3.2 easy-random"></a>3.2 easy-random</h6><p>Java-faker 虽然可以构造不同种类的字符串测试数据，但是如果需要构造复杂对象就有些”力不从心“。</p>
+<p>此时 easy-random 就要上场了。</p>
+<p>源码地址：<a href="https://github.com/j-easy/easy-random" target="_blank" rel="noopener">https://github.com/j-easy/easy-random</a></p>
+<p>官方文档：<a href="https://github.com/j-easy/easy-random/wiki" target="_blank" rel="noopener">https://github.com/j-easy/easy-random/wiki</a></p>
+<p>easy-random 可以轻松构造复杂对象，支持定义对象中集合长度，字符串长度范围，生成集合等。</p>
+<p>正如前面手动构造和半自动构造测试数据所给出的示例代码所示，构造复杂对象非常耗时且编码量较大，而使用easy-random，直接调用 <code>easyRandom#nextObject</code>一行代码即可自动构建测试对象：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> EasyRandom easyRandom <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EasyRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+ <span class="token annotation punctuation">@Test</span>
+ <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testPdfData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 构造测试数据</span>
+      PdfData pdfData <span class="token operator">=</span> easyRandom<span class="token punctuation">.</span><span class="token function">nextObject</span><span class="token punctuation">(</span>PdfData<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"构造的数据:{}"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment" spellcheck="true">// 测试export 函数</span>
+      Boolean export <span class="token operator">=</span> PdfUtil<span class="token punctuation">.</span><span class="token function">export</span><span class="token punctuation">(</span>pdfData<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      Assert<span class="token punctuation">.</span><span class="token function">assertTrue</span><span class="token punctuation">(</span>export<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>Easy-random 还支持通过<code>EasyRandomParameters</code> 来定制构造对象的细节，如对象池大小、字符集、时间范围、日期范围、字符串长度范围、集合大小的范围等。</p>
+<pre class=" language-java"><code class="language-java">EasyRandomParameters parameters <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EasyRandomParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+   <span class="token punctuation">.</span><span class="token function">seed</span><span class="token punctuation">(</span>123L<span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 对象池大小</span>
+   <span class="token punctuation">.</span><span class="token function">objectPoolSize</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 对象图的最大深度</span>
+   <span class="token punctuation">.</span><span class="token function">randomizationDepth</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 字符集</span>
+   <span class="token punctuation">.</span><span class="token function">charset</span><span class="token punctuation">(</span><span class="token function">forName</span><span class="token punctuation">(</span><span class="token string">"UTF-8"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 时间范围</span>
+   <span class="token punctuation">.</span><span class="token function">timeRange</span><span class="token punctuation">(</span>nine<span class="token punctuation">,</span> five<span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 日期范围</span>
+   <span class="token punctuation">.</span><span class="token function">dateRange</span><span class="token punctuation">(</span>today<span class="token punctuation">,</span> tomorrow<span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 字符串长度范围</span>
+   <span class="token punctuation">.</span><span class="token function">stringLengthRange</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">50</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 集合元素个数的范围</span>
+   <span class="token punctuation">.</span><span class="token function">collectionSizeRange</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 接口或抽象类时是否扫描具体的实现类</span>
+   <span class="token punctuation">.</span><span class="token function">scanClasspathForConcreteTypes</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 是否重写默认的初始化方法</span>
+   <span class="token punctuation">.</span><span class="token function">overrideDefaultInitialization</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
+  <span class="token comment" spellcheck="true">// 是否忽略错误</span>
+   <span class="token punctuation">.</span><span class="token function">ignoreRandomizationErrors</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+EasyRandom easyRandom <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EasyRandom</span><span class="token punctuation">(</span>parameters<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>建议大家一定要拉取 easy-random 源码，查看更多属性，包括 <code>EasyRandomParameters</code> 的默认值，以及运行其官方的单元测试来了解更多高级用法。</p>
+<p>如可以查看其日期时间范围参数测试类: <code>DateTimeRangeParameterTests</code> ，来学习如何设置日期范围构造数据的日期范围：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token function">testDateRange</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// Given</span>
+    LocalDate minDate <span class="token operator">=</span> LocalDate<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token number">2016</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    LocalDate maxDate <span class="token operator">=</span> LocalDate<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token number">2016</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">31</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    EasyRandomParameters parameters <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EasyRandomParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">dateRange</span><span class="token punctuation">(</span>minDate<span class="token punctuation">,</span> maxDate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// When</span>
+    TimeBean timeBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EasyRandom</span><span class="token punctuation">(</span>parameters<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">nextObject</span><span class="token punctuation">(</span>TimeBean<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// Then</span>
+   <span class="token function">assertThat</span><span class="token punctuation">(</span>timeBean<span class="token punctuation">.</span><span class="token function">getLocalDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isAfterOrEqualTo</span><span class="token punctuation">(</span>minDate<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isBeforeOrEqualTo</span><span class="token punctuation">(</span>maxDate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>我们不仅可以通过官方的单元测试来学习该框架的用法，还通过源码单元测试的范例来学习如何更好地编写单元测试。</p>
+<p>可以在单元测试中打断点来观察构造对象的属性值，甚至可以通过单步来研究构造对象的过程。</p>
+<p>更多高级用法，请自行拉取源码继续学习。</p>
+<h4 id="3-2-3-如何选择？"><a href="#3-2-3-如何选择？" class="headerlink" title="3.2.3-如何选择？"></a>3.2.3-如何选择？</h4><p>前面讲到了构造单元测试数据的常用手段主要分为三种：<strong>手动构造、半自动、自动构造</strong>。</p>
+<p><strong>那么该如何做出恰当的选择呢？</strong></p>
+<p>下面给出一些建议：</p>
+<ul>
+<li>当构造的测试数据非常简单时，如构造一个整型测试数据或者待构造的对象属性极少时，可以使用手动构造的方式，简单快速；</li>
+<li>当待构造的对象属性均需要手动修改时，建议采用半自动的方式，使用插件构造测试对象并手动赋值或者使用JSON 反序列化的方式；</li>
+<li>当待构造的测试数据为特定字符串时，如人名、地名、大学名称时，建议使用 java-faker；</li>
+<li>当待构造的测试对象较为复杂时，如属性极多或者属性中又嵌套复杂对象时，建议使用 easy-random。</li>
+</ul>
+<h4 id="3-2-4-总结"><a href="#3-2-4-总结" class="headerlink" title="3.2.4-总结"></a>3.2.4-总结</h4><p>本小节主要介绍了<strong>构造单元测试数据的几种常见手段</strong>，如手动构造、半自动、自动三种方式。并介绍了<strong>每种方式的常见构造方法以及各自的优劣</strong>，并给出了如何<strong>根据具体场景做出恰当的选择</strong>。</p>
+<p>希望大家在学习其他知识时，也要对知识进行归类和对比，这样才能深刻理解知识，才能举一反三。</p>
+<p>下一节将给出单元测试的一些具体案例。</p>
+<h3 id="3-3-单元测试之单测举例"><a href="#3-3-单元测试之单测举例" class="headerlink" title="3.3-单元测试之单测举例"></a>3.3-单元测试之单测举例</h3><h4 id="3-3-1-前言"><a href="#3-3-1-前言" class="headerlink" title="3.3.1-前言"></a>3.3.1-前言</h4><p>前面我们讲到了构造单元测试数据的几种方式，接下来我们将讲述如何编写单元测试。</p>
+<p>《手册》 第 29 页有对数据库单元测试的规定<a href="https://www.imooc.com/read/55/article/1159#fn1" target="_blank" rel="noopener">1</a>：</p>
+<blockquote>
+<p>【推荐】和数据库相关的单元测试，可以设定自动回滚机制，不给数据库造成脏数据。或者<br>对单元测试产生的数据有明确的前后缀标识。</p>
+</blockquote>
+<p>那么单元测试还有哪些注意事项，除了数据库相关的单元测试外，其它的单元测试又该如何去写呢？</p>
+<h4 id="3-3-2-对哪些代码写单测？"><a href="#3-3-2-对哪些代码写单测？" class="headerlink" title="3.3.2-对哪些代码写单测？"></a>3.3.2-对哪些代码写单测？</h4><p>实际开发中，主要对<strong>数据访问层</strong>、 <strong>服务层</strong>和<strong>工具类</strong>进行单元测试。</p>
+<p>正如前言中所说，<strong>数据库相关的单元测试</strong>，一般要设置自动回滚。除此之外，还可以整合H2等内存数据库来对数据访问层代码进行测试。</p>
+<p><strong>工具类的单元测试</strong>也非常重要，因为工具类一般在服务内共用，如果有 BUG，影响面很大，很容易造成线上问题或故障。一般需要构造正常和边界值两种类型的用例，对工具类进行全面的测试，才可放心使用。此时结合注释小节所讲的内容，需将典型的调用和结果添加到注释上，方便函数的使用者。</p>
+<p><strong>服务层的单元测试</strong>，一般要依赖 mock 工具，将服务的所有依赖都 mock 掉。其本质是 “控制变量法”，将原本依赖的 N 个 “变量” 都变为“常量”，只观察所要测试的服务逻辑是否正确。</p>
+<h4 id="3-3-3-单元测试的结构"><a href="#3-3-3-单元测试的结构" class="headerlink" title="3.3.3-单元测试的结构"></a>3.3.3-单元测试的结构</h4><p>大家一定要牢记编写单元测试的核心逻辑，其结构如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%BB%93%E6%9E%84.jpeg" alt="单元测试的结构"></p>
+<p>典型的单元测试可分为三个阶段，分别为<strong>准备、执行和验证</strong><a href="https://www.imooc.com/read/55/article/1159#fn2" target="_blank" rel="noopener">2</a>。</p>
+<p><strong>准备阶段（Given）</strong> 主要负责创建测试数据、构造mock 方法的返回值，准备环节的编码是单元测试最复杂的部分。需要注意的是 Mockito 库中以 when 开头的函数其实是在准备阶段。</p>
+<p><strong>执行阶段（When）</strong> 一般只是调用测试的函数，此部分代码通常较短。</p>
+<p><strong>验证阶段（Then）</strong> 通常验证测试函数的执行的结果、 准备阶段 mock 函数的调用次数等是否符合预期。</p>
+<h4 id="3-3-4-单元测试方法命名"><a href="#3-3-4-单元测试方法命名" class="headerlink" title="3.3.4-单元测试方法命名"></a>3.3.4-单元测试方法命名</h4><p>早期必须在单元测试函数命名前加入 ‘test’ 前缀。现在已经不推荐这么使用，一般采用驼峰。</p>
+<p>也会有很多人会将太多描述放到测试函数命名中，这也不太推荐，此种情况应该放到函数的注释中。</p>
+<p>推荐的命名格式如：<code>shouldReturnItemNameInUpperCase()</code>。</p>
+<h4 id="3-3-5-单元测试举例"><a href="#3-3-5-单元测试举例" class="headerlink" title="3.3.5-单元测试举例"></a>3.3.5-单元测试举例</h4><p>数据访问层测试，只不过是将正常的环境加入了回滚或者采用内存/内嵌数据库，难度不大，这里就不给出具体范例。本文将重点讲述工具类的测试和服务层的测试。</p>
+<h5 id="1-工具类的测试"><a href="#1-工具类的测试" class="headerlink" title="1. 工具类的测试"></a>1. 工具类的测试</h5><p>学习工具类的单元测试，强烈推荐大家参考 <a href="https://github.com/google/guava" target="_blank" rel="noopener">guava</a>、<a href="https://github.com/apache/commons-lang" target="_blank" rel="noopener">commons-lang3</a>、 <a href="https://github.com/apache/commons-collections]" target="_blank" rel="noopener">commons-collection4</a> 这三个知名开源工具类项目的源码的单元测试代码。</p>
+<p>如commons-lang3 包的 <code>StringUtils#contains</code> 源码:</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// Contains</span>
+<span class="token comment" spellcheck="true">//-----------------------------------------------------------------------</span>
+<span class="token comment" spellcheck="true">/**
+ * &lt;p>Checks if CharSequence contains a search character, handling {@code null}.
+ * This method uses {@link String#indexOf(int)} if possible.&lt;/p>
+ *
+ * &lt;p>A {@code null} or empty ("") CharSequence will return {@code false}.&lt;/p>
+ *
+ * &lt;pre>
+ * StringUtils.contains(null, *)    = false
+ * StringUtils.contains("", *)      = false
+ * StringUtils.contains("abc", 'a') = true
+ * StringUtils.contains("abc", 'z') = false
+ * &lt;/pre>
+ *
+ * @param seq  the CharSequence to check, may be null
+ * @param searchChar  the character to find
+ * @return true if the CharSequence contains the search character,
+ *  false if not or {@code null} string input
+ * @since 2.0
+ * @since 3.0 Changed signature from contains(String, int) to contains(CharSequence, int)
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">boolean</span> <span class="token function">contains</span><span class="token punctuation">(</span><span class="token keyword">final</span> CharSequence seq<span class="token punctuation">,</span> <span class="token keyword">final</span> <span class="token keyword">int</span> searchChar<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>seq<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> CharSequenceUtils<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>seq<span class="token punctuation">,</span> searchChar<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>对应的单元测试代码如下:</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testContains_Char</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// 不符合条件的特殊用例</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>null<span class="token punctuation">,</span> <span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>null<span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 符合条件的用例</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">,</span> <span class="token string">'b'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assertTrue</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">,</span> <span class="token string">'c'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 不符合条件的正常用例</span>
+    <span class="token function">assertFalse</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"abc"</span><span class="token punctuation">,</span> <span class="token string">'z'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>我们可看到，测试时除了选择符合条件的用例外，还要选择不符合条件的用例。其中不符合条件的用例可以还包括常规的用例和特殊用例（边界条件）。</p>
+<p>再如 guava 的 <code>StopWatch#stop</code> ：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * Stops the stopwatch. Future reads will return the fixed duration that had elapsed up to this
+ * point.
+ *
+ * @return this {@code Stopwatch} instance
+ * @throws IllegalStateException if the stopwatch is already stopped.
+ */</span>
+<span class="token annotation punctuation">@CanIgnoreReturnValue</span>
+<span class="token keyword">public</span> Stopwatch <span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">long</span> tick <span class="token operator">=</span> ticker<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">checkState</span><span class="token punctuation">(</span>isRunning<span class="token punctuation">,</span> <span class="token string">"This stopwatch is already stopped."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  isRunning <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  elapsedNanos <span class="token operator">+=</span> tick <span class="token operator">-</span> startTick<span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>根据源码我们可知，调用该函数后· <code>isRunning</code> 会被设置为<code>false</code>，如果重复调用会抛出 <code>IllegalStateException</code>，</p>
+<p>因此，我们要测试已经停止后再次调用停止函数会的效果。</p>
+<p>验证调用该函数后 <code>isRunning</code> 的确会被设置为<code>false</code>，如果重复调用会抛出 <code>IllegalStateException</code>，因此该函数的单元测试源码如下（注意该测试函数命名）：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testStop_alreadyStopped</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  stopwatch<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  stopwatch<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">try</span> <span class="token punctuation">{</span>
+    stopwatch<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IllegalStateException</span> expected<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">assertFalse</span><span class="token punctuation">(</span>stopwatch<span class="token punctuation">.</span><span class="token function">isRunning</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="2-服务层的测试"><a href="#2-服务层的测试" class="headerlink" title="2. 服务层的测试"></a>2. 服务层的测试</h5><p>服务层的测试一般将底层的所有依赖都 mock 掉，最常用的框架为 Mockito、JMockit、 Easy Mock。</p>
+<p>本小节的示例采用的是 Mockito。</p>
+<p>核心场景如 ：A 类的某函数依赖 B 类的某函数和 C 类的某函数，而 B 类又依赖 E 类和 F 类，C 类又依赖 D 类，等等。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%A0%B8%E5%BF%83%E5%9C%BA%E6%99%AF%E7%BB%93%E6%9E%84.jpeg" alt="核心场景结构"></p>
+<p>如果要测试 A 类的某个函数，则需要 mock B类 和 C 类的对象。测试者可以指定 B 的某个函数接受某个参数返回固定的结果，指定C接受特定参数，返回特定结果，然后调用 A的对应函数，验证 A的返回值是否符合期待。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BE%9D%E8%B5%96.jpeg" alt="函数之间的依赖"></p>
+<p>注：为了简化，此处并没有采用标准的类图方式作图。</p>
+<p>此时有些朋友可能会有一个疑问，<strong>为什么不 mock D 、E 和 F 等其它类呢？</strong></p>
+<p>其实这就是本专栏特别强调学习时要重视“是什么”的原因。单元测试从思想上来讲就是“控制变量法”，即将依赖变为“常量”，只有待测试的函数参数是“变量”，通过输入参数推测出结果，和实际的结果去对比，才可以更好地验证其正确性。</p>
+<p>因此，我们只需要把它的直接依赖变成 “常量”即可，其它的依赖 mock 没有意义。</p>
+<p>另外，大家一定要注意单元测试和集成测试的区别，不要将单元测试和集成测试混在一起。</p>
+<p>下面给出一个简单示例：</p>
+<p>待测试的服务接口：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">ItemService</span> <span class="token punctuation">{</span>
+
+    String <span class="token function">getItemNameUpperCase</span><span class="token punctuation">(</span>String itemId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>待测试的服务的实现类：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ItemServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">ItemService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> ItemRepository itemRepository<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> String <span class="token function">getItemNameUpperCase</span><span class="token punctuation">(</span>String itemId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        Item item <span class="token operator">=</span> itemRepository<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span>itemId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>item <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> item<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>可见该服务依赖数据访问组件 <code>ItemRepository</code>。</p>
+<p>根据前面的单元测试的结构和命名建议，我们对该函数编写单元测试代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">import</span> org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span>Before<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>junit<span class="token punctuation">.</span>Test<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>mockito<span class="token punctuation">.</span>InjectMocks<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>mockito<span class="token punctuation">.</span>Mock<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>mockito<span class="token punctuation">.</span>MockitoAnnotations<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token keyword">static</span> org<span class="token punctuation">.</span>assertj<span class="token punctuation">.</span>core<span class="token punctuation">.</span>api<span class="token punctuation">.</span>Assertions<span class="token punctuation">.</span>assertThat<span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token keyword">static</span> org<span class="token punctuation">.</span>mockito<span class="token punctuation">.</span>Mockito<span class="token punctuation">.</span>*<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ItemServiceTest</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Mock</span>
+    <span class="token keyword">private</span> ItemRepository itemRepository<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@InjectMocks</span>
+    <span class="token keyword">private</span> ItemServiceImpl itemService<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Before</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setUp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        MockitoAnnotations<span class="token punctuation">.</span><span class="token function">initMocks</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 如果从存储层查询到一个Item, 那么它的 name 将被转化为大写.
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">shouldReturnItemNameInUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        <span class="token comment" spellcheck="true">// Given</span>
+        Item mockedItem <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Item</span><span class="token punctuation">(</span><span class="token string">"it1"</span><span class="token punctuation">,</span> <span class="token string">"Item 1"</span><span class="token punctuation">,</span> <span class="token string">"This is item 1"</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">when</span><span class="token punctuation">(</span>itemRepository<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span><span class="token string">"it1"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>mockedItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// When</span>
+        String result <span class="token operator">=</span> itemService<span class="token punctuation">.</span><span class="token function">getItemNameUpperCase</span><span class="token punctuation">(</span><span class="token string">"it1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// Then</span>
+        <span class="token function">verify</span><span class="token punctuation">(</span>itemRepository<span class="token punctuation">,</span> <span class="token function">times</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span><span class="token string">"it1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertThat</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isEqualTo</span><span class="token punctuation">(</span><span class="token string">"ITEM 1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>测试函数采用驼峰命名并且体现出了该测试函数的核心含义。</p>
+<p>可以看出在<strong>准备阶段</strong>，构造测试对象（数据）并 mock 掉底层依赖；<strong>在执行阶段</strong>直接调用待测试的函数；<strong>在验证阶段</strong> 对结果进行断言。</p>
+<p>Mockito 的更多高级用法请参考<a href="https://site.mockito.org/" target="_blank" rel="noopener">官方网站</a>和<a href="https://github.com/mockito/mockito/wiki" target="_blank" rel="noopener">框架配套wiki</a>。如果需要 mock 静态方法、私有函数等，可以学习 <a href="https://github.com/powermock/powermock/wiki/mockito" target="_blank" rel="noopener">PowerMock</a>， 拉取其源码通过学习单元测试来快速掌握其用法。</p>
+<h4 id="3-3-6-总结"><a href="#3-3-6-总结" class="headerlink" title="3.3.6-总结"></a>3.3.6-总结</h4><p>本节主要给出单元测试在实际编程中的运用，给出了单元测试的结构、命名建议以及使用范例。希望大家在实际编程中能够举一反三，灵活运用，通过单元测试提高编码的质量。</p>
+<p>下一节将给出 Java 学习宝典。</p>
+<h2 id="4-方法篇"><a href="#4-方法篇" class="headerlink" title="4-方法篇"></a>4-方法篇</h2><h3 id="4-1-Java学习宝典"><a href="#4-1-Java学习宝典" class="headerlink" title="4.1-Java学习宝典"></a>4.1-Java学习宝典</h3><h4 id="4-1-1-前言"><a href="#4-1-1-前言" class="headerlink" title="4.1.1-前言"></a>4.1.1-前言</h4><p>前面章节围绕《手册》的一些重要知识点进行了学习和拓展。<a href="https://www.imooc.com/read/55/article/1160#fn1" target="_blank" rel="noopener">1</a></p>
+<p><strong>为什么有些人 “一年的经验用十年”，而有些人的学习和排错能力极强呢？</strong></p>
+<p>因为很多人呆在舒适区不愿改变，不敢尝试新的方法，面对新的方法，工具本能地进行排斥，最终错过了快速成长的机会。</p>
+<p>本节将系统阐述在几年的学习和工作中总结出来的 Java 学习的好方法，希望能够对大家有帮助。</p>
+<h4 id="4-1-2-学习的主要途径"><a href="#4-1-2-学习的主要途径" class="headerlink" title="4.1.2-学习的主要途径"></a>4.1.2-学习的主要途径</h4><h5 id="1-读书、看官方文档"><a href="#1-读书、看官方文档" class="headerlink" title="1. 读书、看官方文档"></a>1. 读书、看官方文档</h5><p>学习的最常见手段之一就是读书。</p>
+<p>就 Java 而言，正如前面章节研究问题时所提到的， Java 学习最核心的是 《Java 语言手册》、《JVM 语言手册》，因为这是官方，最权威的资料。</p>
+<p>其次是围绕 java 语言典图书，如《Java 核心技术》、《Java 编程思想》、《深入理解 Java 虚拟机》、《码出高效》等。</p>
+<p>还有 Java 开发岗位涉及到技术的官方手册，如 Spring、MyBatis、Hibernate 等官方手册等。</p>
+<p>再如 Java 开发岗位涉及到的技术的经典图书，如《Redis 深度历险：核心原理与应用实践》、《深入理解 Apache Dubbo 与实战》等。</p>
+<p>还有一些介绍编程技巧的书，如《重构：改善既有代码的设计》、《编写可读代码的艺术》、《代码整洁之道》、《修改软件的艺术》、《Effective Java》 等。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/Java%E7%9B%B8%E5%85%B3%E4%B9%A6%E7%B1%8D.jpeg" alt="Java相关书籍"></p>
+<p>如上图所示，越往底层信息密度越大，准确性越高，参考价值越大。</p>
+<p>希望大家学习技术用法的同时，要注重源码、官方手册的学习，更加注重专业基础的学习。</p>
+<p><strong>读书最关键的是选对书，其次是看书的方法。</strong></p>
+<p>选取适合自己层次的图书很重要，初学者以介绍用法的图书为主，进阶的同学以读官方手册和相关的经典图书为主。</p>
+<p>很多人读技术的书都会有这样的困惑：很多书读了一两遍还是会忘。</p>
+<p>这是一个非常正常的现象。</p>
+<p>为了克服遗忘，重点的图书需要反复阅读，这也就是所谓的 “书读百遍其义自见”，阅读时要加入一些思考，将所学知识和已经有的知识体系结合在一起。</p>
+<h5 id="2-看视频"><a href="#2-看视频" class="headerlink" title="2. 看视频"></a>2. 看视频</h5><p>和读书类似，看视频也是 Java 学习的重要手段。</p>
+<p>视频更加生动形象，尤其对于初学者入门来说帮助很大。</p>
+<p>对于有一定基础，尤其是工作后的同学一般会因为视频讲解过慢，进阶的免费视频较少等原因，看视频学习的时间会减少。</p>
+<p><strong>俗话说 “外行人看热闹，内行人看门道”。</strong></p>
+<p>很多人尤其是新手看视频，仅仅学习视频讲解的内容本身，导致学习新的知识没有视频就不知道如何下手。</p>
+<p>其实看视频学习不仅是看作者讲解的内容本身，更应该关注作者的编码风格，作者学习新知识的方式，作者的编码思路，这些才是更有价值的通用的技能，也是看视频学习的精髓所在。</p>
+<h5 id="3-读源码"><a href="#3-读源码" class="headerlink" title="3. 读源码"></a>3. 读源码</h5><p>读源码是学习进阶的必由之路，但是同样是读源码，不同的方法效果差异很大。</p>
+<p>对于 Java 程序员而言，最重要的就是读 JDK 的源码，其次是读一些经典框架的源码，如 Spring、 Dubbo 等。</p>
+<p>通过读源码的注释，可以深入了解函数的主要功能，甚至核心思路。</p>
+<p>通过阅读源码，可以了解到一些优雅的编码风格，设计思想。还可以通过源码来学习和理解其中所运用的设计模式。</p>
+<p>读源码时要特别注重思考为什么要这么设计，不这么设计会有什么问题。</p>
+<p>然而，很多 Java 初学者，甚至工作一两年的 Java 程序员，读源码抓不住重点，以记忆为主，而不是思考为主。</p>
+<p>读源码时迷失在细节之中，而不能先整体后局部，从设计者的角度来读源码。</p>
+<p>如何更好地阅读源码，在后面的章节中将会重点介绍。</p>
+<h5 id="4-调试"><a href="#4-调试" class="headerlink" title="4. 调试"></a>4. 调试</h5><p>IDE 的代码调试器也是 Java 学习重要手段。</p>
+<p>通过代码调试可以清楚代码的运行轨迹，可以清楚地观察各个对象的状态。</p>
+<p>但是很多 Java 初学者，甚至工作一两年的 Java 程序员， 也只是停留在打个断点，单步调试，并没有熟练掌握更高级的调试方法。</p>
+<p>在后面的章节会系统地介绍调试的正确姿势。</p>
+<h5 id="5-看专栏"><a href="#5-看专栏" class="headerlink" title="5. 看专栏"></a>5. 看专栏</h5><p>现在博客的质量参差不齐，尤其中文技术博客各种相互抄袭，很多不错的技术博客容易断更等。</p>
+<p>随着近些年知识付费的普及，专栏成为学习知识的一个重要途径。专栏都是围绕着一个主题写作，购买和学习专栏可以对某一块知识有一个全面和深入地理解。</p>
+<p>建议大家可以通过购买专栏的方式，系统地将自己不足的模块补齐，而不是低效地碎片化学习。</p>
+<h5 id="6-看公众号、博客等"><a href="#6-看公众号、博客等" class="headerlink" title="6. 看公众号、博客等"></a>6. 看公众号、博客等</h5><p>对于 Java 程序员而言，技术公众号也是学习的重要途径。</p>
+<p>比较不错的公众号有： 架构师之路、IT 技术精选文摘、JavaGuide、程序员小灰等等。</p>
+<p>看一些分享学习和工作中的经验技巧的博客，也是学习的一个不错途径。</p>
+<p>但由于公众号和博客的质量参差不齐，读公众号和博客要抱着怀疑的态度，不要轻信。</p>
+<p>公众号和博客只能作为参考，不应该作为权威的依据。</p>
+<h5 id="7-各种图"><a href="#7-各种图" class="headerlink" title="7. 各种图"></a>7. 各种图</h5><p>作为 Java 程序员，思维导图和 UML 图都是学习和设计的强有力工具。</p>
+<p>通过思维导图，可以整理需求，梳理所学知识并构建知识体系。</p>
+<p>UML 图更是需求分析、系统设计、梳理系统逻辑必不可缺的强大工具。</p>
+<p>思维导图和 UML 图在后续的章节中也会给出全面的讲解。</p>
+<h5 id="8-其他"><a href="#8-其他" class="headerlink" title="8. 其他"></a>8. 其他</h5><p>还可以通过抓包（tcpdump -A | grep xxx）、反汇编、反编译，来学习 Java 相关知识。</p>
+<p>也可以通过 Google 和 Stack OverFlow 来搜索问问题的答案。</p>
+<p>不推荐使用百度搜索问题，是因为百度出的很多问题的答案千篇一律。</p>
+<p>搜索到的解决方案也往往没有给出该问题最本质的原因。</p>
+<p>而 Google 和 Stack OverFlow 搜索出来的资料质量相对较高，而且往往会给出问题的根本原因以及参考资料。</p>
+<h4 id="4-1-3-学习的方法"><a href="#4-1-3-学习的方法" class="headerlink" title="4.1.3-学习的方法"></a>4.1.3-学习的方法</h4><h5 id="1-推演验证"><a href="#1-推演验证" class="headerlink" title="1. 推演验证"></a>1. 推演验证</h5><p>对于大多数工作的朋友来说，入职的部门一般都会有已经设计好的项目模块，这是我们学习进阶的<strong>绝佳素材</strong>。</p>
+<p>但是很多人并不会重视和分析之前的设计，也体会不到这种学习方式给自己能够带来的极大成长。</p>
+<p>我们可以使用推演验证的方式来快速掌握系统的设计、熟悉功能、学习设计思路等。而不是进入侧重记忆，导致容易遗忘，无法灵活运用的怪圈。</p>
+<blockquote>
+<p>所谓的<strong>推演验证</strong>，就是当我们熟悉一块功能，或者我们想通过某个模块来提高编码和设计能力时，我们可以找到需求文档和已经上线的产品去对比使用，然后模拟自己出一个技术方案，包括数据库表的设计，分布式中间件的使用还有一些其它细节等。</p>
+</blockquote>
+<p>我们通过需求文档、交互稿或者体验真实的功能后去反推实现方式，如果当初有技术文档，要和当初的实际的技术方案进行对比。通过对比找出自己设计的缺陷，思考对方当初为何这么设计，并努力找出对方的设计可以改进的地方。通过不断的推演和验证，自己的业务设计能力会提高的很快。</p>
+<p>这种方法有点像学生时代做 “模拟题”，当初某个项目的设计方案就是我们 “模拟题的答案”，通过这种方式的训练，我们的 “工作经验” 会提高很快。而现实生活中，往往是我们没有和 “真题” 同等难度，甚至更难的 “模拟题” 的经验，而只是从自己趟过的坑，做过的项目，通过别人的指点来学习，这样就会收效甚微。</p>
+<p>下面结合一个场景来为大家解释具体的做法：</p>
+<blockquote>
+<p>比如很多人会发现市面上很少有很通俗易懂地教你如何根据实际的场景去设计数据库表结构的资料，肿么办？</p>
+<p>对于还没工作的人来说，可以找一两个知名的开源项目；对于已经工作的人来说，可以通过自己开发的项目来学习表的设计。</p>
+<p>如何学习呢？</p>
+<p>我们先找某一个自己感兴趣的功能点，根据需求文档、页面表现等，熟悉功能。</p>
+<p>然后根据功能自行<strong>推演</strong>，如应该会有几张表，每张表应该包含哪些字段等等。</p>
+<p>然后去和实际的表结构去对比<strong>验证</strong>，如果不同，自己设计的表是否满足需求？对方的设计更好吗？好在哪里？自己是否有遗漏？等等。</p>
+<p>通过多次训练，你会发现自己对表的设计掌握的会越来越好，你将更清楚为什么要这么设计以及如何设计。</p>
+</blockquote>
+<p>后续的源码学习章节的其中一种高效的读源码方法也将采用 “推演和验证” 的方法。</p>
+<p>只有真正尝试过这种方法的人才能体会到它的巨大价值，希望大家在平时开发和学习中多去尝试。</p>
+<h5 id="2-教是最好的学"><a href="#2-教是最好的学" class="headerlink" title="2. 教是最好的学"></a>2. 教是最好的学</h5><p>我们学了好多年，但是很多人从来不会主动探索高效的学习方法，在学习过程中见到的最好的学习方法之一就是 “教学相长”。</p>
+<p>俗话说 “教是最好的学”，在中国的古代文献中有类似的说法。</p>
+<p>《礼记・学记》：“学然后知不足，教然后知困。知不足，然后能自反也；知困，然后能自强也。故曰：教学相长也。</p>
+<p>《兑命》曰：“‘学学半。’其此之谓乎。” 郑玄注：“学则睹己行之所短，教则见己道之所未达”。</p>
+<p>另外著名的费曼学习法也是强调 “教学相长”<a href="https://www.imooc.com/read/55/article/1160#fn2" target="_blank" rel="noopener">2</a>：</p>
+<blockquote>
+<p><strong>费曼学习法</strong>的灵感源于诺贝尔物理奖获得者理查德・费曼（Richard Feynman），运用费曼技巧可以深入理解知识点，并且记忆深刻不易遗忘。知识有两种类型，我们绝大多数人关注的是错误的那种。第一类知识关注了解某个事物的名称。第二类知识关注了解某个事物，这是两码事，通过费曼学习法可以让我们对事物的理解更透彻。</p>
+</blockquote>
+<p>费曼学习法的四个步骤：</p>
+<ul>
+<li>第一步：将学的知识教给别人；</li>
+<li>第二步：回顾。遇到卡壳的地方，回顾原材料，重新学习；</li>
+<li>第三步：将语言条理化，简化。只有能够用简单易懂的语言描述某个知识，才代表真正理解了某个知识；</li>
+<li>第四步：传授。确保自己理解无误的情况下，将知识传授给他人。</li>
+</ul>
+<p>因此我们学习一个知识点时可以尝试教给别人，如果没有合适的倾听者可以讲给 “小黄鸭”（虚拟的听众）听。</p>
+<p>另外也可以将所需的知识写到博客中，也可以在技术群里和别人交流，这也是另外一种 “教”。</p>
+<h5 id="3-PDCA-循环"><a href="#3-PDCA-循环" class="headerlink" title="3. PDCA 循环"></a>3. PDCA 循环</h5><p>PDCA 循环的来源和定义最早是由美国质量管理专家戴明提出来的，也称 “戴明环”。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/PDCA%E5%BE%AA%E7%8E%AF.jpeg" alt="PDCA循环"></p>
+<p>图：PDCA 循环示意图（图片来自百度百科）</p>
+<p>核心内容如下：</p>
+<ol>
+<li><strong>P（Plan）</strong> 即计划。“凡事预则立，不立则废”，做事之前一定要有计划；</li>
+<li><strong>D（Do）</strong> 即所谓的执行。很多人有了计划没有执行力，很难有效果；</li>
+<li><strong>C（Check）</strong> 即检查。分析执行的结果，明确执行中存在哪些问题；</li>
+<li><strong>A（Action）</strong> 即处理。对成功的经验要保持，将其标准化；对失败的经验要总结，引起重视。</li>
+</ol>
+<p>请注意，这里并不是为了介绍某个高大上的概念，而是希望大家能够真正去思考去理解。</p>
+<p>为了更好地理解 PDCA 的价值，我将生活和开发中的一些场景进行描述以帮助大家理解。</p>
+<blockquote>
+<p>在学生时代很多人考试之前会做模拟题或者历年真题，你会发现，很多人做完题后只是把答案抄上去再也不看了。导致的一个严重的问题是，做过的题大概率还错。</p>
+</blockquote>
+<p>这其实就是走了弯路而不自知，浪费了时间却没有成效。</p>
+<p>在我们学习 Java 和参与工作中，很多人一样会存在这种问题：</p>
+<blockquote>
+<p>开发一个模块之前没有充分分析（甚至轻视）需求，着急编写代码，编写代码过程中不能够有意识的和 master 分支进行比对，代码部署到测试服务器时随便点点就算，如果上线后遇到 BUG 就进行修复。</p>
+</blockquote>
+<p>很多人学习时更喜欢 “做更多试卷” 给自己带来的虚假成就感，而不是珍惜错题给自己带来的价值。</p>
+<p>同样地，做项目时，很多人喜欢做更多项目给自己带来的虚假 “成长”，每个项目并没有输出对下一个项目有用的经验。</p>
+<p>这也是很多人 “一年经验用了十年” ，成长很慢的原因之一。</p>
+<p><strong>那么该怎么做呢？</strong></p>
+<p>编写代码之前一定要充分了解需求，做好技术方案，然后再去编码设计。</p>
+<blockquote>
+<p>很多有经验的人都会认为，其实软件开发最关键的是需求的分析，技术方案的设计，而编码只不过是一个时间问题。</p>
+</blockquote>
+<p>编写完代码后将自己的分支和 master 比对，检查是否有冲突，进行自我代码审查。</p>
+<blockquote>
+<p>养成和 master 对比代码的习惯，你可以在测试之前就发现自己编码的问题。</p>
+</blockquote>
+<p>每个项目上线后，总结这些项目学到的经验，存在哪些问题，如果有 BUG，分析 BUG 的原因。</p>
+<blockquote>
+<p>比如</p>
+<p>[1] 这次测试过程中发现某个错误日志在测试环境就已经看到过，但是认为和本功能无关就没注意，最终发现是本功能的修改触发了其他功能的 BUG。</p>
+<p>此时我们可以将 “测试时一定要重视警告和错误日志” 积累到我们的验证流程中；比如测试时可以养成好的习惯，使用 tail -f error.log 看看有没有错误日志。</p>
+<p>[2] 这次开发过程中，我们本地代码都没编译通过就提交到了 git 仓库并在测试服务器打包部署，导致部署失败。</p>
+<p>此时，我们可以将 “提交之前一定要本地编译通过” 积累到我们的开发经验中。比如 maven 项目我们可以每次提交前执行 mvn clean compile。</p>
+<p>[3] 比如我们代码上线后某个地方忘了打日志，不方便我们分析排查问题。那么我们可以梳理出哪些地方该打日志，下次一定开发时要重视起来。</p>
+<p>等等。</p>
+</blockquote>
+<p>然后将经验梳理到云笔记中或者思维导图中，并让它们成为我们的习惯，不断地帮助下一次开发。</p>
+<p>这样才能造成良性循环，这样经验才能有目的的快速累积。</p>
+<p>并不只是学习新的技术才叫学习，决定一个人是否牛的标准之一是他能否在某一个领域超越绝大多数人。</p>
+<p><strong>很多人学习进阶的速度慢，不仅仅在于有些东西没有学，而是不懂学习的方法，不懂总结和反思</strong>。</p>
+<p>孔子说 <strong>“温故而知新，可以为师矣”</strong> 诚如是。</p>
+<h4 id="4-1-4-总结"><a href="#4-1-4-总结" class="headerlink" title="4.1.4-总结"></a>4.1.4-总结</h4><p>本节主要讲述了 Java 学习的主要途径，包括读书、看视频、读源码、调试等；还推荐了几种高效的 Java 学习方法，如费曼学习法、PDCA 循环等。本小节还分析了很多人学习和进阶速率慢的主要原因，即不重视方法，不重视总结和反思。人最可怕的是一直呆在舒适区，不愿意改变，不愿意接受新鲜事物，不愿意学习新的方法。希望通过本节的介绍，对大家能够有所启发。</p>
+<p>下一节我们将学习代码调试的基本方式和高级姿势。</p>
 
             </div>
             <hr/>
@@ -6618,7 +7898,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">299.5k</span>&nbsp;字
+                class="white-color">319.8k</span>&nbsp;字
             
             
             
