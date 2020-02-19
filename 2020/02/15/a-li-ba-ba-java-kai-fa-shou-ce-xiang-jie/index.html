@@ -462,14 +462,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    86.3k
+                    101.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    347 分
+                    402 分
                 </div>
                 
 				
@@ -7537,7 +7537,764 @@ EasyRandom easyRandom <span class="token operator">=</span> <span class="token k
 <p>真正开发时往往是多种调试方法结合在一起，比如可以将修改变量值和回退一起使用，也可以将条件断点和修改变量值，单步等功能一起使用。</p>
 <p>掌握好调试技巧，对快速定位问题，学习源码等都有很大的促进作用。</p>
 <p>当然，代码调试还有很多其他的高级调试技巧可查看 IDEA 官方文档学习，也可以在开发中自行探索。</p>
-<h3 id="4-3-阅读源码的正确姿势"><a href="#4-3-阅读源码的正确姿势" class="headerlink" title="4.3-阅读源码的正确姿势"></a>4.3-阅读源码的正确姿势</h3>
+<h3 id="4-3-阅读源码的正确姿势"><a href="#4-3-阅读源码的正确姿势" class="headerlink" title="4.3-阅读源码的正确姿势"></a>4.3-阅读源码的正确姿势</h3><h4 id="4-3-1-前言"><a href="#4-3-1-前言" class="headerlink" title="4.3.1-前言"></a>4.3.1-前言</h4><p>Java 学习和进阶离不开阅读源码，但是很多人只知道阅读源码却不知道如何阅读源码更有效。</p>
+<p>很多人面对源码无从下手，也有很多人阅读源码刚开始就陷入细节，看着看着就晕了，很难坚持下去。</p>
+<p>也有很多人看了很多源码，最终都 “忘了”，没留下什么印象。</p>
+<p>我自己也遇到过类似的问题，通过探索和交流总结了一些经验，在此分享给大家。</p>
+<h4 id="4-3-2-读源码究竟读什么？"><a href="#4-3-2-读源码究竟读什么？" class="headerlink" title="4.3.2-读源码究竟读什么？"></a>4.3.2-读源码究竟读什么？</h4><p>很多人只是知道阅读源码是进阶的一个重要步骤，但是在阅读之前并不是很清楚到底要通过源码学到什么。</p>
+<p>如果读源码之前想不清楚这件事，很容易 “走马观花”，收获无多。</p>
+<p>通过阅读源码可以学习到很多知识，如：编码规范，包括类、函数、属性的命名，注释的规范等；优秀程序员的编程思想；学习一些高级的编程技巧；某些功能或特性的核心原理；可以学习到一些好的设计原则、设计模式如何落地。</p>
+<h4 id="4-3-3-阅读源码的思路"><a href="#4-3-3-阅读源码的思路" class="headerlink" title="4.3.3-阅读源码的思路"></a>4.3.3-阅读源码的思路</h4><p>阅读源码的方法和心态很重要，很多人想一口气吃个大胖子，急于求成最后适得其反。</p>
+<p>很多人急躁的心情是可以理解的，想早点攻克某个框架源码，但是大家可以回想一下打游戏的场景，想打好游戏，通常需要学习各种通关技巧，需要先 “打野”。</p>
+<p>下面介绍几个阅读源码的思路。</p>
+<h5 id="1-从设计者的角度看源码"><a href="#1-从设计者的角度看源码" class="headerlink" title="1. 从设计者的角度看源码"></a>1. 从设计者的角度看源码</h5><p><strong>从设计者的角度看源码是最有效的方式</strong>。</p>
+<p>源码也是人写出来的，源码的作者编写代码之前也是在头脑中思考过的。</p>
+<p>源码，尤其是复杂源码，都是符合 “任务拆分” 的原则的，即一个大的功能分为几个核心的步骤，分别编写代码。</p>
+<p>这也符合罗伯特・C・马丁（Robert Cecil Martin）所提出的面向对象五大基本原则之一的：单一职责原则。</p>
+<blockquote>
+<p>单一职责原则：一个类或者模块应该有且只有一个改变的原因</p>
+</blockquote>
+<p>因此我们学习源码要想好编写这个功能应该有哪些步骤，再去和源码对比。</p>
+<p>这样才能验证自己思考问题的角度是否正确，是否有遗漏。</p>
+<p>通过对比能够清楚地知道作者为什么要这么设计，作者的源码比自己所设想的好在哪里，这样才不容易遗忘。</p>
+<p><strong>这就像学生时代做数学题一样，很多人会发现如果我们不做题就直接看答案，我们会认为问题都很简单，自己都会。但是真正脱离答案去做题时，往往并不会做。这也像我们拿着复杂迷宫的答案图纸去看迷宫时，会认为迷宫并不难，但是没有提前看答案时，破解迷宫的难度是要大很多的。</strong></p>
+<p>下面举一个非常简单的例子：</p>
+<p>在开发时，需要借助 okhttp 封装一个 HTTP 请求工具类，其中涉及到编写一个判断请求是否成功的函数。</p>
+<p>正如很多人认为地那样，在封装地函数中直接判断响应码是否等于 200 即可。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isSuccessful</span><span class="token punctuation">(</span>Integer code<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token number">200</span> <span class="token operator">==</span> code<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>但是当我们去查看 <code>okhttp3.Response</code> 的 <code>isSuccessful</code> 的写法：</p>
+<pre class=" language-kotlin"><code class="language-kotlin"><span class="token comment" spellcheck="true">/**
+ * Returns true if the code is in [200..300), which means the request was successfully received,
+ * understood, and accepted.
+ */</span>
+<span class="token keyword">val</span> isSuccessful<span class="token operator">:</span> Boolean
+  <span class="token keyword">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> code <span class="token keyword">in</span> <span class="token number">200</span><span class="token operator">..</span><span class="token number">299</span></code></pre>
+<p>突然发现我们的想法不够严谨，响应码从 200 到 299 都应该算请求成功。</p>
+<p>这样我们对源码的某个细节的印象就会非常深刻，更加清晰地了解到自己思路的不严谨性。</p>
+<p>如果我们的 “猜想” 核心的步骤和最终和源码比对，如果和作者的逻辑非常一致时，我们就很开心，这也是看源码的乐趣之一。如果不一致，通过对比完善自己的思路。</p>
+<p><strong>通过这种方式去读源码能够不断纠正我们的思路，不断发现我们的问题，这是阅读源码非常重要的一个目的。</strong></p>
+<h5 id="2-先整体后局部"><a href="#2-先整体后局部" class="headerlink" title="2. 先整体后局部"></a>2. 先整体后局部</h5><p>俗话说 “磨刀不误砍柴工”，这几乎是尽人皆知的道理，但是学习编程时很多人依然会着急看源码，不重视背景知识，不重视框架的整体思想，导致后面浪费更多地时间。</p>
+<p><strong>为了避免过早陷于局部而缺乏全局观念，应该先从整体了解一个技术的核心模块再去学习每个具体模块的源码。</strong></p>
+<p>比如我们学习 dubbo 源码之前必须想了解该框架的主要模块以及之间的关系。</p>
+<p><a href="https://dubbo.apache.org/zh-cn/docs/user/preface/architecture.html" target="_blank" rel="noopener">dubbo 架构图</a>：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/dubbo%E6%9E%B6%E6%9E%84%E5%9B%BE.jpeg" alt="dubbo架构图"></p>
+<p>先了解架构的核心角色以及调用关系，再去学习源码会更容易一些。</p>
+<p><strong>先仔细阅读官方手册再去学习源码</strong>，很多人不重视官方手册，学习很久甚至工作很久，连核心技术栈的官方手册都没认真看过一遍，这是一件非常可怕的事情。</p>
+<p>对要学习的技术有一个整体地了解之后，可以去拉取源码，去看源码包含哪些模块，每个模块的大体功能是什么，各个模块之间有什么关系等，然后再去看代码的细节。而大多数人读源码，会认为这些不重要，会急于读源码，导致效果不好。</p>
+<h5 id="3-由易到难"><a href="#3-由易到难" class="headerlink" title="3. 由易到难"></a>3. 由易到难</h5><p>尤其是对于很多新手来说，连核心技术栈使用都不熟悉的情况下，直接看其源码很容易遭受很大打击。</p>
+<p>因此要根据自己的阶段去选择适合自己的框架来阅读。</p>
+<p>这一点和打游戏是非常一致的，一般开局都先 “打野”，通过 “打野” 来提升等级获取装备等，再去和高级的敌人对抗。</p>
+<p>对于初学者而言，可以先从开发中常用的简单的框架入手，如 <a href="https://github.com/apache/commons-lang" target="_blank" rel="noopener">commons-lang </a>、<a href="https://github.com/apache/commons-collections" target="_blank" rel="noopener">commons-collections</a>、 <a href="https://github.com/google/guava" target="_blank" rel="noopener">guava</a> 等。从看这些简单的源码积累经验，然后再去学习 spring 、spring boot、dubbo 等框架的源码。</p>
+<p>另外要先保证能够熟练使用，再去学习源码效果会更好一些。如果连使用都不会就直接去学习源码，是一种非常不理智的行为。</p>
+<p>另外学习从来不是匀速的，大家也明白 “欲速则不达” 的道理，建议可以先从简单的框架入手，积累经验后快速将这种学习的能力迁移到自己想研究的框架中去。</p>
+<h5 id="4-带着问题看源码"><a href="#4-带着问题看源码" class="headerlink" title="4. 带着问题看源码"></a>4. 带着问题看源码</h5><h6 id="4-1-通用的问题"><a href="#4-1-通用的问题" class="headerlink" title="4.1 通用的问题"></a>4.1 通用的问题</h6><p>看源码和学某个技术之前，要重点思考几个能从整体理解该项目的问题：</p>
+<ul>
+<li>这个项目主要核心功能是什么？</li>
+<li>这个框架能解决什么问题？</li>
+<li>有没有同类的框架，有啥异同？</li>
+</ul>
+<p>很多人会忽略这些问题，认为这些问题不重要，导致虽然能用起来，却对框架的使用场景、解决的本质问题都不清楚。</p>
+<h6 id="4-2-工作中遇到的问题"><a href="#4-2-工作中遇到的问题" class="headerlink" title="4.2 工作中遇到的问题"></a>4.2 工作中遇到的问题</h6><p>对于很多人而言，大多数时间都花费在工作上，业余时间并没那么多，那么如何去学源码呢？</p>
+<p>其实未必需要有大量完整地时间才可以去学习源码，<strong>我们在开发过程中遇到问题时可以顺便进入源码来研究问题</strong>。</p>
+<p>在工作任务不是特别忙的时候，可以通过自己项目引用的 jar 包进入源码中看一下平时常用的注解是如何解析的，常用的函数具体实现是怎样的，常用的类中还有哪些其它函数等。</p>
+<p>当学习和工作中遇到问题时，如果能够借机深挖，就可以借助这个问题带动源码的部分内容的学习。</p>
+<p>如在 《虚拟机退出时机问题研究》小节所举的例子，下面代码打印语句还没来得及执行就结束了：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CompletableFutureDemo</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    CompletableFuture<span class="token punctuation">.</span><span class="token function">runAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span>2L<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> ignore<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token punctuation">}</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"异步任务"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>最终我们通过进入 <code>runAsync</code> 函数的源码跟踪到 <code>ForkJoinPool#registerWorker</code> 函数发现， <code>ForkJoinPool</code> 的工作线程类型为守护者线程。</p>
+<p>我们就借着这个机会，学习了 <code>CompletableFuture</code> 源码的部分知识点。</p>
+<p>下面介绍另外一个问题，比如某同学使用 MyBatis 时，运行项目测试时发现找不到自定定义好的 Mapper，咋回事呢？</p>
+<p>此时你要想出各种可能性：</p>
+<ul>
+<li>包名是不是写错了扫描不到？</li>
+<li>接口是不是写成类了？</li>
+</ul>
+<p>等等最有可能的问题，然后依次排查。</p>
+<p>最终发现是因为自己误将 Mapper 接口定义为类导致的，将类 (class) 改成接口 (interface) 就好了。</p>
+<p>那么为啥会这样呢？大家千万不要就此打住。</p>
+<p>了解 MyBatis 会通过 MapperRegistry 来注册和获取 Mapper 对象的代理，我们进入添加 mapper 的核心代码：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/MapperRegistry.jpeg" alt="MapperRegistry"></p>
+<p>可以看到该函数会先判断 Mapper 是否为接口类型，如果是接口类型才会注册此映射的代理对象，因此问题就非常明确了。</p>
+<p>每一个问题都是我们学习源码的好机会，希望大家能够有这种意识。</p>
+<p>很多人恰恰是平时不用心，临近找工作突击，才导致学啥都不深入，结果可想而知。</p>
+<p>随着遇到的问题越来越多，看过常见的类的源码的函数越来越多，对源码的理解就越来越深刻，越来越熟悉。</p>
+<h6 id="4-3-看-issues"><a href="#4-3-看-issues" class="headerlink" title="4.3 看 issues"></a>4.3 看 issues</h6><p>通过看开源项目的 issues， 你可以发现该项目的潜在 BUG。</p>
+<p>可以了解同一个问题，不同人的解决思路，以及官方最终采用的是哪种方案。</p>
+<p>很多人的解决方案，对你实际的业务开发也有很大帮助。</p>
+<h6 id="4-4-看时序图"><a href="#4-4-看时序图" class="headerlink" title="4.4 看时序图"></a>4.4 看时序图</h6><p>有些人可能会想到，可以根据源码画出时序图来理解源码，但是画图非常耗时，怎么办呢？</p>
+<p>IDEA 插件 <a href="https://github.com/Vanco/SequencePlugin" target="_blank" rel="noopener">SequenceDiagram</a> 就派上用场了，这个插件非常赞，可以根据源码绘制出调用时序图，对学习源码帮助极大。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E4%BB%A3%E7%A0%81%E8%B0%83%E7%94%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.jpeg" alt="代码调用时序图"></p>
+<h6 id="4-5-看错误堆栈信息"><a href="#4-5-看错误堆栈信息" class="headerlink" title="4.5 看错误堆栈信息"></a>4.5 看错误堆栈信息</h6><p>程序运行出错时，是我们学习的最佳时机。</p>
+<p>大家可以通过 [Stack trace to UML 插件](Stack trace to UML ) 绘制出出错的调用时序图，了解调用的顺序。</p>
+<p>如下面出错信息：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E9%94%99%E8%AF%AF%E5%A0%86%E6%A0%88%E4%BF%A1%E6%81%AF.jpeg" alt="错误堆栈信息"></p>
+<p>安装好插件后，通过菜单：Analyze &gt; Open Stack trace to UML plugin + Generate UML diagrams from stacktrace from debug ，将绘制出下面的时序图：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%87%BA%E9%94%99%E7%9A%84%E8%B0%83%E7%94%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.jpeg" alt="出错的调用时序图"></p>
+<p>当异常堆栈信息非常多时，通过该插件绘制出的时序图将非常有助于帮助我们了解调用链，理解源码。</p>
+<h5 id="5-带着场景学源码"><a href="#5-带着场景学源码" class="headerlink" title="5. 带着场景学源码"></a>5. 带着场景学源码</h5><p>比如从设计模式的角度去学习源码。</p>
+<p>可以从设计模式的六大原则来思考源码的设计，思考源码是如何体现这几种原则的。</p>
+<blockquote>
+<p>设计模式六大原则：单一职责原则、里氏替换原则、依赖倒置原则、接口隔离原则、迪米特法则、开放封闭原则。</p>
+</blockquote>
+<p>还可以结合《设计模式之禅》这本书或者菜鸟教程中设计模式的教程，了解具体某些设计模式的特点、使用场景、优点、缺点等。</p>
+<p>然后从 JDK 或者 Spring 等自己想学习的框架源码中去寻找这些设计模式的身影。</p>
+<p>通过这种方式可以更清楚设计模式该如何落地，从更多角度去了解源码。</p>
+<p>这里不详细展开，希望大家自行学习。</p>
+<h5 id="6-通过源码的单元测试来学习源码"><a href="#6-通过源码的单元测试来学习源码" class="headerlink" title="6. 通过源码的单元测试来学习源码"></a>6. 通过源码的单元测试来学习源码</h5><p>正如前面一些章节所提到的，大多数知名的 Java 开源项目都会有非常完善的单元测试，这是我们学习源码的一个非常重要的突破口。我们可以运行单元测试来调试源码，熟悉核心类的功能。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%BA%90%E7%A0%81%E7%9A%84%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95.jpeg" alt="源码的单元测试"></p>
+<p>可以直接根据类名搜索，也可以通过找到该类，使用 “find usages” 功能来找到其单元测试代码。</p>
+<h5 id="7-通过-DEMO-学源码"><a href="#7-通过-DEMO-学源码" class="headerlink" title="7. 通过 DEMO 学源码"></a>7. 通过 DEMO 学源码</h5><p>大家可以使用官方的例子或者自己写例子运行，来体会某个项目的用法，研究其特性。</p>
+<p>在这里推荐一个高质量的英文技术文章网站 <a href="https://www.baeldung.com/category/java/" target="_blank" rel="noopener">baeldung</a>, 几乎所有的文章都有 <a href="https://github.com/eugenp/tutorials" target="_blank" rel="noopener">配套代码</a> , 我们可以直接通过该网站的代码运行学习某些知识点，某些框架。</p>
+<p>大家学习某个框架，还可以自行去 github 找到相关的范例，运行学习。</p>
+<p>另外，超级推荐大家通过自己开发的项目来学习 Spring 源码。大家可以对照着官方文档、对照着 Spring 的源码教程等，观察自己项目中某个 Spring 类的使用，还可以在项目测试时偶尔进到源码中断点，通过调试自己的项目来学习源码。</p>
+<h4 id="4-3-4-阅读源码的技巧"><a href="#4-3-4-阅读源码的技巧" class="headerlink" title="4.3.4-阅读源码的技巧"></a>4.3.4-阅读源码的技巧</h4><h5 id="1-实现-“简易版”-是学习的重要途径"><a href="#1-实现-“简易版”-是学习的重要途径" class="headerlink" title="1. 实现 “简易版” 是学习的重要途径"></a>1. 实现 “简易版” 是学习的重要途径</h5><p>比如学习 Spring 源码之前，可以根据自己平时使用 Spring 的方式，自己实现简易版的 Spring，记录自己编写代码的核心步骤，以及核心步骤的缺点和遇到的问题。待真正去阅读源码时，很多问题豁然开朗。</p>
+<p>可能很多人会认为，不是所有的代码都有简易版。的确如此，但是只要思维灵活，方法总比困难多。</p>
+<p>如可以购买或者寻找《Spring5 核心原理与 30 个类手写实战》书本所配套的<a href="https://github.com/gupaoedu-tom/spring5-samples" target="_blank" rel="noopener">简单版 Spring 代码</a>，并且自己尝试从最简单版去改编，梳理清楚核心逻辑，并记录这个过程中遇到的困难。再去读 Spring 源码就会容易很多。</p>
+<p>比如想读 dubbo 源码，可以在 github 上找一些简单的 Java RPC 框架看会后再去看 dubbo 的源码。</p>
+<h5 id="2-寻找程序入口是一个学习源码的切入点"><a href="#2-寻找程序入口是一个学习源码的切入点" class="headerlink" title="2. 寻找程序入口是一个学习源码的切入点"></a>2. 寻找程序入口是一个学习源码的切入点</h5><p>通过寻找程序启动的入口，对入口断点调试，可以从源头了解框架的启动流程和运行原理。</p>
+<p>可以通过打断点，然后通过调用栈逆向寻找入口；可以找网上的博客的源码分析找到入口打断点。</p>
+<h5 id="3-阅读源码时要重视函数的命名"><a href="#3-阅读源码时要重视函数的命名" class="headerlink" title="3. 阅读源码时要重视函数的命名"></a>3. 阅读源码时要重视函数的命名</h5><p>往往优秀的源码函数命名都非常贴切。可以通过 IDEA 的 structure，来了解源码中某个类的核心函数。</p>
+<p>核心类有哪些核心的函数，这些函数的功能又是什么，对学习源码帮助很大。</p>
+<p>通过单个函数快速了解其意图，对学习源码帮助很大。</p>
+<h5 id="4-多看函数列表"><a href="#4-多看函数列表" class="headerlink" title="4. 多看函数列表"></a>4. 多看函数列表</h5><p>在看源码时建议打开函数列表，进入某个类时优先看该类有哪些公有函数。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%BA%90%E7%A0%81%E4%B9%8B%E6%9F%A5%E7%9C%8B%E5%87%BD%E6%95%B0%E5%88%97%E8%A1%A8.jpeg" alt="源码之查看函数列表"></p>
+<p>这样做有助于帮助你从整体了解该类，更全面地了解一个类的功能。</p>
+<h5 id="5-阅读源码时要重视源码的注释"><a href="#5-阅读源码时要重视源码的注释" class="headerlink" title="5. 阅读源码时要重视源码的注释"></a>5. 阅读源码时要重视源码的注释</h5><p>优秀的开源项目的类、函数甚至成员变量都会有非常详尽的注释。</p>
+<p>注释可以快速帮助我们理解源码，帮助我们了解一些重要细节。</p>
+<p>比如很多代码会给出其核心步骤，此时一定要先阅读函数上面的注释和内部给出的核心步骤再去读源码。</p>
+<p>比较典型的一个案例 <code>java.util.concurrent.ThreadPoolExecutor#execute</code> ：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * Executes the given task sometime in the future.  The task
+ * may execute in a new thread or in an existing pooled thread.
+ *
+ * If the task cannot be submitted for execution, either because this
+ * executor has been shutdown or because its capacity has been reached,
+ * the task is handled by the current {@code RejectedExecutionHandler}.
+ *
+ * @param command the task to execute
+ * @throws RejectedExecutionException at discretion of
+ *         {@code RejectedExecutionHandler}, if the task
+ *         cannot be accepted for execution
+ * @throws NullPointerException if {@code command} is null
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">execute</span><span class="token punctuation">(</span>Runnable command<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>command <span class="token operator">==</span> null<span class="token punctuation">)</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NullPointerException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">/*
+     * Proceed in 3 steps:
+     *
+     * 1. If fewer than corePoolSize threads are running, try to
+     * start a new thread with the given command as its first
+     * task.  The call to addWorker atomically checks runState and
+     * workerCount, and so prevents false alarms that would add
+     * threads when it shouldn't, by returning false.
+     *
+     * 2. If a task can be successfully queued, then we still need
+     * to double-check whether we should have added a thread
+     * (because existing ones died since last checking) or that
+     * the pool shut down since entry into this method. So we
+     * recheck state and if necessary roll back the enqueuing if
+     * stopped, or start a new thread if there are none.
+     *
+     * 3. If we cannot queue task, then we try to add a new
+     * thread.  If it fails, we know we are shut down or saturated
+     * and so reject the task.
+     */</span>
+    <span class="token keyword">int</span> c <span class="token operator">=</span> ctl<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">workerCountOf</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token operator">&lt;</span> corePoolSize<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">addWorker</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        c <span class="token operator">=</span> ctl<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isRunning</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> workQueue<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> recheck <span class="token operator">=</span> ctl<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span> <span class="token function">isRunning</span><span class="token punctuation">(</span>recheck<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token function">remove</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token function">reject</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">workerCountOf</span><span class="token punctuation">(</span>recheck<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token function">addWorker</span><span class="token punctuation">(</span>null<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">addWorker</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token function">reject</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="6-关注目标类继承的类或者实现的接口"><a href="#6-关注目标类继承的类或者实现的接口" class="headerlink" title="6. 关注目标类继承的类或者实现的接口"></a>6. 关注目标类继承的类或者实现的接口</h5><p>目标类的父类和实现的接口是研究该类功能和特征的重要突破口。</p>
+<p>借助前面章节讲到的调试技巧，查看调用栈，运行表达式等可以极大地帮助我们理解源码。通过 IDEA 提供的类图功能，可以帮助我们理解不同类之间的关系。</p>
+<p>如下图所示，通过 IDEA 自带的类图工具绘制出 fastjson 核心类之的类图，通过类图的选项来控制显示的内容和可见性。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/IDEA%E6%9F%A5%E7%9C%8B%E7%B1%BB%E5%9B%BE.jpeg" alt="IDEA查看类图"></p>
+<h5 id="7-其它"><a href="#7-其它" class="headerlink" title="7. 其它"></a>7. 其它</h5><p>大家可以使用前面调试章节所学到的查看调用栈、设置条件断点、查看加载的对象等调试功能来帮助大家学习源码。</p>
+<p>大家还可以跟着某个框架的专栏作者的思路去深入学习某个具体框架的源码。</p>
+<h4 id="4-3-5-总结"><a href="#4-3-5-总结" class="headerlink" title="4.3.5-总结"></a>4.3.5-总结</h4><p>本节主要讲述如何阅读源码，讲到了阅读源码的思路和一些技巧。希望通过本文的介绍大家可以更高效地阅读源码，提高进阶的速度。</p>
+<p>下一节将讲述重构的相关知识。</p>
+<h3 id="4-4-代码重构的正确姿势"><a href="#4-4-代码重构的正确姿势" class="headerlink" title="4.4-代码重构的正确姿势"></a>4.4-代码重构的正确姿势</h3><h4 id="4-4-1-前言"><a href="#4-4-1-前言" class="headerlink" title="4.4.1-前言"></a>4.4.1-前言</h4><p>在软件迭代过程中常常会因为原来的功能有 BUG、无法满足新的需求、性能遇到瓶颈等原因为需要对代码进行重构。</p>
+<p>那么：</p>
+<ul>
+<li>为什么要重构？</li>
+<li>如何保证重构代码的正确性？</li>
+<li>有哪些重构技巧？</li>
+</ul>
+<p>这三个关键问题都是本节的重点探讨的内容。</p>
+<h4 id="4-4-2-什么是重构？何时重构？"><a href="#4-4-2-什么是重构？何时重构？" class="headerlink" title="4.4.2-什么是重构？何时重构？"></a>4.4.2-什么是重构？何时重构？</h4><h5 id="1-什么是重构？"><a href="#1-什么是重构？" class="headerlink" title="1. 什么是重构？"></a>1. 什么是重构？</h5><p>想了解为何要重构以及如何重构，就要先搞清楚什么是重构。</p>
+<blockquote>
+<p>重构（ refactoring）是这样的一个过程：在不改变代码外在行为的前提下，对代码进行修改，以改进程序的内部结构。本质上讲，重构就是在代码写好之后，改进它的设计。 – 《重构》<a href="https://www.imooc.com/read/55/article/1163#fn1" target="_blank" rel="noopener">1</a></p>
+</blockquote>
+<h5 id="2-何时动手重构？"><a href="#2-何时动手重构？" class="headerlink" title="2. 何时动手重构？"></a>2. 何时动手重构？</h5><h6 id="2-1-添加新功能的时候"><a href="#2-1-添加新功能的时候" class="headerlink" title="2.1 添加新功能的时候"></a>2.1 添加新功能的时候</h6><p>当因为新的需求要为系统添加新功能时，可能会发现很多问题。</p>
+<p>比如发现不同的类需要使用同一段代码，而这段代码在之前的一个类中；发现分支条件越来越多，难以维护；发现随着功能的增强，函数的参数列表越来越长，代码长度太长难以理解等。</p>
+<p>可以借助开发新功能的时机去对代码进行重构。</p>
+<h6 id="2-2-修复错误时重构"><a href="#2-2-修复错误时重构" class="headerlink" title="2.2 修复错误时重构"></a>2.2 修复错误时重构</h6><p>当我们收到一份来自测试或者技术支持提过来的 “编码缺陷” 的 jira 时几乎就意味着我们要重构代码了。</p>
+<p>可能是接口的结果不符合预期，也可能是接口的性能达不到要求。</p>
+<h6 id="2-3-代码审查时重构"><a href="#2-3-代码审查时重构" class="headerlink" title="2.3 代码审查时重构"></a>2.3 代码审查时重构</h6><p>很多公司都会有代码审查机制，复杂、重要的项目都要通过代码审查（ Code Review） 后才能上线。</p>
+<p>在代码审查阶段，代码审查人员可能对我们代码的可读性、可维护性、代码的性能等进行评价并给出建议。</p>
+<p>如果代码审车人员给出了比较合理的建议，此时就要对有问题的代码进行重构。</p>
+<h4 id="4-4-3-如何保证重构代码的正确性？"><a href="#4-4-3-如何保证重构代码的正确性？" class="headerlink" title="4.4.3-如何保证重构代码的正确性？"></a>4.4.3-如何保证重构代码的正确性？</h4><p><strong>重构技巧千万种，保证正确性是关键。</strong> 那么如何保证重构代码的正确性呢？</p>
+<p>正如单元测试的章节所讲的一样，<strong>单元测试是保证代码正确性的强有力保证</strong>。</p>
+<p>《重构》第二版 <a href="https://www.imooc.com/read/55/article/1163#fn2" target="_blank" rel="noopener">2</a>“重构第一步” 小节有这样一段描述：</p>
+<blockquote>
+<p>进行重构时，我们需要依赖测试。我们将测试视为 bug 检查器，它们能够保护我们不被自己犯的错所困扰。</p>
+<p>把我们想表达的目标写两遍 – 代码里写一遍，测试里再写一遍 – 我们的错误才能骗过检测器。这降低了我们犯错的概率。尽管编写测试需要花费时间，但却为我们节省下可观的调试时间。</p>
+</blockquote>
+<p>因此要保证重构的代码都可以通过测试，如果前人并没有编写对应的单元测试，可以在重构时补上对应的单元测试。</p>
+<h4 id="4-4-4-一些重构技巧"><a href="#4-4-4-一些重构技巧" class="headerlink" title="4.4.4-一些重构技巧"></a>4.4.4-一些重构技巧</h4><p>Java 代码的重构主要包括以下几个方面：代码的 “坏味道”，对象之间的重构，数据的重构，函数调用的重构和表达式简化的重构。</p>
+<h5 id="1-代码的坏味道"><a href="#1-代码的坏味道" class="headerlink" title="1. 代码的坏味道"></a>1. 代码的坏味道</h5><p>代码的坏味道有很多种，常见的包括：重复代码，过长的函数，过大的类，过长的参数列表，过多的注释等。</p>
+<p><strong>重复代码</strong>通常有 3 种情况，</p>
+<p>1、<strong>同一个类的多个函数包含重复代码</strong>， 此时可以将公共代码提取为该类的私有函数，在上述函数中调用；</p>
+<p>2、<strong>互为兄弟的子类之间包含相同的代码</strong>，此时应该将重复代码上移到父类中；</p>
+<p>3、<strong>两个毫不相关的出现重复代码</strong>，此时应该将公共代码抽取到一个新类中。</p>
+<p>比如在实际开发中，经常需要根据将某个字段和枚举的值进行比较，可能频繁出现如下代码：</p>
+<pre class=" language-java"><code class="language-java">Integer someType <span class="token operator">=</span> xxxDTO<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 第一种形式</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>CoinEnum<span class="token punctuation">.</span>PENNY<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> someType<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 代码省略</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 第二种形式</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>CoinEnum<span class="token punctuation">.</span>PENNY <span class="token operator">==</span> CoinEnum<span class="token punctuation">.</span><span class="token function">getByValue</span><span class="token punctuation">(</span>someType<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 代码省略</span>
+<span class="token punctuation">}</span></code></pre>
+<p>那么如何变得更优雅呢？</p>
+<p>项目中多处需要执行批量逻辑，可能需要对接口数量做限制，会在项目中多处出现这种代码：</p>
+<pre class=" language-java"><code class="language-java"> <span class="token keyword">public</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token keyword">void</span> <span class="token function">aRun</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> dataList<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>dataList<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">int</span> size <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true">// 每 10 个元素为一组执行一次</span>
+    Lists<span class="token punctuation">.</span><span class="token function">partition</span><span class="token punctuation">(</span>dataList<span class="token punctuation">,</span> size<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">someRun</span><span class="token punctuation">(</span>dataList<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">}</span>
+
+ <span class="token keyword">private</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token keyword">void</span> <span class="token function">someRun</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> dataList<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token comment" spellcheck="true">// 省略</span>
+ <span class="token punctuation">}</span></code></pre>
+<p>此时可以将其封装到工具类中：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token keyword">void</span> <span class="token function">partitionRun</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> dataList<span class="token punctuation">,</span> <span class="token keyword">int</span> size<span class="token punctuation">,</span> Consumer<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>T<span class="token operator">>></span> consumer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>dataList<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    Preconditions<span class="token punctuation">.</span><span class="token function">checkArgument</span><span class="token punctuation">(</span>size <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"size must > 0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    Lists<span class="token punctuation">.</span><span class="token function">partition</span><span class="token punctuation">(</span>dataList<span class="token punctuation">,</span> size<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>consumer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如果在项目中多个地方需要类似的逻辑， 则直接调用该工具类即可：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 每批 10 个</span>
+ExecuteUtil<span class="token punctuation">.</span><span class="token function">partitionRun</span><span class="token punctuation">(</span>mockDataList<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>eachList<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> a<span class="token punctuation">.</span><span class="token function">someRun</span><span class="token punctuation">(</span>eachList<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 每批 20 个</span>
+ExecuteUtil<span class="token punctuation">.</span><span class="token function">partitionRun</span><span class="token punctuation">(</span>mockDataList<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>eachList<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> b<span class="token punctuation">.</span><span class="token function">otherRun</span><span class="token punctuation">(</span>eachList<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>如果<strong>函数过长</strong>，读懂函数的逻辑将变得非常困难，接手代码的人需要花费较多时间才能读懂这些代码。</p>
+<p>在工作中，如果接手的代码某一行报错，但是代码行数很多，一般需要读懂整个函数逻辑才敢动手修改，是一件非常痛苦的事情。根据《手册》 “【推荐】单个函数总行数不超过 80 行” <a href="https://www.imooc.com/read/55/article/1163#fn3" target="_blank" rel="noopener">3</a> 的建议，需要将大函数拆分成多个子步骤（函数）。最好的办法是搞清楚该函数分为几个步骤，分别将每个子步骤提取为一个子函数即可。</p>
+<p>如果<strong>类过大</strong>，通常是函数太多，成员变量过多。如果是函数太多，通常可以根据将函数归类，拆分到不同的类中，一个常见的做法是将 <code>OrderService`` 拆成 OrderSearchService</code> 和 <code>OrderOperateService</code> 分别承担订单的搜索和非搜索业务。如果是成员变量过多，则需要考虑是否应该多个成员变量抽取到某个类中，后者一部分成员变量是否应该属于某个类，通过将新类当做成员变量来消减成员变量的数量。</p>
+<p>如果<strong>函数的参数较长</strong>，传参时需仔细核实参数列表以避免误传。如果对外暴露的接口，需要新增一个属性时，为了避免修改签名让二方被迫跟着修改调用的代码，就需要新增一个接口，这种不优雅的方案。根据《手册》的分层领域模型规约部分的建议，<strong>应该将请求的参数封装成查询对象</strong>。这也是一个宝贵的开发经验，尤其是暴露给二方 RPC 接口时，如果未来可能修改参数，尽量使用对象来接收参数，避免因函数签名不同而导致错误。</p>
+<p>如果<strong>代码中的注释过多</strong>，应该简化注释，尽量只在关键步骤，特殊逻辑上添加注释，应该使用变量和函数名来表意。</p>
+<h5 id="2-重新组织函数"><a href="#2-重新组织函数" class="headerlink" title="2. 重新组织函数"></a>2. 重新组织函数</h5><p><strong>当函数中条件表达式较为复杂时</strong>，应该将复杂表达式或者其中一部分放到临时变量中，并通过变量名来表达其用途，也可以将部分表达式在一起组成一个含义，还可以将其封装到函数中。</p>
+<p>可以参见 spring <code>TypeConverterDelegate#convertToTypedCollection</code> 源码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 提取为变量</span>
+<span class="token keyword">boolean</span> approximable <span class="token operator">=</span> CollectionFactory<span class="token punctuation">.</span><span class="token function">isApproximableMapType</span><span class="token punctuation">(</span>requiredType<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>approximable <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">canCreateCopy</span><span class="token punctuation">(</span>requiredType<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>logger<span class="token punctuation">.</span><span class="token function">isDebugEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"Custom Map type ["</span> <span class="token operator">+</span> original<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+            <span class="token string">"] does not allow for creating a copy - injecting original Map as-is"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token keyword">return</span> original<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// 提取为函数</span>
+    <span class="token keyword">private</span> <span class="token keyword">boolean</span> <span class="token function">canCreateCopy</span><span class="token punctuation">(</span>Class<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> requiredType<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token operator">!</span>requiredType<span class="token punctuation">.</span><span class="token function">isInterface</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>Modifier<span class="token punctuation">.</span><span class="token function">isAbstract</span><span class="token punctuation">(</span>requiredType<span class="token punctuation">.</span><span class="token function">getModifiers</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+                Modifier<span class="token punctuation">.</span><span class="token function">isPublic</span><span class="token punctuation">(</span>requiredType<span class="token punctuation">.</span><span class="token function">getModifiers</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> ClassUtils<span class="token punctuation">.</span><span class="token function">hasConstructor</span><span class="token punctuation">(</span>requiredType<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span></code></pre>
+<p><strong>如果不在循环中对一个含义不明确的临时变量多次赋值时</strong>，需对每一次都创建独立的临时变量。</p>
+<p>如下列代码使用一个临时变量表达多种含义：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">int</span> temp <span class="token operator">=</span> array<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 省略中间代码</span>
+temp <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>应该修改为：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">int</span> length <span class="token operator">=</span> array<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 省略中间代码</span>
+<span class="token keyword">int</span> age <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>如果<strong>调用二方批量接口响应很慢容易超时</strong>，除了可以像 4.1 重复代码所给出的示例一样，将其<strong>改为小批次调用，并将小批次调用的结果进行聚合</strong>。</p>
+<p>通过封装成工具函数实现复用，可以通过控制 size 来避免接口超时：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>T<span class="token punctuation">,</span> V<span class="token operator">></span> List<span class="token operator">&lt;</span>V<span class="token operator">></span> <span class="token function">partitionCall2List</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> dataList<span class="token punctuation">,</span> <span class="token keyword">int</span> size<span class="token punctuation">,</span> Function<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">,</span> List<span class="token operator">&lt;</span>V<span class="token operator">>></span> function<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>dataList<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    Preconditions<span class="token punctuation">.</span><span class="token function">checkArgument</span><span class="token punctuation">(</span>size <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"size must > 0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> Lists<span class="token punctuation">.</span><span class="token function">partition</span><span class="token punctuation">(</span>dataList<span class="token punctuation">,</span> size<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>function<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>Objects<span class="token operator">:</span><span class="token operator">:</span>nonNull<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    <span class="token punctuation">(</span>resultList1<span class="token punctuation">,</span> resultList2<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                        resultList1<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span>resultList2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">return</span> resultList1<span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+<span class="token punctuation">}</span></code></pre>
+<p>为了获取更快的响应速度，可以使用并发或并行特性:</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token operator">&lt;</span>T<span class="token punctuation">,</span> V<span class="token operator">></span> List<span class="token operator">&lt;</span>V<span class="token operator">></span> <span class="token function">partitionCall2ListWithCompletable</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span> dataList<span class="token punctuation">,</span>
+                                                     <span class="token keyword">int</span> size<span class="token punctuation">,</span>
+                                                     ExecutorService executorService<span class="token punctuation">,</span>
+                                                     Function<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">,</span> List<span class="token operator">&lt;</span>V<span class="token operator">>></span> function<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>dataList<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    Preconditions<span class="token punctuation">.</span><span class="token function">checkArgument</span><span class="token punctuation">(</span>size <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"size must >0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment" spellcheck="true">// 异步调用并获取CompletableFuture对象列表</span>
+    List<span class="token operator">&lt;</span>CompletableFuture<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>V<span class="token operator">>>></span> completableFutures <span class="token operator">=</span> Lists<span class="token punctuation">.</span><span class="token function">partition</span><span class="token punctuation">(</span>dataList<span class="token punctuation">,</span> size<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>eachList <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>executorService <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">return</span> CompletableFuture<span class="token punctuation">.</span><span class="token function">supplyAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> function<span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>eachList<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">return</span> CompletableFuture<span class="token punctuation">.</span><span class="token function">supplyAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> function<span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>eachList<span class="token punctuation">)</span><span class="token punctuation">,</span> executorService<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 等待全部完成</span>
+    CompletableFuture<span class="token operator">&lt;</span>Void<span class="token operator">></span> allFinished <span class="token operator">=</span> CompletableFuture<span class="token punctuation">.</span><span class="token function">allOf</span><span class="token punctuation">(</span>completableFutures<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">CompletableFuture</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        allFinished<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+  <span class="token comment" spellcheck="true">// 组合结果</span>
+    <span class="token keyword">return</span> completableFutures<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>CompletableFuture<span class="token operator">:</span><span class="token operator">:</span>join<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>CollectionUtils<span class="token operator">:</span><span class="token operator">:</span>isNotEmpty<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span>V<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>list1<span class="token punctuation">,</span> list2<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                list1<span class="token punctuation">.</span><span class="token function">addAll</span><span class="token punctuation">(</span>list2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> list1<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>还有无数种可以重构的情况，更多重构的场景和范例请参考《重构》这本经典著作，在编码过程中认真体会和运用。</p>
+<p><strong>在平时开发时，在满足功能需求的基础上要注重代码的性能</strong>。</p>
+<p>比如下面这段代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">getImages</span><span class="token punctuation">(</span>String type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    List<span class="token operator">&lt;</span>String<span class="token operator">></span> result <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"10*20"</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        result<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://xxxxxximg1.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        result<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://xxxxxximgx.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 省略其他</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"10*30"</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://yyyyimg1.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        result<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://yyyyimgy.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 省略其他</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>我们可以看到图片的内容是固定的，不需要每次都要查询，上面的写法每个请求都要创建一个 List 将对应的图片塞进去再返回，完全没有必要。</p>
+<p>可以参考下面的代码进行重构：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>String<span class="token operator">>></span> images<span class="token punctuation">;</span>
+
+<span class="token keyword">static</span> <span class="token punctuation">{</span>
+    images <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true">// 根据元素的个数设置初始长度</span>
+    List<span class="token operator">&lt;</span>String<span class="token operator">></span> first <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    first<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://xxxxxximg1.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    first<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://xxxxxximg2.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 省略其他</span>
+    List<span class="token operator">&lt;</span>String<span class="token operator">></span> second <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    second<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://yyyyimg1.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    second<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"http://yyyyimg2.png"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 省略其他</span>
+
+    images<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"10*20"</span><span class="token punctuation">,</span> first<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    images<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"10*30"</span><span class="token punctuation">,</span> second<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    images <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">unmodifiableMap</span><span class="token punctuation">(</span>images<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">public</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">getImages</span><span class="token punctuation">(</span>String type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> images<span class="token punctuation">.</span><span class="token function">getOrDefault</span><span class="token punctuation">(</span>type<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这样每次请求都会从 “缓存” 中获取，而且为了防止 map 被修改，将其设置为 unmodifiableMap，而且使用 Map 接口的 getOrDefault 功能，大大简化了代码。</p>
+<h5 id="3-线程安全问题"><a href="#3-线程安全问题" class="headerlink" title="3. 线程安全问题"></a>3. 线程安全问题</h5><p>当多线程共享变量是，要特别注意线程安全问题。</p>
+<p>请看下面的例子：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">DemoService</span><span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">doGetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 第一处代码</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>data <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            data <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> data<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">getData</span><span class="token punctuation">(</span>String param<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 省略其他</span>
+        List<span class="token operator">&lt;</span>String<span class="token operator">></span> data <span class="token operator">=</span> <span class="token function">doGetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">// 省略其他</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>假设有多个线程并发调用 doGetData 函数，最初的前两个线程极短时间内依次走到第一处代码的判断处，都会进入 if 代码块。</p>
+<p>如果第一个线程在调用 data.addd (“c”) 后，如果第二个线程执行 data = new ArrayList&lt;&gt;(); 第一个线程返回 data 时，该集合内没有元素（元素丢失）。</p>
+<p>针对该示例代码的情况，我们可以通过静态代码块来构造数据，也可以通过双重检查锁来实现。</p>
+<p>参考修改 1：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">;</span>
+
+<span class="token keyword">static</span> <span class="token punctuation">{</span>
+    data <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    data <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">unmodifiableList</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>参考修改 2：</p>
+<pre class=" language-java"><code class="language-java">  <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Object LOCK <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token comment" spellcheck="true">// 第 1 处代码</span>
+  <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">volatile</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> data<span class="token punctuation">;</span>
+
+  <span class="token keyword">private</span> List<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">doGetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token keyword">if</span> <span class="token punctuation">(</span>data <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>LOCK<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>data <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                  <span class="token comment" spellcheck="true">// 第 2 处代码</span>
+                    ArrayList<span class="token operator">&lt;</span>String<span class="token operator">></span> inner <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    inner<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    inner<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    inner<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token comment" spellcheck="true">// 第 3 处代码</span>
+                    data <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">unmodifiableList</span><span class="token punctuation">(</span>inner<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> data<span class="token punctuation">;</span>
+   <span class="token punctuation">}</span></code></pre>
+<p>我们在第 1 处代码加上 volatile 关键字来保证可见性，我们在第 2 处代码创建一个局部变量，避免使用 data = new ArrayList&lt;&gt;(); ，因为这样会导致还没添加数据就已经创建了对象，另外一个线程并发访问时直接进行最外层判断时就满足 data != null 返回没有元素的 data 集合。</p>
+<h5 id="4-使用权威的工具类"><a href="#4-使用权威的工具类" class="headerlink" title="4. 使用权威的工具类"></a>4. 使用权威的工具类</h5><p>我们尽量使用 JDK 封装好的类，使用大公司开源的工具类，避免重复劳动。</p>
+<p>平时可以多去 commons-lang3 、commons-collections4 、 guava 等知名工具类框架中了解其提供的简单实用的工具类。</p>
+<p>比如让当前线程 sleep 一段时间，不要用数字自行计算：</p>
+<pre class=" language-java"><code class="language-java">Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> <span class="token number">1000</span><span class="token operator">*</span><span class="token number">60</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>而应该使用时间相关的类：</p>
+<pre class=" language-java"><code class="language-java">TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>如开发中计算耗时，通常获取开始和结束的时间，然后结束时间减去开始时间：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">useTimeStamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">long</span> start <span class="token operator">=</span> System<span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 省略一些代码</span>
+    <span class="token keyword">long</span> end <span class="token operator">=</span> System<span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>end <span class="token operator">-</span> start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>应该使用 StopWatch 类，不仅简单方便，而且该类还提供了更多强大功能：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">useStopWatch</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    StopWatch stopWatch <span class="token operator">=</span> StopWatch<span class="token punctuation">.</span><span class="token function">createStarted</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 省略一些代码</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>stopWatch<span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>非常建议大家在开发中使用第三方工具类时能够主动进入其源码，打开函数列表，去查看里面提供的核心工具类，有时候会有意外发现。</p>
+<h4 id="4-4-5-总结"><a href="#4-4-5-总结" class="headerlink" title="4.4.5-总结"></a>4.4.5-总结</h4><p>本文主要讲述什么是重构，何时重构，并选取几个典型场景为例说明如何重构。更多重构的场景和范例请参考《重构》这本经典著作。另外推荐《编写可读代码的艺术》、《代码简洁之道》这两本书，它们都是提高代码可读性和重构代码的不错参考资料。</p>
+<h3 id="4-5-Code-Review的正确姿势"><a href="#4-5-Code-Review的正确姿势" class="headerlink" title="4.5-Code Review的正确姿势"></a>4.5-Code Review的正确姿势</h3><h4 id="4-5-1-前言"><a href="#4-5-1-前言" class="headerlink" title="4.5.1-前言"></a>4.5.1-前言</h4><p>相信很多从事 Java 开发行业的同学都听说过代码审查 (Code Review)。那么是否思考过下面几个问题？</p>
+<ul>
+<li>代码审查是什么？为啥要代码审查？</li>
+<li>代码审查审查什么？谁来审查？</li>
+<li>如何进行代码审查呢？</li>
+</ul>
+<h4 id="4-5-2-What-Why-Who"><a href="#4-5-2-What-Why-Who" class="headerlink" title="4.5.2-What? Why?Who?"></a>4.5.2-What? Why?Who?</h4><h5 id="1-什么是代码审查？"><a href="#1-什么是代码审查？" class="headerlink" title="1. 什么是代码审查？"></a>1. 什么是代码审查？</h5><blockquote>
+<p>代码审查也叫代码复查，即通过阅读代码的方式来检查代码是否符合要求。</p>
+</blockquote>
+<p>通俗来讲，我们代码开发完成以后，项目发布之前，需要让其他人阅读我们的代码，看是否符合要求，是否存在隐患等。</p>
+<p>代码审查的目标主要有：</p>
+<ul>
+<li>保证每一次上线时，至少会有两个人能够理解该代码的逻辑。</li>
+<li>保证每次代码审查后的结果都会落到实处，有跟进有解决。</li>
+</ul>
+<h5 id="2-为什么要代码审查？"><a href="#2-为什么要代码审查？" class="headerlink" title="2. 为什么要代码审查？"></a>2. 为什么要代码审查？</h5><p>代码审查是提高代码质量，提前发现 BUG ，统一团队代码规范的一个重要途径。</p>
+<p>俗话说：“不识庐山真面目，只缘身在此山中”。</p>
+<p>由于第一人称视角和个人的习惯难改，经验有限的缘故，我们通常很难发现自己编码中存在的问题。</p>
+<p>因此团队中开发经验丰富的其他成员对代码进行把关，更容易发现代码中存在的功能和性能问题，能够提前发现一些隐患。</p>
+<p>通过代码审查可以检查团队成员是否按照团队的编码规范进行开发。</p>
+<p>同时代码审查也是团队成员相互学习的一种重要方式，作为代码审查人员可以学习团队其他成员的编程技巧，设计方案等，是学习进阶的一个极佳方式。</p>
+<h5 id="3-谁来审查？"><a href="#3-谁来审查？" class="headerlink" title="3. 谁来审查？"></a>3. 谁来审查？</h5><p>每个公司和团队的规定可能有所不同。</p>
+<p>常见的代码审查人员为团队的技术主管，团队中有丰富开发经验的老员工。</p>
+<p>也有些团队对于日常的小需求会让开发人员自己找其他熟悉相关背景的同事进行代码审查。</p>
+<p>这里分享一个<strong>非常重要的经验</strong>，我们在开发过程中就可以将自己的开发分支和 master 分支的最新代码进行比对，按照代码审查的内容对自己代码进行审查，这样能够及时发现问题，尽可能避免将问题遗留在 “正式的代码审查阶段”。</p>
+<h5 id="4-代码审查，审查什么？"><a href="#4-代码审查，审查什么？" class="headerlink" title="4. 代码审查，审查什么？"></a>4. 代码审查，审查什么？</h5><h6 id="4-1-审查设计规范"><a href="#4-1-审查设计规范" class="headerlink" title="4.1 审查设计规范"></a>4.1 审查设计规范</h6><ul>
+<li>代码是否符合面向对象的五大原则原则？是否符合领域设计的原则？</li>
+</ul>
+<blockquote>
+<p><strong>面向对象的五大原则</strong>：单一职责原则，开闭原则，里氏替换原则，接口隔离原则，依赖倒置原则。</p>
+<p>如一个函数干了两件不相干的事情，应该拆分为两个函数。</p>
+<p>如嵌套超过 3 层可以使用卫语句、策略模式、状态模式等。</p>
+</blockquote>
+<ul>
+<li>是否使用了某种设计模式？该设计模式使用是否恰当？</li>
+<li>新的代码是否符合团队的代码规范？</li>
+<li>代码位置是否正确？如用户相关的代码是否放到了用户服务中？</li>
+<li>新代码是否重用了已有代码？新代码是否提供了可重用的代码？结合前面章节学到的重构原则，是否需要重构？</li>
+<li>新代码是否有过度设计的现象？是否违背 YAGN 原则？</li>
+</ul>
+<blockquote>
+<p><strong>YAGN</strong> 即 “You aren’t gonna need it”。只有在需要的时候程序员才应该编写相应的代码。<a href="https://www.imooc.com/read/55/article/1164#fn1" target="_blank" rel="noopener">1</a></p>
+</blockquote>
+<h6 id="4-2-审查可读性和可维护性"><a href="#4-2-审查可读性和可维护性" class="headerlink" title="4.2 审查可读性和可维护性"></a>4.2 审查可读性和可维护性</h6><ul>
+<li>属性、变量、参数、方法类的命名是否能够反映出其要表达的真实含义？</li>
+<li>是否能够理解自己阅读的代码？</li>
+<li>是否能够理解测试代码？</li>
+<li>测试是否覆盖了所有分支？测试是否覆盖了正常和异常情况？是否有一些未考虑的情况？</li>
+<li>异常信息是否容易理解？</li>
+<li>代码片段、文档、注释是否有令人困惑的部分？</li>
+</ul>
+<h6 id="4-3-审查是否有错误"><a href="#4-3-审查是否有错误" class="headerlink" title="4.3 审查是否有错误"></a>4.3 审查是否有错误</h6><ul>
+<li><strong>代码是否符合需求？</strong> 测试代码编写的是否正确？</li>
+<li><strong>代码中是否有潜在的 BUG？</strong> 是否校验错了参数？判断条件是否有误？</li>
+<li>代码是否有安全问题？如 SQL 注入。</li>
+<li>代码是否存在性能问题？是否有不必要的数据库调用、IO 读写操作和远程调用？</li>
+<li>编写代码的开发人员是否更新了相关文档？</li>
+<li>是否有明显的错误？如是否会偶发性指向测试库？是否需要调用真实服务时，却没有调用真实的服务，而采用了硬编码方式 mock 了接口？</li>
+</ul>
+<h6 id="4-4-审查测试代码"><a href="#4-4-审查测试代码" class="headerlink" title="4.4 审查测试代码"></a>4.4 审查测试代码</h6><ul>
+<li>源码作者是否为新的代码或修复的代码编写了测试代码？</li>
+<li>测试是否覆盖到了容易出错的部分或者复杂的部分？</li>
+<li>测试是否验证了代码的正确性？</li>
+<li>是否能够想出没有被当前测试代码覆盖的场景？</li>
+<li>是否测试了代码的限制？如批量查询接口只支持 100 个元素，是否被测试到了？</li>
+<li>是否涵盖了安全方面的测试？</li>
+<li>是否有性能测试？</li>
+</ul>
+<h6 id="4-5-审查性能方面"><a href="#4-5-审查性能方面" class="headerlink" title="4.5 审查性能方面"></a>4.5 审查性能方面</h6><ul>
+<li>新的代码中某些函数是否有性能要求？是否验证了该函数的性能？</li>
+<li>新的代码是否降低了之前的性能？</li>
+<li>是否有不必要的外部服务调用？如不必要的调用数据库，不必要的外部服务调用。</li>
+<li>新代码是否有可能引起内存泄露的情况？</li>
+<li>是否有可能引起内存占用无限增长的情况？</li>
+<li>代码中使用的资源是否正确关闭？如创建的连接或者流。</li>
+<li>资源池的配置是否正确？</li>
+<li>是否使用了在多线程场景下可能引发性能问题的类？</li>
+</ul>
+<blockquote>
+<p>正如《手册》并发处理章节 第 15 条 Random 如果被多线程共享，虽然线程安全，但是因为竞争同一个 seed 会导致性能下降 <a href="https://www.imooc.com/read/55/article/1164#fn2" target="_blank" rel="noopener">2</a>。</p>
+</blockquote>
+<ul>
+<li>主要可能引发性能问题的常见场景，如果用到了反射，要思考是否必须要用反射？要思考提供的接口如果超时会怎样？超时时间设置为多少更合理？是否使用了并行特性？是否在没必要的地方使用了并行特性？</li>
+</ul>
+<h6 id="4-6-审查正确性"><a href="#4-6-审查正确性" class="headerlink" title="4.6 审查正确性"></a>4.6 审查正确性</h6><ul>
+<li>多线程环境下数据结构是否选择正确？</li>
+</ul>
+<blockquote>
+<p>如在多线程环境下共享变量使用非线程安全的类，就可能出现线程安全问题。</p>
+<p>如可以使用 <code>Collections.sychronizedList()</code> 来创建线程安全的 <code>List</code>. 如果读的频率远大于写的频率，可以使用 <code>CopyOnWriteArrayList</code>.</p>
+<p>再如多线程条件下， <code>SimpleDateFormat</code> 存在线程安全问题，为了避免线程安全问题可以使用 <code>ThreadLocal</code> 的方式。</p>
+</blockquote>
+<ul>
+<li>代码中锁的使用是否正确？</li>
+<li>代码使用的数据结构是否正确？如需要随机访问，却使用了 <code>LinkedList</code> , 需要保证唯一性却使用了 List.</li>
+<li>日志的级别设置是否正确？</li>
+</ul>
+<h6 id="4-7-审查安全性"><a href="#4-7-审查安全性" class="headerlink" title="4.7 审查安全性"></a>4.7 审查安全性</h6><ul>
+<li>是否缺乏安全校验？如外部服务调用的结果没有判空直接使用导致空指针错误。</li>
+<li>批量查询接口是否有对查询数量进行限制？</li>
+<li>敏感操作是否做了权限校验？</li>
+<li>在使用平台资源时，是否做了限制？如短信、邮件是否做了数量限制、疲劳控制？下单、支付是否做了幂等校验？</li>
+<li>是否存在 SQL 注入的可能性？</li>
+<li>日志是否脱敏？</li>
+<li>发帖、评论、发送即时消息等用户生成内容的场景是否实现了防刷，风控？</li>
+<li>开发人员是否开发了一些危险后门？</li>
+</ul>
+<p>更多具体案例大家可以参考 <a href="https://www.jetbrains.com/upsource/documentation/" target="_blank" rel="noopener">Upsource - Docs &amp; Demos</a></p>
+<h5 id="5-如何审查"><a href="#5-如何审查" class="headerlink" title="5. 如何审查"></a>5. 如何审查</h5><h6 id="5-1-代码审查工具"><a href="#5-1-代码审查工具" class="headerlink" title="5.1 代码审查工具"></a>5.1 代码审查工具</h6><p>最简单直接的代码审查工具就是 GIT ，git 提供了强大的 diff 功能，通常代码审查人员会将所要审查的分支和 master 分支进行对比。</p>
+<p>也可以使用类似 Upsource （JetBrains 出品的一款知名的代码审查和项目分析工具）。</p>
+<p>建议在代码审查前自己预先使用 findbugs 等静态检查工具，检查出一些潜在的风险提前修改。</p>
+<h6 id="5-2-代码审查的形式"><a href="#5-2-代码审查的形式" class="headerlink" title="5.2 代码审查的形式"></a>5.2 代码审查的形式</h6><p>代码审查的形式每个公司和团队也千差万别，这里介绍常见的利用简单的代码审查形式。</p>
+<p><strong>代码审查的形式</strong></p>
+<p>有些团队的代码审查人员通过需求文档了解项目的需求，通过技术文档了解对方的设计，然后拉取对方的开发分支和 master 进行比较，按照上述的审查内容进行审查，对发现的问题进行记录，并约时间双方进行沟通。</p>
+<p>也有些团队可能将审查人员和开发人员约在一起，开发人员负责介绍项目的需求、技术文档，然后介绍自己代码修改点，自己代码的核心实现。由代码审查人员随时提问，开发人员现场解答，并对待修改的地方做记录，根据代码审查人员的建议做出修改。代码审查后要修复审查中遇到的问题，尽量当天完成。下一次代码审查时，需先检查之前的问题修复情况。再次记录此次代码审查的问题。</p>
+<p><strong>具体原则</strong></p>
+<p>小项目代码审查：只要有新写的或者修改的代码都可以拿出来审查；代码审查至少两人在场，场地不限，时长尽量短；聚焦核心代码、核心业务逻辑，关键点。</p>
+<p>大项目的代码审查：尽量找个会议室，更多人参与其中，和 master 全量 diff。</p>
+<h4 id="4-5-3-总结"><a href="#4-5-3-总结" class="headerlink" title="4.5.3-总结"></a>4.5.3-总结</h4><p>本节主要讲述了代码审查的概念，重点解答了：为什么要代码审查？代码审查审查什么内容？如何进行代码审查。</p>
+<p>希望大家不要坐等别人对自己代码进行审查，可以养成在开发过程中对自己代码进行自我审查的习惯，多将自己的开发分支代码和最新的 master 代码进行比对，避免将太多问题暴露到软件生命周期的靠后的阶段，降低修改的成本。</p>
+<p>下一节我们将学习思维导图的相关知识。</p>
+<h2 id="5-作图篇"><a href="#5-作图篇" class="headerlink" title="5-作图篇"></a>5-作图篇</h2><h3 id="5-1-让我们一起学习思维导图"><a href="#5-1-让我们一起学习思维导图" class="headerlink" title="5.1-让我们一起学习思维导图"></a>5.1-让我们一起学习思维导图</h3><h4 id="5-1-1-前言"><a href="#5-1-1-前言" class="headerlink" title="5.1.1-前言"></a>5.1.1-前言</h4><p>《手册》的 “设计规约” 章节，针对不同的情况分别建议使用：用例图、状态图、时序图、类图活动图等各种 UML 图形。这些 UML 图形都是需求分析和系统设计强有力的工具。</p>
+<p><strong>然而为何本节先从思维导图讲起呢？</strong></p>
+<p>因为思维导图不仅是我们实际开发过程中进行需求梳理一种常见方式，更是我们学习和总结知识的强有力的工具。<a href="https://www.imooc.com/read/55/article/1165#fn1" target="_blank" rel="noopener">1</a></p>
+<p>但很多人画思维导图只不过是随手列举或者按照书目章节进行记录，不清楚思维导图应该记录什么内容。</p>
+<p>各种内容如何更好地组织在一起，没有充分系统的画图理论，导致画图后很少再去看，画图后印象不深刻。</p>
+<p>因此本节先介绍思维导图的相关知识和用法，在后续章节中再介绍各种常见 UML 图的概念和应用。</p>
+<h4 id="5-1-2-思维导图是什么？为什么要用它？"><a href="#5-1-2-思维导图是什么？为什么要用它？" class="headerlink" title="5.1.2-思维导图是什么？为什么要用它？"></a>5.1.2-思维导图是什么？为什么要用它？</h4><h5 id="1-什么是思维导图"><a href="#1-什么是思维导图" class="headerlink" title="1. 什么是思维导图"></a>1. 什么是思维导图</h5><p>我们首先看下维基百科关于思维导图的定义：</p>
+<blockquote>
+<p>A <strong>mind map</strong> is a diagram used to visually organize information. A mind map is hierarchical and shows relationships among pieces of the whole.</p>
+</blockquote>
+<p>也就是说思维导图是一种可视化的图形思维工具，思维导图通过层级化的方式展示部分和整体的关系。</p>
+<p>因此思维导图的核心之一就是拆分，即将整体合理地拆分成多个部分，以便于理解。</p>
+<h5 id="2-思维导图解决什么问题？"><a href="#2-思维导图解决什么问题？" class="headerlink" title="2. 思维导图解决什么问题？"></a>2. 思维导图解决什么问题？</h5><p>思维导图可以帮助我们从多个角度思考问题；可以帮助我们理清复杂问题的逻辑关系，形成结构化思维。</p>
+<p>平时学习知识时更多地是侧重于记忆，相当于拿答案去看题目，总会有中看着就会，实际运用时就忘的感觉。而思维导图则是关键词为导向，通过一个关键词在头脑中提取与其相关的所有案例，并将其归纳总结到思维导图中。通过思维导图构建繁杂的信息和知识网络的关系。</p>
+<p>学习观通过机器学习反思人类学习的方法，其中讲到学习需要明确输入和输出，需要通过例子重塑信息和知识的关系（即理解知识），理清关系和拆分知识，验证知识的有效性。</p>
+<p>思维导图是学习的一个重要手段，因为思维导图则满足学习的几个重要条件：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpeg" alt="思维导图"></p>
+<p>（此图来源自《学习观》 ）</p>
+<p>正如图上思维导图所示：借助思维导图我们可以明确问题的输入和输出；可以通过思维导图对知识进行拆分，可以通过归纳的方法去总结知识，也可以通过演绎的方法去运用知识，还可以通过思维导图理清各种知识之间的逻辑关系；可以通过思维导图了解学习内容的本质，通过分而治之的方式将复杂的问题简单化。思维导图的同级知识之间有相互独立性。</p>
+<p>在实际的学习和开发过程中，我通常会使用思维导图来浓缩阅读图书的重点信息；使用思维导图来汇总关键的知识点相关信息；使用思维导图来总结编程的主要思想等。思维导图已经成为学习知识和分析问题的一个重要工具。</p>
+<h5 id="3-思维导图的误区"><a href="#3-思维导图的误区" class="headerlink" title="3. 思维导图的误区"></a>3. 思维导图的误区</h5><p><strong>很多人因为不会用思维导图，而认为思维导图 “没有用”。</strong></p>
+<p><strong>画思维导图的常见误区</strong>有很多种，最常见如下图所示：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%94%BB%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E7%9A%84%E8%AF%AF%E5%8C%BA.jpeg" alt="画思维导图的误区"></p>
+<p>思维导图并不是越大越详细越好，思维导图的一个主要目的是压缩知识。</p>
+<p>思维导图的知识点之间如果不独立，则压缩知识就不够充分，知识之间的关系就不够明确。</p>
+<p>很多人读了很多书，学了很多 “知识” 却不会运用，其本质在于只是见过、记忆过，但是没有真正理解知识。</p>
+<p>如果思维导图的知识之间毫无逻辑关系，没有太大意义，无法帮助我们理解知识，无法发挥出思维导图的优势。</p>
+<p>思维导图的一大作用就是帮助我们理解知识，寻找知识的关联，形成知识网络，帮助我们加深印象。</p>
+<p>随着学习的不断深入，之前的思维导图可能存在错误、遗漏等情况，这就需要对思维导图进行更新，然而很多人即使有新的理解也不愿意去更新思维导图，这样思维导图的价值就会非常有限。</p>
+<h4 id="5-1-3-画思维导图"><a href="#5-1-3-画思维导图" class="headerlink" title="5.1.3-画思维导图"></a>5.1.3-画思维导图</h4><h5 id="1-思维导图工具"><a href="#1-思维导图工具" class="headerlink" title="1. 思维导图工具"></a>1. 思维导图工具</h5><p>俗话说：“工欲善其事必先利其器”。画思维导图亦是如此。<a href="https://www.imooc.com/read/55/article/1165#fn2" target="_blank" rel="noopener">2</a></p>
+<p>最常见的思维导图工具有: xmind, MindManager、MindMaster、FreeMind、 iThoughts、百度脑图等。</p>
+<p>其中最出名的当属老牌的思维导图工具 xmind，支持多平台，使用简单，主题丰富，功能强大。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/xmind.jpeg" alt="xmind"></p>
+<p>如上图所示，以 xmind 为例，<strong>思维导图的核心组件</strong>有：Topic (主题)、Subtopic（子主题）、RelationShip (联系)、Summary（概括）、Boundary（边界）、Notes （笔记）。</p>
+<p>其中 主题和子主图是思维导图的核心；边界用来区分不同的概念领域；联系主要用来描述跨层知识之间的关系；概括则将多个知识点汇总为一个；笔记主要用来描述知识点。</p>
+<h5 id="2-画思维导图的依据"><a href="#2-画思维导图的依据" class="headerlink" title="2. 画思维导图的依据"></a>2. 画思维导图的依据</h5><p>回归概念，思维导图是一种可视化的思维方式，因此画思维导图的目的是帮助我们学习和思考。</p>
+<p>设计思维导图的主要依据也就是如何学习的依据即：<strong>明确输入输出、将信息压缩为知识、通过例子重塑大脑连接、利用逻辑拆分知识</strong>。</p>
+<p>只有明确输入和输出才能做到 “以终为始”，保证不跑题。</p>
+<p>思维导图是知识的可视化，因此应该选取重点知识，从而压缩知识；思维导图的本质是帮助我们理解知识，因此要通过例子来验证输入和输出的关系；知识点之间要尽可能独立，而知识点之间又必然有某些关联，如分类、回归、组合、执行步骤等。</p>
+<p>画思维导图时可以和 5w1h 分析法结合在一起，即思考问题是什么 (what) ？为什么 (why) ? 何人 (who) ？何时 (when)？何地 (where)？如何做 (how)。</p>
+<h5 id="3-画思维导图的例子"><a href="#3-画思维导图的例子" class="headerlink" title="3. 画思维导图的例子"></a>3. 画思维导图的例子</h5><h6 id="3-1-归纳法和演绎法"><a href="#3-1-归纳法和演绎法" class="headerlink" title="3.1 归纳法和演绎法"></a>3.1 归纳法和演绎法</h6><p>在学习和工作中，可以将共性的知识点总结在一起，如化整为零、化零为整、时间换空间，空间换时间，问题转化、加中间者、通用方案等，这就是在积累经验，理解知识的过程。</p>
+<p>当设计方案遇到一些难题时，可以从归纳的知识和案例中得到启发，从而能够做到理论和实际相结合。</p>
+<p><strong>通过这种学习的方式，知识就像滚雪球一样越滚越大，知识之间的联系越来越密切，越来越能够融会贯通，理解会越来越好。</strong></p>
+<p>如问题转换部分示例如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E9%97%AE%E9%A2%98%E8%BD%AC%E6%8D%A2.jpeg" alt="问题转换"></p>
+<p>再如有计算机科学领域流行一句话：</p>
+<blockquote>
+<p>All problems in computer science can be solved by another level of indirection.</p>
+<p>计算机科学的所有问题都可以通过增加中间层来解决。</p>
+</blockquote>
+<p>因此学习时将中间环节或第三方的场景梳理在一起：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%8A%A0%E4%B8%AD%E9%97%B4%E7%8E%AF%E8%8A%82%E5%92%8C%E7%AC%AC%E4%B8%89%E6%96%B9.jpeg" alt="加中间环节和第三方"></p>
+<p>随着我们读书越来越多，工作中遇到的情况越来越复杂，可以将更多案例添加到此思维导图中，这样就通过一个知识点将不同的知识点串联在了一起。</p>
+<p>我们学习技术时还可以结合生活、哲学等，通过思维导图进行总结：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B2%A1%E6%9C%89%E4%B8%87%E8%83%BD%E7%9A%84%E6%96%B9%E6%A1%88.jpeg" alt="没有万能的方案"></p>
+<p>通过这种方式就实现了跨学科，跨科目，跨技术的学习，将知识学活。</p>
+<p>有些人使用思维导图知识帮助自己 “记忆” 某些具体知识，这有些买椟还珠。</p>
+<p>我们不需要一字不差地记忆右侧的某个具体知识点，我们需要的是通过右侧相似的具体案例，归纳出本质的规律，找到根本原因，加深对规律的理解，然后在使用时将其运用出去解决问题。</p>
+<p><strong>学习的目的是学以致用，所谓学就是看书，思考等，用就是将学到的知识用来解决新的问题。</strong></p>
+<p>通过上述方式构造知识之间的关联，加深对知识的理解，降低记忆难度。当遇到类的情况是更容易想到该知识点，更容易逆向运用到解决新的问题上。</p>
+<h6 id="3-2-思考"><a href="#3-2-思考" class="headerlink" title="3.2 思考"></a>3.2 思考</h6><p>可以使用思维导图总结学习的方法，比如总结如何学习，其中就包括写示例代码、画 UML 图、看官方手册、看技术网站、读源码、模拟设计、调试、抓包、反汇编等。</p>
+<p>其中读源码部分的思维导图如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%9C%8B%E6%BA%90%E7%A0%81%E7%9A%84%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpeg" alt="看源码的思维导图"></p>
+<p>在不断学习进阶的过程中需要对该思维导图不断丰富，如果我们发现 “读一些源码分析的书” 是一个非常好的方法，可以将其添加到上述思维导图中。</p>
+<h6 id="3-3-其他"><a href="#3-3-其他" class="headerlink" title="3.3 其他"></a>3.3 其他</h6><p>我们可以使用思维导图梳理产品需求的核心要点和注意事项；总结从需求分析到项目上线过程中需要注意的问题；还可以通过思维导图梳理工作中常用的命令，总结学习和进阶必备的图书等。</p>
+<p>这种相对比较简单，而且场景不同设计的思维导图内容差异很大，大家根据实际情况去画图即可。</p>
+<h4 id="5-1-4-总结"><a href="#5-1-4-总结" class="headerlink" title="5.1.4-总结"></a>5.1.4-总结</h4><p>本节主要讲述什么是思维导图，为什么要使用思维导图，画思维导图有哪些依据和误区，有哪些思维导图的工具，并给出了自己的几个使用思维导图的范例。</p>
+<p>俗话说：“纸上得来终觉浅，绝知此事要躬行”，希望大家可以通过本节的学习，能够重视思维导图，能够理解并熟练的运用思维导图，积累工作经验，深入理解知识，提高进阶的速率。</p>
+<p>下一节将讲解流程图。</p>
+<h3 id="5-2-我们一起学基本流程图"><a href="#5-2-我们一起学基本流程图" class="headerlink" title="5.2-我们一起学基本流程图"></a>5.2-我们一起学基本流程图</h3><h4 id="5-2-1-前言"><a href="#5-2-1-前言" class="headerlink" title="5.2.1-前言"></a>5.2.1-前言</h4><p>能够学习和使用助于分析和解决问题的各种图形是计算机专业的专业素养体现。</p>
+<p>前面讲了思维导图，倡导大家使用思维导图来学习知识，深化对知识的理解，并能够举一反三融会贯通。</p>
+<p>在正式学习 UML 图之前，我们在本节学习做技术方案时常用的图形之一的<strong>流程图</strong>。</p>
+<h4 id="5-2-2-What？Why-When"><a href="#5-2-2-What？Why-When" class="headerlink" title="5.2.2-What？Why?When?"></a>5.2.2-What？Why?When?</h4><h5 id="1-什么是流程图？"><a href="#1-什么是流程图？" class="headerlink" title="1. 什么是流程图？"></a>1. 什么是流程图？</h5><p>流程图是表示算法和计算机程序的工具，但现在已经被应用到各种流程中。</p>
+<p>维基百科对流程图做出下面的描述 <a href="https://www.imooc.com/read/55/article/1166#fn1" target="_blank" rel="noopener">1</a>：</p>
+<blockquote>
+<p>流程图 （Flow Chart）是表示算法、工作流或流程的一种框图表示，它以不同类型的框表示不同种类的步骤，两个步骤之间通过箭头连接。</p>
+</blockquote>
+<h5 id="2-为什么要使用流程图？"><a href="#2-为什么要使用流程图？" class="headerlink" title="2. 为什么要使用流程图？"></a>2. 为什么要使用流程图？</h5><p>流程图在信息展示中扮演着重要角色，它能够帮助我们将复杂的问题可视化，可以清楚地描述问题或任务的结构。流程图便于说明解决已知问题的方法，在分析、设计、记录及操控等很多领域的流程或程序中都有广泛应用。</p>
+<p>在实际开发中，<strong>流程图是程序员设计技术方案，开发人员之间交流设计思想的一个主要图形之一</strong>。在交流技术问题时，很多优秀的程序员也会习惯性地，画流程图来交流思路。</p>
+<p>同时流程图也是我们开发人员和产品、测试沟通的一个工具，他们可能看不懂你的代码，但是看得懂流程图。</p>
+<h5 id="3-何时使用流程图？"><a href="#3-何时使用流程图？" class="headerlink" title="3. 何时使用流程图？"></a>3. 何时使用流程图？</h5><p><strong>那么使用流程图的典型场景有哪些？</strong></p>
+<ul>
+<li>当需要描述复杂流程时；</li>
+<li>当分析一些不必要的步骤时；</li>
+<li>当我们需要帮助团队成员理解程序时；</li>
+<li>当我们需要设计一个新的流程时。</li>
+</ul>
+<h4 id="5-2-3-How"><a href="#5-2-3-How" class="headerlink" title="5.2.3-How?"></a>5.2.3-How?</h4><p>了解了流程图是什么，为什么需要流程图以及流程图的主要场景，接下来我们将学习如何画流程图。</p>
+<h5 id="1-画图工具"><a href="#1-画图工具" class="headerlink" title="1. 画图工具"></a>1. 画图工具</h5><p>还是那句话：“工欲善其事必先利其器”<a href="https://www.imooc.com/read/55/article/1166#fn2" target="_blank" rel="noopener">2</a>。</p>
+<p>在学习和工作中接触了很多画流程图工具 <a href="https://www.imooc.com/read/55/article/1166#fn3" target="_blank" rel="noopener">3</a>，其中比较有名的有 Microsoft Office Visio<a href="https://www.imooc.com/read/55/article/1166#fn4" target="_blank" rel="noopener">4</a>、Visual Paradigm、Process On、亿图图示等。</p>
+<p>本小节将采用 Visual Paradigm 来学习 流程图。</p>
+<h5 id="2-核心符号"><a href="#2-核心符号" class="headerlink" title="2. 核心符号"></a>2. 核心符号</h5><p><strong>终端符号</strong>，表示流程的开始和结束：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%BB%88%E7%AB%AF%E7%AC%A6%E5%8F%B7.jpeg" alt="终端符号"></p>
+<p><strong>流程</strong>，表示某个特殊的操作。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B5%81%E7%A8%8B.jpeg" alt="流程"></p>
+<p><strong>文档</strong>，表示一个输入或输出的介质，如输入或输出。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%96%87%E6%A1%A3.jpeg" alt="文档"></p>
+<p><strong>决策</strong>，表示一个决策或分支点。采用菱形表示，表示此时分为多个情况，每种情况可表示一种子任务，通常有两种情况：是，否。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%86%B3%E7%AD%96.jpeg" alt="决策"></p>
+<p><strong>数据</strong>，表示信息进入或离开处理程序。输入可能是一个外卖订单，输出可能是一个外卖包裹。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%95%B0%E6%8D%AE.jpeg" alt="数据"></p>
+<p><strong>延时或瓶颈</strong>，表示程序的延时或者性能瓶颈。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%BB%B6%E6%97%B6%E6%88%96%E7%93%B6%E9%A2%88.jpeg" alt="延时或瓶颈"></p>
+<p><strong>流</strong>，表示流程处理的方向。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B5%81.jpeg" alt="流"></p>
+<p><strong>汇总</strong>，表示多个流程汇总到一处。通常用在多个流指向同一个处理流程，为了美观，可以先指向该组件再从该组件指向该处理流程。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B1%87%E6%80%BB.jpeg" alt="汇总"></p>
+<p><strong>或</strong>，表示多个流程之间是或关系。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%88%96.jpeg" alt="或"></p>
+<p><strong>数据库</strong>，表示文档和档案的存储。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%95%B0%E6%8D%AE%E5%BA%93.jpeg" alt="数据库"></p>
+<p><strong>页面内引用</strong>，表示上一个或下一个步骤在此绘图的其他位置，需设置一串字符串来标识，多用于大型流程图。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E9%A1%B5%E9%9D%A2%E5%86%85%E5%BC%95%E7%94%A8.jpeg" alt="页面内引用"></p>
+<p><strong>页面外引用</strong>，表示将使用单独的页面绘制子流程图，需设置一串字符串来标识，多用于大型流程图。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E9%A1%B5%E9%9D%A2%E5%A4%96%E5%BC%95%E7%94%A8.jpeg" alt="页面外引用"></p>
+<h5 id="3-画图步骤"><a href="#3-画图步骤" class="headerlink" title="3. 画图步骤"></a>3. 画图步骤</h5><p>首先明确画流程图是将复杂的任务拆分为多个流程，核心是子步骤的顺序与条件。</p>
+<p>核心步骤分为以下 4 步：</p>
+<ol>
+<li>画一个只包含任务本身的流程图；</li>
+<li>画一个将任务拆分成多个子任务的流程图；</li>
+<li>考虑流程中可能出现的异常情况，在这些异常情况中添加决策节点和其它可能的路径；</li>
+<li>如果不能够清晰表达流程，则重复上述步骤。</li>
+</ol>
+<p>对应的流程图如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%94%BB%E6%B5%81%E7%A8%8B%E5%9B%BE%E7%9A%84%E6%B5%81%E7%A8%8B.jpeg" alt="画流程图的流程"></p>
+<h5 id="4-基本流程图举例"><a href="#4-基本流程图举例" class="headerlink" title="4. 基本流程图举例"></a>4. 基本流程图举例</h5><p>特别强调，画流程图的主要目的是让看此图的人能够清楚地表达执行流程，因此不必拘泥于细节。</p>
+<h6 id="4-1-简单示例"><a href="#4-1-简单示例" class="headerlink" title="4.1 简单示例"></a>4.1 简单示例</h6><p>按照上述画流程图的步骤，我们以用拖把拖地为例作图如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B5%81%E7%A8%8B%E5%9B%BE%E4%B9%8B%E6%8B%96%E6%8A%8A%E6%A1%88%E4%BE%8B.jpeg" alt="流程图之拖把案例"></p>
+<h6 id="4-2-模拟设计"><a href="#4-2-模拟设计" class="headerlink" title="4.2 模拟设计"></a>4.2 模拟设计</h6><p>比如产品让我们设计一个登录的功能，场景描述如下：</p>
+<blockquote>
+<p>系统有两种登录方式，一种是通过手机号和短信验证码登录；一种是通过用户名密码登录。</p>
+<p>如果是手机和短信验证码登录方式，用户点击获取验证码按钮，手机会收到验证码短信（60 秒内只能获取一次，验证码 5 分钟内有效），输入正确登录成功，输入错误提示失败。如果采用用户名密码登录，用户名和密码正确则登录成功，否则登录失败。</p>
+</blockquote>
+<p>根据以上描述，我们可以作出下面的参考流程图：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B%E5%9B%BE.jpeg" alt="登录流程图"></p>
+<p>上面给出了两个简单的案例，希望大家在实际学习和开发过程中多加练习，熟能生巧。在实际工作中能够更快速准确地画出流程图，清楚地说明自己的意图。</p>
+<h4 id="5-2-4-总结"><a href="#5-2-4-总结" class="headerlink" title="5.2.4-总结"></a>5.2.4-总结</h4><p>本节主要介绍了流程图的概念，为什么要使用流程图、何时使用流程图、以及作流程图的主要步骤，并给出了基本流程图的使用案例。</p>
+<p>希望大家在设计技术方案时，在修改了某个功能提交提测文档时，在和其他开发人员沟通设计想法时，都可以尝试使用流程图，让自己的观点表达得更清楚。</p>
+<p>下一节我们将一起学习用例图。</p>
+<h3 id="5-3-我们一起学用例图"><a href="#5-3-我们一起学用例图" class="headerlink" title="5.3-我们一起学用例图"></a>5.3-我们一起学用例图</h3>
             </div>
             <hr/>
 
@@ -8015,7 +8772,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">322.2k</span>&nbsp;字
+                class="white-color">337.5k</span>&nbsp;字
             
             
             
