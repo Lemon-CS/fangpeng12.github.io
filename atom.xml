@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-02-21T10:34:21.691Z</updated>
+  <updated>2020-02-21T16:01:42.461Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>单元测试之Mock</title>
+    <link href="https://fangpeng12.github.io/2020/02/21/dan-yuan-ce-shi-zhi-mock/"/>
+    <id>https://fangpeng12.github.io/2020/02/21/dan-yuan-ce-shi-zhi-mock/</id>
+    <published>2020-02-21T13:32:12.000Z</published>
+    <updated>2020-02-21T16:01:42.461Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;单元测试之Mock&quot;&gt;&lt;a href=&quot;#单元测试之Mock&quot; class=&quot;headerlink&quot; title=&quot;单元测试之Mock&quot;&gt;&lt;/a&gt;单元测试之Mock&lt;/h1&gt;&lt;h2 id=&quot;1-Mock详解&quot;&gt;&lt;a href=&quot;#1-Mock详解&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="单元测试" scheme="https://fangpeng12.github.io/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
+    
+    
+      <category term="单元测试" scheme="https://fangpeng12.github.io/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
+    
+      <category term="Mock" scheme="https://fangpeng12.github.io/tags/Mock/"/>
+    
+  </entry>
   
   <entry>
     <title>《阿里巴巴Java开发手册》详解</title>
