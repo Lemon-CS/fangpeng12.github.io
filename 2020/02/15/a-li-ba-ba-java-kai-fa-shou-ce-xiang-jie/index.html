@@ -462,14 +462,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    109.8k
+                    122.2k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    430 分
+                    474 分
                 </div>
                 
 				
@@ -8575,7 +8575,7 @@ temp <span class="token operator">=</span> user<span class="token punctuation">.
 <p>为了更清楚地描述该 BUG ，我们画出对应的时序图：</p>
 <p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%A4%BA%E4%BE%8B%E7%9A%84%E6%97%B6%E5%BA%8F%E5%9B%BE.jpeg" alt="示例的时序图"></p>
 <h5 id="3-其它"><a href="#3-其它" class="headerlink" title="3. 其它"></a>3. 其它</h5><h6 id="3-1-根据插件学时序图"><a href="#3-1-根据插件学时序图" class="headerlink" title="3.1 根据插件学时序图"></a>3.1 根据插件学时序图</h6><p>大家还可以使用 IDEA 插件：<a href="https://plugins.jetbrains.com/plugin/8286-sequencediagram/" target="_blank" rel="noopener">SequenceDiagram </a>来学习时序图，它可以根据代码调用链路自动生成时序图。</p>
-<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/IDEA%E6%8F%92%E4%BB%B6%E7%94%9F%E6%88%90%E6%97%B6%E5%BA%8F%E5%9B%BE.jpeg" alt="IDEA插件生成时序图"></p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/IDEA%E6%8F%92%E4%BB%B6%E7%94%9F%E6%88%90%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg" alt="IDEA插件生成时序图"></p>
 <p>该插件还支持点击生命线顶部的类名，点击请求的函数名称跳转到对应函数中。</p>
 <p>这对我们学习时序图、熟悉自己项目代码和学习开源代码都有极大的帮助。</p>
 <h6 id="3-2-根据案例学时序图"><a href="#3-2-根据案例学时序图" class="headerlink" title="3.2 根据案例学时序图"></a>3.2 根据案例学时序图</h6><p>visual paradigm 给出了大量的<a href="https://online.visual-paradigm.com/diagrams/examples/sequence-diagram/" target="_blank" rel="noopener">时序图范例</a>，大家可以参考学习。</p>
@@ -8583,7 +8583,484 @@ temp <span class="token operator">=</span> user<span class="token punctuation">.
 <h4 id="5-5-5-总结"><a href="#5-5-5-总结" class="headerlink" title="5.5.5-总结"></a>5.5.5-总结</h4><p>本节主要学习了时序图的定义，时序图的使用场景，时序图的核心组件和画图步骤，并给出了一个范例。</p>
 <p>介绍了两种高效学习时序图的方式，即使用时序图插件和看时序图案例学时序图，希望大家多学习多实践。</p>
 <p>下一节我们将学习状态机图。</p>
-<h3 id="5-6-我们一起学状态机图"><a href="#5-6-我们一起学状态机图" class="headerlink" title="5.6-我们一起学状态机图"></a>5.6-我们一起学状态机图</h3>
+<h3 id="5-6-我们一起学状态机图"><a href="#5-6-我们一起学状态机图" class="headerlink" title="5.6-我们一起学状态机图"></a>5.6-我们一起学状态机图</h3><h4 id="5-6-1-前言"><a href="#5-6-1-前言" class="headerlink" title="5.6.1-前言"></a>5.6.1-前言</h4><p>前一节我们学到了用来表示对象交互顺序的时序图，那么有没有图形可以表示对象的状态变化呢？</p>
+<p>答案是：有，它就是<strong>状态机图</strong>。</p>
+<p>《手册》的设计规约章节有对状态图的规定：</p>
+<blockquote>
+<p>【强制】如果某个业务对象的状态超过 3 个，使用状态图来表达并明确状态变化变化的各个触发条件。</p>
+</blockquote>
+<p>那么我们思考下面几个问题：</p>
+<ul>
+<li>什么是状态机图？</li>
+<li>状态机图的使用场景是什么？</li>
+<li>如何画状态机图？</li>
+</ul>
+<h4 id="5-6-2-状态机图是什么？使用场景有哪些？"><a href="#5-6-2-状态机图是什么？使用场景有哪些？" class="headerlink" title="5.6.2-状态机图是什么？使用场景有哪些？"></a>5.6.2-状态机图是什么？使用场景有哪些？</h4><h5 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h5><p>状态机图也叫状态图、状态转换图、简单状态图，它描述一个事物随着事件的状态变化。</p>
+<p>简而言之，<strong>状态机图主要描述对象的状态以及引起对象状态变换的事件</strong>。</p>
+<p>状态机图可以对对象、用例甚至整个系统的行为建模。</p>
+<p>大多数面向对象技术都适用状态机图来描述一个对象在其生命周期中的状态变化。</p>
+<h5 id="2-使用场景"><a href="#2-使用场景" class="headerlink" title="2. 使用场景"></a>2. 使用场景</h5><p>在业务建模时，可以创建状态机图对用例场景建模（和手册描述的情况类似）。</p>
+<p>在分析和设计时，可以建模事件驱动对象；我们还可以使用多个状态机图来表现同一个状态机和行为的不同方面。</p>
+<h4 id="5-6-3-作图前的准备"><a href="#5-6-3-作图前的准备" class="headerlink" title="5.6.3-作图前的准备"></a>5.6.3-作图前的准备</h4><h5 id="1-核心组件"><a href="#1-核心组件" class="headerlink" title="1. 核心组件"></a>1. 核心组件</h5><p>为了更全面地描述核心组件的构成，本小节采用 visual paradigm 官网状态机图组件给大家讲解分析。</p>
+<h6 id="1-1-状态"><a href="#1-1-状态" class="headerlink" title="1.1 状态"></a>1.1 状态</h6><p>状态表示一个对象生命周期中的一种条件，它可以满足执行某些活动的条件后者等待接收某些事件。</p>
+<p>状态包括 5 个部分：</p>
+<ul>
+<li>状态名：状态的名称</li>
+<li>进入（）：进入状态的行为</li>
+<li>行为（do）：在进入状态时执行的行为</li>
+<li>退出行为（）：离开状态时执行的操作</li>
+<li>延迟触发（Deferrable Trigger）：暂时不触发状态变更的行为</li>
+</ul>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E4%B9%8B%E7%8A%B6%E6%80%81.jpeg" alt="状态机图之状态"></p>
+<h6 id="1-2-转换"><a href="#1-2-转换" class="headerlink" title="1.2 转换"></a>1.2 转换</h6><p>转换是指前一个状态到后一个状态经历的事件。转换前的状态称为源状态，转变后的状态称为目标状态。</p>
+<p>转化分为 5 个部分：</p>
+<ul>
+<li>源状态：受变换影响的状态</li>
+<li>事件触发器：一种可以触发源状态以满足保护条件的机制</li>
+<li>保护条件：在接收事件触发器转换时需要计算的布尔表达式</li>
+<li>操作：可执行的原子计算，可以直接作用于拥有状态机的对象，并间接作用于对象可见的其他对象</li>
+<li>目标状态：转换完成后所处的状态</li>
+</ul>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E4%B9%8B%E8%BD%AC%E6%8D%A2.jpeg" alt="状态机图之转换"></p>
+<h6 id="1-3-决策节点"><a href="#1-3-决策节点" class="headerlink" title="1.3 决策节点"></a>1.3 决策节点</h6><p><strong>分节点</strong>（Fork node）是一种为状态，用来表示进入的转换将分为两个或者多个目标状态。从 fork 定点传入的流转不允许有守护条件或者触发器，至少有两个或两个以上的转出条件。</p>
+<p><strong>合节点</strong>（Join node）也是一种伪状态，合并从分支节点转换而来的多个状态，合节点至少有两个或两个以上的转入和一个转出。</p>
+<p>![fork and join 节点](fork and join 节点.jpeg)</p>
+<p><strong>选择</strong>（Choice）是一种伪状态，通过守护条件判断执行的路径。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E4%B9%8Bchoice.jpeg" alt="状态机图之choice"></p>
+<p>如下图所示下单时，如果库存足够则进入确认订单状态，如果库存不足或用户取消，则进入取消状态。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E9%80%89%E6%8B%A9%E8%8A%82%E7%82%B9%E6%A1%88%E4%BE%8B.jpeg" alt="状态机图选择节点案例"></p>
+<p><strong>终止</strong></p>
+<p>终止也是一种虚拟状态，表示状态机的生命周期结束。终止用待叉号的箭头表示。</p>
+<p>和最终状态不同的是，终止状态表示由于上下文对象的结束而导致状态机的结束</p>
+<p>如下图所示，断电导致激活状态转为终止状态</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E7%BB%88%E6%AD%A2.jpeg" alt="状态机图终止"></p>
+<h6 id="1-4-组合状态"><a href="#1-4-组合状态" class="headerlink" title="1.4 组合状态"></a>1.4 组合状态</h6><p>普通的状态是不包含子结构的，而组合状态则需要画在状态内部或者画到独立的状态图中，表示将一个状态分为多个状态。包含子状态的状态称之为组合状态。</p>
+<p>如下图的 Active 状态就是一个组合状态，其中的 Inspection / Choice/ Transaction 只在 Active 状态下才存在。</p>
+<p>需要注意的是，组合状态最多只有一个初始和最终状态。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE%E4%B9%8B%E7%BB%88%E6%AD%A2.jpeg" alt="状态机图之终止"></p>
+<p><strong>组合状态和子状态机图</strong></p>
+<p>下图为例，左侧表示组合状态，右侧表示子状态机图，两者语义上等价。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E7%BB%84%E5%90%88%E7%8A%B6%E6%80%81%E5%92%8C%E5%AD%90%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9B%BE.jpeg" alt="组合状态和子状态机图"></p>
+<p><strong>正交状态</strong></p>
+<p>如果一个组合状态包含两个及两个一样的子区域，则称之为正交。正交状态通过虚线分隔为多个部分。</p>
+<p>如下图所示， S2 转换到状态 S1（转换到正交状态的边界）即代表激活了所有区域的初始状态。在正交状态中，每个区域都必须能够触达结束状态从而能够触发完成事件。 S3 转换到 S1 则表示并发的情况。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%AD%A3%E4%BA%A4%E7%8A%B6%E6%80%81.jpeg" alt="正交状态"></p>
+<p><strong>历史状态</strong></p>
+<p>历史状态允许状态机重新进入已经离开的组合状态。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%8E%86%E5%8F%B2%E7%8A%B6%E6%80%81.jpeg" alt="历史状态"></p>
+<h5 id="2-绘图步骤"><a href="#2-绘图步骤" class="headerlink" title="2. 绘图步骤"></a>2. 绘图步骤</h5><p><strong>寻找主要状态</strong>。画状态机图最重要的步骤是寻找主要状态。</p>
+<p><strong>确定状态间的转换</strong>，可以先将状态绘制出来，然后再分析状态之间的转换过程，绘制过程中可以调整状态的位置，以实现更好的视觉效果。</p>
+<p><strong>细化状态内的活动和转换</strong>。绘制完状态和状态间的转换后，可以根据需要添加内部转换，进入和退出转换，和其他的相关活动。</p>
+<p><strong>组合和正交状态的使用</strong>。如果某些状态可以归结为一个状态，那么可以使用组合状态绘制。如果一个状态可分为多个部分（转换流程），可以使用正交状态。</p>
+<h4 id="5-6-4-状态机图范例"><a href="#5-6-4-状态机图范例" class="headerlink" title="5.6.4-状态机图范例"></a>5.6.4-状态机图范例</h4><h5 id="1-人生如梦"><a href="#1-人生如梦" class="headerlink" title="1. 人生如梦"></a>1. 人生如梦</h5><p>人的一生从婚姻角度看，包括单身、已婚、离异三个大状态；从职场角度看主要包括待业、受雇、退休三个大状态，当然从其他角度还可以画出更详细的状态图。</p>
+<p>我们使用 <a href="http://plantuml.com/zh/activity-diagram-beta" target="_blank" rel="noopener">PlantUML</a>，从婚姻和求职角度画出人生的状态图。</p>
+<blockquote>
+<p>注：大家可以在 IDEA 中安装 PlantUML 插件，在项目视图下找到 Scratches and Consoles 选项选项卡，在此目录下作图。</p>
+</blockquote>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E4%BA%BA%E7%94%9F%E7%8A%B6%E6%80%81%E5%9B%BE.jpeg" alt="人生状态图"></p>
+<h5 id="2-评论审核状态图"><a href="#2-评论审核状态图" class="headerlink" title="2. 评论审核状态图"></a>2. 评论审核状态图</h5><p>另外以某个博客评论审核系统为例，演示状态图的画法。</p>
+<blockquote>
+<p>某博客系统发表评论后需要审核，审核通过后读者才可见，审核不通过则需要重新修改，修改通过才能读者可见。</p>
+</blockquote>
+<p>我们先寻找主要状态：待审核、待修改、公开，然后根据实际情况填充状态之间的转换。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E8%AF%84%E8%AE%BA%E5%AE%A1%E6%A0%B8%E7%8A%B6%E6%80%81%E5%9B%BE.jpeg" alt="评论审核状态图"></p>
+<h4 id="5-6-5-总结"><a href="#5-6-5-总结" class="headerlink" title="5.6.5-总结"></a>5.6.5-总结</h4><p>本节主要讲述了状态机图的主要概念，常见的使用场景，核心的组件，并给出了使用范例。希望大家能够熟练掌握并运用到项目梳理和技术方案的设计中。</p>
+<p>下一节将讲述活动图的概念，活动图和状态图的区别，以及活动图的画法等。</p>
+<h3 id="5-7-我们一起学活动图"><a href="#5-7-我们一起学活动图" class="headerlink" title="5.7-我们一起学活动图"></a>5.7-我们一起学活动图</h3><h4 id="5-7-1-前言"><a href="#5-7-1-前言" class="headerlink" title="5.7.1-前言"></a>5.7.1-前言</h4><p>前一节我们学到了描述对象状态随着事件变化的状态机图，那么有没有一种图描述对象协作关系的图形呢？</p>
+<p>答案是，有，那就是活动图。</p>
+<blockquote>
+<p>【强制】如果系统中超过 2 个对象之间存在协作关系，并且需要表示复杂的处理流程，使用活动图来表示。</p>
+<p>说明：活动图是流程图的扩展，增加了体现协作关系的对象泳道，支持表示并发等。</p>
+</blockquote>
+<p>那么我们思考几个问题：</p>
+<ul>
+<li>什么是活动图？</li>
+<li>为什么要使用活动图？</li>
+<li>如何画活动图呢？</li>
+</ul>
+<p>本小节将为你分析这些问题。</p>
+<h4 id="5-7-2-活动图是什么？它的使用场景有哪些？"><a href="#5-7-2-活动图是什么？它的使用场景有哪些？" class="headerlink" title="5.7.2-活动图是什么？它的使用场景有哪些？"></a>5.7.2-活动图是什么？它的使用场景有哪些？</h4><h5 id="1-活动图的概念"><a href="#1-活动图的概念" class="headerlink" title="1. 活动图的概念"></a>1. 活动图的概念</h5><p>活动图是工作流的图形表示，活动图主要由活动和动作构成，可以支持分支选择、迭代、并行。在 UML 中，活动图主要用于为计算性和组织性过程（即工作流）建模，相关活动之间的数据流也在其覆盖范围。</p>
+<p>活动图显示连接动作和其他节点（如决策、分支、连接、合并和对象节点）的流。一般情况下活动和活动图之间是一一对应关系。</p>
+<p>除非一个活动图表示一个连续的循环，否则，活动图应该有一个使活动开始的初始动作，还应该有一个或者多个终止动作。实心圆表示活动开始，牛眼符号表示活动结束。</p>
+<p>流可以分支和合并。在活动图中用钻石表示分支条件，分支条件的出口由事件（如 Yes, No）或守护条件（如下图中的[order accepted]，[order rejectes]）来控制。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E6%8F%8F%E8%BF%B0.jpeg" alt="活动图描述"></p>
+<p>流还可以分叉和再连接。这就产生了并发（并行）的计算线程。流的分叉和连接用短线表示。没有并发过程的流程图和传统的流程图非常相似。</p>
+<h5 id="2-活动图和状态图关系"><a href="#2-活动图和状态图关系" class="headerlink" title="2. 活动图和状态图关系"></a>2. 活动图和状态图关系</h5><p>活动图简化了流程图并添加了一些新的符号。</p>
+<p>状态图着重描述从一个状态到另一个状态的流程，主要有外部事件的参与。</p>
+<p>活动图将流程分为一个一个活动，通过活动的先后顺序来展示流程；而状态机图从某个事物的状态是如何变化的角度来描述流程。</p>
+<h5 id="3-使用场景"><a href="#3-使用场景" class="headerlink" title="3. 使用场景"></a>3. 使用场景</h5><p>正如《手册》所说，当系统中超过 2 个对象之间存在协作关系，并且需要保湿复杂的处理流程时，需要使用活动图表示。</p>
+<h4 id="5-7-3-绘图"><a href="#5-7-3-绘图" class="headerlink" title="5.7.3-绘图"></a>5.7.3-绘图</h4><h5 id="1-核心组件-1"><a href="#1-核心组件-1" class="headerlink" title="1. 核心组件"></a>1. 核心组件</h5><h6 id="1-1-初始节点（Initial-Node）"><a href="#1-1-初始节点（Initial-Node）" class="headerlink" title="1.1 初始节点（Initial Node）"></a>1.1 初始节点（Initial Node）</h6><p>活动发生前的状态称之为开始状态。除非有嵌套活动，否则一个流程只能有一个开始状态。</p>
+<h6 id="1-2-最终节点（Final-Node）"><a href="#1-2-最终节点（Final-Node）" class="headerlink" title="1.2 最终节点（Final Node）"></a>1.2 最终节点（Final Node）</h6><p>最终节点采用大圆套小圆表示，其中内部的小圆为实心。活动图只能有一个初始状态，但是可以有 0 个或多个最终状态。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE.jpeg" alt="活动图"></p>
+<h6 id="1-3-流的最终节点"><a href="#1-3-流的最终节点" class="headerlink" title="1.3 流的最终节点"></a>1.3 流的最终节点</h6><p>UML 2.0 新增了一个节点类型，称之为流的最终节点，用来代替活动的最终节点来表示流的终结。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E6%9C%80%E7%BB%88%E8%8A%82%E7%82%B9.jpeg" alt="活动图最终节点"></p>
+<h6 id="1-4-流程转换"><a href="#1-4-流程转换" class="headerlink" title="1.4 流程转换"></a>1.4 流程转换</h6><p>活动图包含多种活动状态，那么这些状态之间通过什么关联呢？状态流转就应运而生了。</p>
+<p><strong>状态流转包括控制流转和对象流转。</strong></p>
+<p><strong>控制流转（Control Flow）</strong>或状态流转也叫做路径或边。它用来表示从一个活动状态到另外一个活动状态的转变。我们使用带箭头的实线来表示。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E6%B5%81%E7%A8%8B%E8%BD%AC%E6%8D%A2.jpeg" alt="活动图之流程转换"></p>
+<p><strong>对象流转（Object Flow）</strong>发生在活动和对象之间。一个活动状态使用对象作为输入，则从对象用箭头指向该活动状态。如果一个活动状态需要更新或者产生一个对象作为输出，那么箭头需要从该活动状态指向对象。</p>
+<h6 id="1-5-决策节点和分支"><a href="#1-5-决策节点和分支" class="headerlink" title="1.5 决策节点和分支"></a>1.5 决策节点和分支</h6><p><strong>决策节点</strong></p>
+<p>决策节点承接一个流程控制来源，将其拆分为多个流程控制出口。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E5%86%B3%E7%AD%96%E8%8A%82%E7%82%B9.jpeg" alt="活动图之决策节点"></p>
+<p><strong>合并节点</strong></p>
+<p>合并节点将多个可选分支汇聚到一个节点中。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E5%90%88%E5%B9%B6%E8%8A%82%E7%82%B9.jpeg" alt="活动图之合并节点"></p>
+<p><strong>Fork 节点</strong></p>
+<p>Fork 节点将一个流程分成多个并发流程。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8BFork%E8%8A%82%E7%82%B9.jpeg" alt="活动图之Fork节点"></p>
+<p><strong>Join 节点</strong></p>
+<p>一个join 节点是同步多流程的控制节点。它有多个入口边，只有一个出口边。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8BJoin%E8%8A%82%E7%82%B9.jpeg" alt="活动图之Join节点"></p>
+<h6 id="1-6-守护"><a href="#1-6-守护" class="headerlink" title="1.6 守护"></a>1.6 守护</h6><p>活动图中，<strong>守护</strong>（Guard）是一种真假条件，决定状态的流转。</p>
+<h6 id="1-7-对象节点"><a href="#1-7-对象节点" class="headerlink" title="1.7 对象节点"></a>1.7 对象节点</h6><p>UML 2.0 的活动建模支持对象节点。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E5%AF%B9%E8%B1%A1%E8%8A%82%E7%82%B9.jpeg" alt="活动图之对象节点"></p>
+<h6 id="1-8-数据存储"><a href="#1-8-数据存储" class="headerlink" title="1.8 数据存储"></a>1.8 数据存储</h6><p>数据存储表示对象的持久化。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8.jpeg" alt="活动图之数据存储"></p>
+<h6 id="1-9-备注"><a href="#1-9-备注" class="headerlink" title="1.9 备注"></a>1.9 备注</h6><p>备注支持为活动图中的元素进行注释，可以承载对建模有用的信息。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E5%A4%87%E6%B3%A8.jpeg" alt="活动图之备注"></p>
+<h6 id="1-10-泳道"><a href="#1-10-泳道" class="headerlink" title="1.10 泳道"></a>1.10 泳道</h6><p>泳道表示不同的信息种类，将整个流程图结合到不同得到参与者视角中。</p>
+<p>下图表示顾客在线采购超时商品并下单，销售商实地挑选商品并安排运输的泳道图。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E6%B3%B3%E9%81%93.jpeg" alt="活动图之泳道"></p>
+<h6 id="1-11-时间事件和事件信号"><a href="#1-11-时间事件和事件信号" class="headerlink" title="1.11 时间事件和事件信号"></a>1.11 时间事件和事件信号</h6><p><strong>时间事件</strong>表示活动的时间描述，采用水漏的图形表示。</p>
+<p>下图表示每周三执行备份活动。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E6%97%B6%E9%97%B4%E4%BA%8B%E4%BB%B6.jpeg" alt="活动图之时间事件"></p>
+<p><strong>接收事件活动</strong>（Accept Event Action）在活动图的业务建模中非常重要。它表示接收活动等待事件的发生。事件接收后，活动将被执行。</p>
+<p><strong>发送信号活动</strong>（Send Signal Action）表示接收活动作出反应的信号。</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E4%B9%8B%E5%8F%91%E9%80%81%E4%BF%A1%E5%8F%B7.jpeg" alt="活动图之发送信号"></p>
+<h5 id="2-绘图步骤-1"><a href="#2-绘图步骤-1" class="headerlink" title="2. 绘图步骤"></a>2. 绘图步骤</h5><p>构造结构图通常先为用例添加开始和结束点，为用例的主要步骤添加一个活动，从每个活动到其他活动、决策点和终点添加转换，在并行活动的地方添加同步条。</p>
+<p>绘制活动图的主要步骤如下：</p>
+<ol>
+<li>首先，决定是否采用泳道，主要根据活动图中是否要体现出活动图的不同实施者；</li>
+<li>然后，尽量使用分支、分叉和汇合等基本的构建元素来描述活动控制流程；</li>
+<li>如果需要，加入对象流以及对象的状态变化；</li>
+<li>如果需要，使用高级建模元素（如辅助活动图、汇合描述、发送信号和接收信号和备注等）来表示更详细的信息。</li>
+</ol>
+<p>回顾之前的几种图形的绘制过程，我们可以发现，<strong>绘图的步骤基本都是先绘制主要信息再进行丰富，符合先整体后局部，先易后难的方式</strong>。因此我们在绘图过程中，不需要背诵具体的绘图步骤，记住这个绘图原则即可。</p>
+<h5 id="3-参考范例"><a href="#3-参考范例" class="headerlink" title="3. 参考范例"></a>3. 参考范例</h5><p>上一节我们使用状态图绘制了某博客系统发表评论的步骤，本节将使用 <a href="http://plantuml.com/zh/activity-diagram-beta" target="_blank" rel="noopener">PlantUML</a> 绘制对应的活动图。</p>
+<p>场景描述：</p>
+<blockquote>
+<p>读者在某博客系统阅读文章后可以发表评论，但是评论需要作者审核，审核通过后对其他读者才可见，审核不通过则需要重新修改。</p>
+</blockquote>
+<p>由于这里有两个角色，读者和作者，因此我们采用泳道的方式绘图。</p>
+<p>评论审核是否通过需要走不通的流程，因此需要使用分支进行活动的流程控制。</p>
+<p>根据场景描述以及上述分析，我们绘图如下：</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%B4%BB%E5%8A%A8%E5%9B%BE%E6%A1%88%E4%BE%8B.jpeg" alt="活动图案例"></p>
+<h4 id="5-7-4-总结"><a href="#5-7-4-总结" class="headerlink" title="5.7.4-总结"></a>5.7.4-总结</h4><p>本节主要介绍了活动图的概念、活动图的使用场景、活动图的核心组件，并给出了活动图的使用范例。希望大家可以结合 PlantUML中活动图的相关语法示例，结合 visual paradigm 的活动图范例，结合本节给出的绘图步骤，进行模仿绘图。</p>
+<p>下一章为避坑篇，讲述开发中常见的坑以及如何才能更好地避坑。</p>
+<h2 id="6-避坑篇"><a href="#6-避坑篇" class="headerlink" title="6-避坑篇"></a>6-避坑篇</h2><h3 id="6-1-Git和数据库篇"><a href="#6-1-Git和数据库篇" class="headerlink" title="6.1-Git和数据库篇"></a>6.1-Git和数据库篇</h3><h4 id="6-1-1-前言"><a href="#6-1-1-前言" class="headerlink" title="6.1.1-前言"></a>6.1.1-前言</h4><p>本章开始我们进入避坑篇，重点讲解开发中的相关坑点和一些避坑经验。</p>
+<p>Git 和数据库是我们平时开发中常用到的技术，但是使用不当很容易出坑。</p>
+<p>本小节将结合实际的开发经验，讲解 git 和 数据库相关比较有代表性的坑点和如何避坑<a href="https://www.imooc.com/read/55/article/1172#fn1" target="_blank" rel="noopener">1</a>。</p>
+<h4 id="6-1-2-Git-相关"><a href="#6-1-2-Git-相关" class="headerlink" title="6.1.2-Git 相关"></a>6.1.2-Git 相关</h4><h5 id="1-相关教程、软件"><a href="#1-相关教程、软件" class="headerlink" title="1. 相关教程、软件"></a>1. 相关教程、软件</h5><p>本小节的重点不在于教大家如何学习 Git ，而是重点讲解实际开发中可能遇到问题。</p>
+<p>本部分小介绍一些经典的 Git 资料，方便大家学习。</p>
+<h6 id="1-1-资料"><a href="#1-1-资料" class="headerlink" title="1.1 资料"></a>1.1 资料</h6><p>正如本专栏一直强调的：学习技术我们优先去官网看官方文档。</p>
+<blockquote>
+<p>很多人正是因为看官方文档时没时间，才导致遇到 N 多问题浪费更多时间去解决，希望大家一定重视起来。</p>
+</blockquote>
+<p>Git 官网提供了技术的介绍， Git 的下载地址，<a href="https://www.imooc.com/read/55/article/[https://git-scm.com/book/zh/v2/起步-关于版本控制](https://git-scm.com/book/zh/v2/起步-关于版本控制)" target="_blank" rel="noopener">官方文档</a>，还非常贴心得给出了 <a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener">《Pro Git》 电子书</a>。</p>
+<p>![Git 官网](Git 官网.jpeg)</p>
+<p>大家还可以去 廖雪峰大大的官网上学习 <a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="noopener">Git 相关用法</a>。</p>
+<h6 id="1-2-软件"><a href="#1-2-软件" class="headerlink" title="1.2 软件"></a>1.2 软件</h6><p>如果你喜欢原生命令，直接敲命令即可。如果你更喜欢用软件可以用 IDEA 自带的 Git 工具，还可以用 <a href="https://www.sourcetreeapp.com/" target="_blank" rel="noopener">SourceTree</a> 、<a href="https://www.git-tower.com/" target="_blank" rel="noopener">Tower</a>等可视工具。</p>
+<p>![SourceTree 软件界面](SourceTree 软件界面.jpeg)</p>
+<h5 id="2-Git-相关的坑点"><a href="#2-Git-相关的坑点" class="headerlink" title="2. Git 相关的坑点"></a>2. Git 相关的坑点</h5><p>Git 的相关坑点主要是由于 Git 掌握不熟，还有粗心导致的。</p>
+<h6 id="2-1-常见错误"><a href="#2-1-常见错误" class="headerlink" title="2.1 常见错误"></a>2.1 常见错误</h6><p><strong>案例1：检出错误</strong></p>
+<p>对于有错误提示的错误，一定要认真看错误提示的内容。</p>
+<p>如下面的提示：</p>
+<pre><code>ssh: connect to host xxx.com port 22: Connection refused
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.</code></pre><p>显然要检查是否自己账户有权限或者自己clone 的地址是否有误。</p>
+<p><strong>案例2：切换邮箱提交错误</strong></p>
+<p>如下图所示，开发中可能还会遇到的一种错误是不小心切换了 git 账户，新的账户没有提交权限，然而你在新的账户上有了一次提交，此时代码推不上去，切换回原邮箱依然提示推不上去。肿么办…</p>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E6%9F%90%E4%BD%8D%E5%90%8C%E5%AD%A6%E9%81%87%E5%88%B0%E7%9A%84%E7%B1%BB%E4%BC%BC%E9%97%AE%E9%A2%98%E5%9B%BE%E7%A4%BA.jpeg" alt="某位同学遇到的类似问题图示"></p>
+<p>遇到这种问题大家一定要冷静思考，更换账户后为啥还推不上去呢？</p>
+<p>通过 <code>git log</code> 可以看到提交历史中包含了之前错误账户的提交，因此解决问题的思路就是使用新的账户撤销错误那次提交。</p>
+<p>其中一个方法如下：</p>
+<ol>
+<li>重新设置回原来的账户；</li>
+<li>回退到更换邮箱之前的版本：<code>git reset --soft d1a9eac6</code>；</li>
+<li>重新提交然后推送即可。</li>
+</ol>
+<p><img src="/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/%E5%A4%84%E7%90%86%E5%88%87%E6%8D%A2%E9%82%AE%E7%AE%B1%E6%8F%90%E4%BA%A4%E9%94%99%E8%AF%AF.jpeg" alt="处理切换邮箱提交错误"></p>
+<p>执行上述步骤后，我们发现提交记录里已经没有 <a href="http://wrong.qq.com/" target="_blank" rel="noopener">wrong.qq.com</a> 这个错误账户的提交记录，因此重新推送代码就不会再报错。</p>
+<h6 id="2-2-粗心类错误"><a href="#2-2-粗心类错误" class="headerlink" title="2.2 粗心类错误"></a>2.2 粗心类错误</h6><h4 id="案例1：切分支错误"><a href="#案例1：切分支错误" class="headerlink" title="案例1：切分支错误"></a>案例1：切分支错误</h4><p>比如你同时开发多个项目，你本应该按照下面的步骤基于master 拉出两个功能分支：</p>
+<ol>
+<li>基于 master 分支拉出了 feature-a 分支，来开发 A 功能；</li>
+<li>然后再从 master 分支拉出 feature-b 分支，来开发 B 功能。</li>
+</ol>
+<p>但是由于粗心直接从 feature-a 拉出了 feature-b 分支。</p>
+<p>最可怕的是，feature-b 的功能测试都通过且先上线。此时 feature-a 的代码就会被带到线上，极可能导致故障。</p>
+<p>【建议】拉取新分支时一定要注意检查父分支。</p>
+<h4 id="案例2：提前合并到-master"><a href="#案例2：提前合并到-master" class="headerlink" title="案例2：提前合并到 master"></a>案例2：提前合并到 master</h4><p>有些功能还未到发布时间，提前一晚合并到 master ，由于晚上有其他团队成员紧急发布，导致自己的代码被带到了线上，然而线上相关的表DDL 还没提交，其他配置还没配置好。</p>
+<p>从而发生故障，无故躺枪，杯具…</p>
+<p><strong>案例3: merge 代码冲突解决不当</strong></p>
+<p>如果两个人在同一个分支开发或者多个分支合并到主分支容易出现冲突，如果冲突解决不当可能造成故障。</p>
+<p>比如冲突时没有了解清楚就删除了别人的代码，导致上线后出现问题。</p>
+<p>【建议】 合并代码遇到冲突时，如果没有把握，联系和你冲突的人员一起确认。</p>
+<p><strong>案例4：一个分支干了多件事</strong></p>
+<p>有些人喜欢偷偷搞点小动作，某个功能专用的分支做了点其他事情，比如顺手优化了某个接口，却不告知测试人员。</p>
+<p>导致测试没有覆盖到所有修改的场景，上线以后可能出现问题。</p>
+<p>【建议】 一个分支只干一件事，如果顺带做了点其它改动一定要告知测试人员。</p>
+<h6 id="2-3-其他建议"><a href="#2-3-其他建议" class="headerlink" title="2.3 其他建议"></a>2.3 其他建议</h6><p>【建议】开发周期较长时，及时合并 master 分支解决冲突，避免最后阶段大量冲突，同时避免自己依赖的接口修改、删除和废弃等情况。</p>
+<p>【建议】开发过程中要多将自己的开发分支和 master 代码进行比对，自我 Code Review，有助于及早发现问题。</p>
+<h4 id="6-1-3-数据库相关"><a href="#6-1-3-数据库相关" class="headerlink" title="6.1.3-数据库相关"></a>6.1.3-数据库相关</h4><h5 id="1-案例分析"><a href="#1-案例分析" class="headerlink" title="1. 案例分析"></a>1. 案例分析</h5><p>数据库本身的学习可以参考其他教程，本小节重点讲述实际开发中数据库相关的坑。</p>
+<p><strong>案例1：没有唯一键约束</strong></p>
+<p>《手册》中有涉及唯一键的描述：</p>
+<blockquote>
+<p>【强制】业务上具有唯一特性的字段，即使是多个字段的组合，也必须建成唯一索引。</p>
+</blockquote>
+<p>很多人会认为只要先查后插就能保证唯一，实则不然。</p>
+<p>在高并发场景下，如果没有同步操作，两个事务同时开启，先后查询到没有数据，然后依次执行插入会出现重复数据。</p>
+<p>是不是非高并发场景就没问题呢？结果也是否定的。</p>
+<p>一方面别人写代码如果没有先查后插入而是直接插入，无法保证唯一性；另外一方面不是所有的数据都是通过 Java 代码插入到数据库的，如果通过数据平台写入时看到没有唯一键约束就没考虑数据重复的问题，极可能会写入重复的数据。</p>
+<p>因此业务上具有唯一性的字段，即使是多个字段组合，也必须创建唯一键。</p>
+<p><strong>案例2：执行 delete 等危险操作没带查询条件</strong></p>
+<p>有些朋友手抖，执行delete 语句时不带条件或者删除条件有误，将可能造成事故。</p>
+<p>这里给出一条避坑建议：</p>
+<p>【建议】执行删除操作时，要开启事务，同时要先查询核对影响的行数和数据准确性，再执行删除操作 ；执行删除操作后再次核实，如果情况不对立即回滚。</p>
+<p><strong>案例3：新数据或者功能没考虑对老数据的影响</strong></p>
+<p>比如在没下旧接口的情况下要新增接口，而新接口要修改数据库表结构新增一个非 null 字段。</p>
+<p>此时如果没考虑老接口，上线以后老接口插入数据时就会报错。</p>
+<p><strong>案例4：时效性要求极高的场景查了备库</strong></p>
+<p>有些接口对时效性要求较高，比如支付后还要通过另外一个接口查询支付结果，如果查询支付结果的接口走的是备库，此时恰有一个 DDL 导致主备延时较高，很容易查询出不符合预期的结果。</p>
+<p>然而支付的结果影响较大，短暂的主备延迟可能会造成意想不到的后果。</p>
+<p>因此给出以下建议：</p>
+<p>【建议】大表的 DDL 不要在高峰期执行。</p>
+<p>【建议】对于实时性要求极高的接口，请直接查询主库。</p>
+<p><strong>案例5：MyBatis 映射语句问题</strong></p>
+<p>一个比较典型的错误案例如下：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> xxx
+<span class="token keyword">where</span>
+<span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"a  != null"</span><span class="token operator">></span>
+ <span class="token number">a</span> <span class="token operator">=</span> <span class="token comment" spellcheck="true">#{a}</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"b  != null"</span><span class="token operator">></span>
+ <span class="token operator">and</span> <span class="token number">b</span> <span class="token operator">=</span> <span class="token comment" spellcheck="true">#{b}</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span></code></pre>
+<p>如果 a 和 b 同时为 null，则生成的语句将会是: <code>select * from xxx where</code> 从而出现语法错误。</p>
+<p>此种情况应该使用 标签来代替 where 关键字。</p>
+<p>另外一个典型的错误：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> students 
+<span class="token operator">&lt;</span><span class="token keyword">where</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"a  != null"</span><span class="token operator">></span>
+ <span class="token number">a</span> <span class="token operator">=</span> <span class="token comment" spellcheck="true">#{a}</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">where</span><span class="token operator">></span>
+<span class="token keyword">limit</span> <span class="token comment" spellcheck="true">#{offset},#{limit}</span></code></pre>
+<p>此时，如果 offset 或者 limit 传入负数，就会报错。</p>
+<blockquote>
+<p>ERROR when execute SQL: SELECT * FROM students limit -1,10<br>SyntaxError: Parse error on line 1:<br>…FROM students limit -1,10<br>———————–^<br>Expecting ‘NUMBER’, got ‘MINUS’</p>
+</blockquote>
+<p>因此，对于分页的参数一定要做好参数校验。</p>
+<p><strong>案例6：悬停时间较长的事务被kill</strong></p>
+<p>一个朋友在开发中遇到这样一种编码逻辑：查询出所有数据，然后循环根据每个数据的特征查询其她接口作为参数计算出值，然后插入到数据库，循环结束后提交事务。</p>
+<p>之前数据量小时都没问题，数据量大以后该函数执行报错。</p>
+<p>进行了各种分析，各种调试，各种尝试都没解决。</p>
+<p>最终咨询 DBA 才得知根本原因是事务悬停超过 xxx 秒就会被 kill。</p>
+<p>可以计算完成将结果每几百个一批批量插入到数据库；可以通过公司的大数据处理平台实现这个功能。</p>
+<p><strong>案例7：表新增了供查询的字段，却没建索引，导致慢查询</strong></p>
+<p>建表时很多人会想着创建索引加快查询速度。但是由于新增某个功能加新字段时，很容易忘记加索引。如果数据量较大，并发量较大时，容易导致慢查询。</p>
+<p>【建议】新增字段如果作为查询条件时，要思考是否要加索引。</p>
+<h5 id="2-选读"><a href="#2-选读" class="headerlink" title="2. 选读"></a>2. 选读</h5><p>《手册》中有这样一个规定：【强制】页面搜索严禁左模糊或者全模糊，如果需要请走搜索引擎来解决。</p>
+<p>给出的说明是：索引文件具有 B-Tree 的最左前缀匹配特征，如果左侧的值未确定，那么无法使用此索引。</p>
+<p>因此很多朋友可能会这么写：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span>  <span class="token keyword">from</span> xxx <span class="token keyword">where</span> name <span class="token operator">like</span> CONCAT<span class="token punctuation">(</span><span class="token comment" spellcheck="true">#{name},'%') </span></code></pre>
+<p>我们要思考一个问题：<strong>这样写真的能避免左侧模糊查询吗？</strong></p>
+<p>如果参数 name 的值为 ： “%” 或者 “%某字符”呢？</p>
+<p>MySQL 中结果就等价于 ：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span>  <span class="token keyword">from</span> xxx <span class="token keyword">where</span> name <span class="token operator">like</span> <span class="token string">'%%'</span> </code></pre>
+<p>或者</p>
+<pre class=" language-java"><code class="language-java">select <span class="token operator">*</span>  from xxx where name like <span class="token string">'%某字符%'</span> </code></pre>
+<p>依然不会走到索引。</p>
+<p>因此对于 like 的参数，大家可以进行参数检查，也可以进行转义处理。</p>
+<h4 id="6-1-4-总结"><a href="#6-1-4-总结" class="headerlink" title="6.1.4-总结"></a>6.1.4-总结</h4><p>本节结合实际的开发经验讲述了 Git 和数据库中常见的坑点，并给出了一些建议。</p>
+<p>希望大家在学习 Git 和数据库相关知识时，要注重思考，多动手实践去验证。</p>
+<p>下一节将介绍其它各种坑点，给出对大家实际的学习开发有帮助的建议。</p>
+<h3 id="6-2-综合篇"><a href="#6-2-综合篇" class="headerlink" title="6.2-综合篇"></a>6.2-综合篇</h3><h4 id="6-2-1-前言"><a href="#6-2-1-前言" class="headerlink" title="6.2.1-前言"></a>6.2.1-前言</h4><p>前面一小节集中讲述了 Git 和数据库相关的典型坑点并给出了一些建议。</p>
+<p>本节将结合实际的开发经验给出其他各种坑点合集，以帮助大家尽可能地体会开发中可能会遇到的典型坑点，从而尽早避免 。</p>
+<h4 id="6-2-2-各种趟坑姿势"><a href="#6-2-2-各种趟坑姿势" class="headerlink" title="6.2.2-各种趟坑姿势"></a>6.2.2-各种趟坑姿势</h4><p>Java 工程师的进阶之路就是不断的踩坑之路。</p>
+<p>聪明人和普通人的区别之一是，聪明人喜欢吸取别人的踩坑经验，而普通人不重视别人的经验，很多道理只有自己亲身经历，遭受挫折才开始重视。</p>
+<h5 id="1-二方服务的坑"><a href="#1-二方服务的坑" class="headerlink" title="1. 二方服务的坑"></a>1. 二方服务的坑</h5><p><strong>案例 1：空指针异常</strong></p>
+<p>在大一些的公司工作，不免要调用公司其他团队的服务接口，然而二方接口的很多返回值都可能为空。</p>
+<p>往往在测试时对接的功能都很正常，结果上线以后，各种空指针异常，囧…</p>
+<p>【建议】 写代码代码时一定要注意避免空指针。 具体的避免空指针方法参见第一章的对应小节。</p>
+<p><strong>案例 2：幂等性问题</strong></p>
+<p>有时候消息可能重复消费，你提供的服务对方也可能会因超时重试，如果没做好幂等，很可能出现重复下单、重复付款等严重的问题。</p>
+<p>【建议】对于重复调用会有副作用的接口要注意保持接口的幂等。通常上游传入业务识别号和数据编号，作为幂等的依据，采用数据库唯一键等方式做幂等。</p>
+<p><strong>案例 3：二方服务不可用</strong></p>
+<p>二方服务不都是可靠的，偶尔可能会出现短暂的不可用。因此大家在和其他团队对接时，要考虑如果对方接口挂掉，我们该如何处理？</p>
+<p>比如内容被风控是小概率事件，不应该阻碍核心功能。如果你负责对接风控，如果场景允许，当对方服务异常时可以做降级处理，直接返回风控通过，避免阻塞核心流程。</p>
+<p><strong>案例 4：二方接口废弃</strong></p>
+<p>我们在对接二方服务时，可能会发现自己找的接口或者对方提供的接口可能被标记废弃。</p>
+<p>如果对方服务 jar 包提供了源码包，我们可以看其源码注释，查看是否有废弃的原因并给出替代的新接口，如果没有一定要和对方核实。</p>
+<p><strong>案例 5：接口返回值为基本类型</strong></p>
+<p>如果对接二方服务时，如果发现对方的接口中如果包含了基本类型的返回值。</p>
+<p>因为基本类型的返回值都会有默认值，一定要确认这些默认值对自己的数据有没有副作用。</p>
+<p>在某些场景下，很有可能因为这些默认值直造成成一些意想不到坑。</p>
+<p><strong>案例 6：SNAPSHOT 包提供的新接口 “丢了”</strong></p>
+<p>IDEA 默认不会更新 SNAPSHOT 包，第一次拉取后缓存该 Jar 包。</p>
+<p>如果你在 IDEA 中设置 总是更新 SNAPSHOT 可能会发现，二方人员新开发的接口突然找不到了。</p>
+<p>因此《手册》中有下面的规定：</p>
+<blockquote>
+<p>【强制】线上应用不要依赖 SNAPSHOT 版本 (安全包除外)。<br>说明：不依赖 SNAPSHOT 版本是保证应用发布的幂等性。另外，也可以加快编译时的打包构建。</p>
+</blockquote>
+<h5 id="2-环境相关的坑"><a href="#2-环境相关的坑" class="headerlink" title="2. 环境相关的坑"></a>2. 环境相关的坑</h5><p><strong>案例 1：配置错误</strong></p>
+<p>很多时候由于我们粗心很有可能上线之前漏了一些配置导致出现一些线上问题。</p>
+<p>比如实际开发中就出现某些人将 host 的值配置为 host+port 的形式，而该功能不影响核心流程，程序正常启动，但该功能没有正常工作。</p>
+<p><strong>案例 2：测试时发现非常费解的问题</strong></p>
+<p>开发中可能偶尔遇到非常诡异的问题，怎么看都应该是对的，但是就是不对，可能卡住很久。</p>
+<p>此时要注意是不是环境搞错了。</p>
+<p>因为很多大公司都会有好几套环境，如开发环境、QA 环境、QA 性能测试环境、预发环境、预发性能测试环境、和线上环境等。设置同样是 QA 环境还包括通用的 QA 环境和项目特有的 QA 环境。</p>
+<p>遇到无法理解的问题，比如发布了项目没报错，但是就是访问不到，大概率是环境搞错了，要注意核对环境。</p>
+<p><strong>案例 3：浏览器问题</strong></p>
+<p>发现自己的浏览器访问总是有问题，而别人的浏览器可以，orz…</p>
+<h5 id="3-测试中遇到的坑"><a href="#3-测试中遇到的坑" class="headerlink" title="3. 测试中遇到的坑"></a>3. 测试中遇到的坑</h5><p><strong>案例 1：场景没回归到</strong></p>
+<p>比如你的服务接口提供给 Web 端、 小程序端 和 安卓 APP 端调用，修改了接口可能只自测了其中两个场景，然后代码上线发现唯一没覆盖的 小程序端有 BUG，囧…</p>
+<p>【建议】自己的接口修改影响到的地方都要进行回归。</p>
+<p><strong>案例 2: 只测试了正常值</strong></p>
+<p>作为 Java 开发工程师我们测试自己接口时，总是习惯性测试正常值，而不会甚至想不到去测试异常数据。</p>
+<p>接口上线以后，如果出现异常值，很可能就会导致线上问题。</p>
+<p>【建议】做好参数防御，编码时要考虑异常情况。</p>
+<p><strong>案例 3：服务启动调用了接口没走到断点</strong></p>
+<p>在 QA 环境测试时可能会发现服务启动正常，调用的姿势也正确，在接口代码第一行断点都进不来，囧…</p>
+<p>很多朋友可能会因为类似问题卡很久，其实此种情况很可能被拦截器拦截掉了…</p>
+<h5 id="4-经验不足的坑"><a href="#4-经验不足的坑" class="headerlink" title="4. 经验不足的坑"></a>4. 经验不足的坑</h5><p><strong>案例 1：switch 缺少 default 语句</strong></p>
+<p>《手册》中规定：在一个 switch 块内，都必须包含一个 default 语句并且放在最后，即使它什么代码也没有。</p>
+<p>写 switch 的有些场景是根据类型来做不同的事情，比如商品类型，但是类型可能会增加，但是代码可能会滞后。</p>
+<p>因此尽量要编写 default 语句，写 default 语句时要思考未来新增类型时会有什么影响？</p>
+<p>【建议】如果走到 default 逻辑，如果可能会有不良影响的情况，即使不抛异常也要打印警告或者错误日志。</p>
+<p><strong>案例 2： List 转 Map key 重复问题</strong></p>
+<p>如果编写一个 List 转 Map 的函数，可能有些新手会这么写：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> <span class="token function">getResult</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>SimpleObject<span class="token operator">></span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> data<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toMap</span><span class="token punctuation">(</span>SimpleObject<span class="token operator">:</span><span class="token operator">:</span>getName<span class="token punctuation">,</span> SimpleObject<span class="token operator">:</span><span class="token operator">:</span>getValue<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这么写会存在一些问题吗，比如空指针异常，因为集合对象可能为 null, 集合的元素也可能为 null。</p>
+<p>还有一个问题是 key 有可能重复，抛出：java.lang.IllegalStateException: Duplicate key 异常信息。</p>
+<p>肿么办，orz…</p>
+<p>可以参考如下写法：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> <span class="token function">getResult</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>SimpleObject<span class="token operator">></span> data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>CollectionUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> data<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>Objects<span class="token operator">:</span><span class="token operator">:</span>nonNull<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>obj <span class="token operator">-</span><span class="token operator">></span> Objects<span class="token punctuation">.</span><span class="token function">nonNull</span><span class="token punctuation">(</span>obj<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">toMap</span><span class="token punctuation">(</span>SimpleObject<span class="token operator">:</span><span class="token operator">:</span>getName<span class="token punctuation">,</span> SimpleObject<span class="token operator">:</span><span class="token operator">:</span>getValue<span class="token punctuation">,</span>
+                    Integer<span class="token operator">:</span><span class="token operator">:</span>sum<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>案例 3：属性拷贝的坑</strong></p>
+<p>开发时，很多人对自己要求不高，为了省事，大量使用 Bean 拷贝工具。</p>
+<p>由于某些工具在特殊场景下会触发其自身的 BUG；还有多次属性拷贝通过代码很难看出哪些属性会填入了值，不必要地消耗了精力；修改对象属性时或者类型不对应时无法在编译器报错，增加了出错的风险；</p>
+<p>具体建议参考 Java 属性拷贝的正确姿势小节。</p>
+<p><strong>案例 4：越权问题</strong></p>
+<p>比如你提供一个下载文档的接口，没有校验文档和当前用户的权限关系，而是直接根据文档 ID 就可以下载，那么如果用户发现规律，递增或者递减传入其他用户的文档 ID，就会发生安全问题。</p>
+<p>【建议】不要只实现功能，对于需要隔离的资料，要重视权限的校验。</p>
+<p><strong>案例 5：消息顺序性</strong></p>
+<p>比如有这样一个场景，在短时间内发两次消息通知下游反查你的服务数据，然后更新到他们的库中。</p>
+<p>两个消息可能被对方集群中的两台服务器分别消费，反查到的新数据可能先插到了对方的表中，而旧的数据更新到对方库中，导致旧值覆盖新值。</p>
+<p>如果可以将两次消息合并为一次，这样就可以避免这个问题；如果是旧版本可丢弃的场景，也可以发送消息时带上时间戳或者版本号，下游更新数据时比对时间戳或版本号，时间更晚或者版本更旧直接丢弃。</p>
+<p><strong>案例 6：暴露的服务修改签名</strong></p>
+<p>提供给二方用的服务接口，由于需要优化或者升级，而且认为并没有人用，或者已经通知了使用方一起修改，于是大胆地修改了函数签名。</p>
+<p>结果新的接口上线以后，发现未评估到的另外一个使用方调用报错，造成故障，orz…</p>
+<p>【建议】暴露的接口不到万不得已不要修改函数签名，如果需要修改尽量提供新的接口。</p>
+<p><strong>案例 7：没有兜底方案</strong></p>
+<p>比如底层新增了一个必传参数，而这个参数是允许传默认的值，开发者认为前端肯定会传入的，就直接透传给底层，结果由于没覆盖所有场景，上线后有一处调用前端没传报错。</p>
+<p>【建议】在条件允许的情况下尽可能设计兜底方案。</p>
+<p>比如调用二方查询接口时 ip 是必传参数，我们开发时要求前端传给我们，但是我们实际开发时如果不传可以给个默认值，但是走到默认值逻辑时，我们要打印警告日志，引起我们的注意。</p>
+<p>这样即使由于某些场景没覆盖到，功能还是 OK 的。</p>
+<h4 id="6-2-3-总结"><a href="#6-2-3-总结" class="headerlink" title="6.2.3-总结"></a>6.2.3-总结</h4><p>本小节介绍了开发中可能遇到的典型坑点，并给出了对应的建议。</p>
+<p>当然还有有各种各样的趟坑姿势，篇幅有限不可能一一介绍，也欢迎大家留言补充。</p>
+<p>希望大家能够主动了解开发中可能遇到的坑点，主动积累，从别人的错误中吸取经验，少踩坑。</p>
+<p>下一节将根据这几节讲到坑给出 Java 避坑宝典。</p>
+<h3 id="6-3-Java避坑宝典"><a href="#6-3-Java避坑宝典" class="headerlink" title="6.3-Java避坑宝典"></a>6.3-Java避坑宝典</h3><h4 id="6-4-1-前言"><a href="#6-4-1-前言" class="headerlink" title="6.4.1-前言"></a>6.4.1-前言</h4><p>本章前面两节讲述了 Git 、数据库以及其他方面的各种坑点，并给出了针对某些具体坑点的建议。</p>
+<p>本节将综合各种坑点和实际的开发经验，给出更宏观的避坑原则和具体的避坑经验。</p>
+<h4 id="6-4-2-关于趟坑的一切"><a href="#6-4-2-关于趟坑的一切" class="headerlink" title="6.4.2-关于趟坑的一切"></a>6.4.2-关于趟坑的一切</h4><h5 id="1-趟坑的原因分析"><a href="#1-趟坑的原因分析" class="headerlink" title="1. 趟坑的原因分析"></a>1. 趟坑的原因分析</h5><h6 id="1-1-技术原理理解不到位"><a href="#1-1-技术原理理解不到位" class="headerlink" title="1.1 技术原理理解不到位"></a>1.1 技术原理理解不到位</h6><p>由于很多人不重视原理的学习，对很多技术理解不够深入，容易出现误用的情况。</p>
+<p>比如 Git 理解不到位，本该从 master 拉取新分支开发新功能，却从另外一个项目分支拉取新的开发分支，导致项目上线带上了本不该发布的功能代码，从而出现故障。</p>
+<p>比如对线程池的理解不够深入，使用 Executors 构造无界线程和无界队列的线程池，导致 OOM。</p>
+<h6 id="1-2-没有养成好的习惯"><a href="#1-2-没有养成好的习惯" class="headerlink" title="1.2 没有养成好的习惯"></a>1.2 没有养成好的习惯</h6><p>开发前没有仔细梳理需求的习惯；开发时没有自我代码审查的习惯；测试时没有看错误日志的习惯；上线前没有检查各种配置的习惯；上线过程中和上线后没有关注线上日志的习惯。</p>
+<h6 id="1-3-经验不够丰富"><a href="#1-3-经验不够丰富" class="headerlink" title="1.3 经验不够丰富"></a>1.3 经验不够丰富</h6><p>比如测试时没有充分评估影响面，导致漏测出现故障；</p>
+<p>比如线上执行删除操作时，没有开启事务，也没有仔细反复检查；</p>
+<p>比如都不认为自己依赖的服务会挂掉，不认为网络抖动会影响到自己的项目；</p>
+<p>打印了敏感信息的日志，如果客户的住址、手机号、敏感账户等信息。</p>
+<p>比如评估任务之前非常想当然，按照经验评估，而不是核实好每个接口，做好技术方案，留出灵活的时间，导致中间发现很多东西和自己想的不一样，项目经常延期。</p>
+<h6 id="1-4-缺乏思考"><a href="#1-4-缺乏思考" class="headerlink" title="1.4 缺乏思考"></a>1.4 缺乏思考</h6><p>很多人趟坑的另外一个重要原因是思考，不去思考为什么要这么设计，并且设计方案没有在头脑中推演。</p>
+<p>由于缺乏思考，产品说啥就做啥，如果产品早期设计有问题，后期大量修改就会跟着被动修改。</p>
+<h6 id="1-5-缺乏技术追求"><a href="#1-5-缺乏技术追求" class="headerlink" title="1.5 缺乏技术追求"></a>1.5 缺乏技术追求</h6><p>很多人开发抱着一种完成任务就好的态度，缺乏技术追求。</p>
+<h5 id="2-宏观避坑经验"><a href="#2-宏观避坑经验" class="headerlink" title="2. 宏观避坑经验"></a>2. 宏观避坑经验</h5><h6 id="2-1-加强学习"><a href="#2-1-加强学习" class="headerlink" title="2.1 加强学习"></a>2.1 加强学习</h6><p>重视官方文档。官方文档才是最权威最准确的参考资料，希望可以引起大家足够的重视；</p>
+<p>加强专业知识的学习，可以重温大学最重要的四本课：操作系统、计算机网络、数据结构和算法、计算机组成原理，还可以购买黑皮书系列；</p>
+<p>平时看书尽量购买经典的技术图书，有些技术图书要反复看；</p>
+<p>平时开发时，如果不是特别忙可以进入到源码中，看源码的核心函数的注释和逻辑学习源码；</p>
+<p>平时调试问题时，可以使用各种调试技巧来学习源码，比如查看调用栈、执行表达式等；</p>
+<p>购买某个技术的专栏。专栏的质量一般都会偏高，大家可以通过专栏的学习，加深对某项技术的理解。</p>
+<h6 id="2-2-养成好的习惯"><a href="#2-2-养成好的习惯" class="headerlink" title="2.2 养成好的习惯"></a>2.2 养成好的习惯</h6><p>要明确每个阶段自己的主要任务，甚至前一个阶段如果提前完成或者有时间可以提前准备后一个阶段的内容。</p>
+<p><strong>编码前</strong>：认真阅读需求文档，通过思维导图 和各种 UML 图来梳理需求和设计技术方案。</p>
+<p><strong>开发中</strong>多将自己的代码和 master 进行比对，及时发现自己代码中存在的问题。养成编写单元测试的习惯，单元测试</p>
+<p>可以帮助你发现一些粗心导致的错误，帮你发现一些逻辑问题等。写代码时要注意编码规范，日志规范，注释规范等。</p>
+<p>养成用静态代码检查插件检查自己代码的习惯，尽可能在编码阶段发现和解决问题。开发过程中一定本地编译通过再提交代码。</p>
+<p><strong>测试阶段</strong>一定重视错误日志，遇到问题及时修改；测试时不仅要测试正常情况，要以破坏者的角度自测。测试阶段要任何和预期不符的现象都要引起足够的重视。</p>
+<p><strong>发布前</strong>重新检查上线清单，核查配置是否都已经设置好，通知合作方就绪。</p>
+<p><strong>发布阶段</strong>及时观察错误日志、观察请求错误情况。</p>
+<h6 id="2-3-积累开发经验"><a href="#2-3-积累开发经验" class="headerlink" title="2.3 积累开发经验"></a>2.3 积累开发经验</h6><p>很多人的思维很奇怪，总是轻视别人的经验，这样容易走弯路，希望大家多从别人身上吸收经验。</p>
+<p>每一个自己开发的大项目做完以后都要复盘，反思在从需求分析到上线整个过程中，本次项目自己存在哪些问题，编码中哪个设计不够完善，并总结出可供未来参考的经验。</p>
+<p>了解微服务的核心构成，了解每种常用技术存在的主要问题和主要的解决方案。</p>
+<p>多看《手册》、《Effective Java》、《重构》、《编写可维护代码的艺术》这饱含者前辈智慧的计算机开发经验的经典图书。</p>
+<p>学习和实践高级的调试技巧，帮助自己更快定位问题，更好地学习源码。</p>
+<p>要养成“面向失败编程”的思维习惯，要考虑各种依赖方出现问题对自己造成的影响，如果有可能可以设计出兜底方案。</p>
+<p>多了解和实践软件设计的基本原则：高内聚、低耦合；</p>
+<p>开发中多体会设计模式的六大原则：单一职责、里氏替换、依赖倒置、接口隔离、迪米特法则、开闭原则；学习经典设计模式的使用场景，优点、缺点和核心实现逻辑等。</p>
+<blockquote>
+<p>注意：这里列举的规则并不是让大家背诵，而是希望大家能实实在在地去理解它们。</p>
+</blockquote>
+<p>当发现公司其他团队或者团队的其他成员的代码出 BUG 甚至发生故障时，要了解出现问题的原因，自己后面开发时要注意规避。</p>
+<p>如果有时间可以看看其他同事的技术方案，思考他做方案是为什么会这么设计，这样设计有什么好处等。</p>
+<p>多和一些志同道合的朋友交流不涉及具体公司具体代码和业务内容的通用的开发经验。</p>
+<blockquote>
+<p>积累一些具体的开发经验，如：</p>
+<p><strong>加开关</strong></p>
+<p>如果对某个功能真得没把握，公司提供灰度发布，可以按比例切流量到包含新功能服的务器。如果没提供，可以用 apollo 做功能开关，验证有问题及时关闭；</p>
+<p>如果某个功能有时需要打开，有时需要关闭，设计时可以通过apollo来控制，避免打开或关闭时需要修改源码发布。</p>
+<p><strong>加默认值</strong></p>
+<p>比如调用某个接口，其中IP 是必传字段，如果不传会报错，如果场景允许，可以在不传时给一个默认值，并加上警告日志，这样就可以避免线上问题。</p>
+<p><strong>加白名单</strong></p>
+<p>有些数据要走特殊逻辑，可以通过apollo 加入白名单。</p>
+<p><strong>预留拓展字段</strong></p>
+<p>有些功能注定会拓展，可以预留一个拓展字段。</p>
+<p>等等。</p>
+</blockquote>
+<h6 id="2-4-做技术的思考者"><a href="#2-4-做技术的思考者" class="headerlink" title="2.4 做技术的思考者"></a>2.4 做技术的思考者</h6><p>通过本专栏的一些解读，很多朋友会发现：知道是什么，为什么可能比怎么做更重要。</p>
+<p>因为很多人之所以不知道该怎么做，恰恰是因为并没有真正理解清楚概念，并没有认真思考过为什么要这样。</p>
+<h5 id="3-排错技巧"><a href="#3-排错技巧" class="headerlink" title="3. 排错技巧"></a>3. 排错技巧</h5><h6 id="3-1-先猜想后验证"><a href="#3-1-先猜想后验证" class="headerlink" title="3.1 先猜想后验证"></a>3.1 先猜想后验证</h6><p>大家在遇到坑需要排查问题时，一定要根据已有知识根据可能性列举出几种最大概率的原因，然后再分别验证。</p>
+<h6 id="3-2-控制变量法"><a href="#3-2-控制变量法" class="headerlink" title="3.2 控制变量法"></a>3.2 控制变量法</h6><p>有时候我们分析问题时会发现可能受到多种因素影响，此时我们要尽量让一个因素成为变量，其他的因素成为常量。</p>
+<p>这样通过控制其他因素可以有效验证当前的因素是否是错误的主要原因。</p>
+<h6 id="3-3-缩小范围"><a href="#3-3-缩小范围" class="headerlink" title="3.3 缩小范围"></a>3.3 缩小范围</h6><p>通过 F12 看请求和响应信息来定位问题是前端还是后端。</p>
+<p>比如 4xx 响应码大都是前端错误； 5xx 响应码大都是后端错误。</p>
+<h6 id="3-4-换环境大法"><a href="#3-4-换环境大法" class="headerlink" title="3.4 换环境大法"></a>3.4 换环境大法</h6><p>比如发现了诡异的问题，我们可以换环境，比如浏览器开无痕模式、换浏览器、换个项目、让同事用他的电脑试试等等。</p>
+<h6 id="3-5-代码审查大法"><a href="#3-5-代码审查大法" class="headerlink" title="3.5 代码审查大法"></a>3.5 代码审查大法</h6><p>代码审查小节给出了非常详细地讲解。</p>
+<p>出现问题时，可以重新检查自己的代码逻辑，检查代码是否有性能问题，分析代码可能出错的原因。</p>
+<h6 id="3-6-善用工具"><a href="#3-6-善用工具" class="headerlink" title="3.6 善用工具"></a>3.6 善用工具</h6><p><strong>日志分析大法</strong></p>
+<p>遇到问题优先查看日志，平时要熟练掌握 tail、grep、less 等操作日志的指令。</p>
+<p><strong>调试大法</strong></p>
+<p>前面章节中有讲到 Java 代码调试的基本技巧和高级技巧。</p>
+<p>大家通过调试来分析问题时，要灵活运用这些调试技巧。</p>
+<p><strong>抓包工具</strong></p>
+<p>可以使用 tcpdump 命令抓取网络包来分析问题。</p>
+<p>比如分析某个消息是否正常发送出去，可以通过该命令抓取自己的 topic，还可以通过消息的控制台观察消费情况来核实。</p>
+<p><strong>反编译和反汇编</strong></p>
+<p>对于涉及到源码或者语法糖的问题，大家还可以通过反编译和反汇编来分析问题。</p>
+<p><strong>配套监控网站</strong></p>
+<p>比如排查消息队列的问题，可以看公司的消息队列对应 topic 和 channel 的相关信息，辅助我们排查问题。</p>
+<p><strong>arthas线上问题诊断工具</strong></p>
+<p>可以借助 arthas的强大功能来分析线上问题。这需要在没有遇到问题时，本地多次训练学习。</p>
+<h6 id="3-7-搜索引擎"><a href="#3-7-搜索引擎" class="headerlink" title="3.7 搜索引擎"></a>3.7 搜索引擎</h6><p>建议大家灵活运用搜索引擎，善于从网上寻找类似错误，找到启发。</p>
+<p>多去StackOverFlow 中去搜索问题。</p>
+<h6 id="3-8-寻求帮助"><a href="#3-8-寻求帮助" class="headerlink" title="3.8 寻求帮助"></a>3.8 寻求帮助</h6><p>紧急的问题自己无法处理，及时寻求帮助。</p>
+<p>另外平时遇到一些很难排查的诡异的问题，自己卡住很久可以放一段时间再研究，会发现突然有思路，也可以让同事帮一起研究，有时候自己苦思冥想想不明白的事情，别人很快就可以想出原因，给出更合理的建议等。</p>
+<p>最后，建议大家平时没遇到问题的时候多了解别人的坑，本地写 DEMO演练，这样真正遇到问题时才不会那么方。</p>
+<h4 id="6-4-3-总结"><a href="#6-4-3-总结" class="headerlink" title="6.4.3-总结"></a>6.4.3-总结</h4><p>本小节分析了开发中遇到坑的原因，主要包括基础不扎实、没有养成好的习惯、缺乏开发经验，缺乏思考等。针对这些问题给出了具体的建议。</p>
+<p>希望大家能够更多地从别人的坑中学到经验，增强专业素养，提高编码水平，多产出少犯错。</p>
+<p><strong>转自</strong>：慕课网专栏《阿里巴巴Java开发手册详解》</p>
+
             </div>
             <hr/>
 
@@ -9061,7 +9538,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">345.8k</span>&nbsp;字
+                class="white-color">358.2k</span>&nbsp;字
             
             
             
