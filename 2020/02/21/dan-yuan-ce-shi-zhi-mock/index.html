@@ -460,14 +460,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    22.3k
+                    23.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    94 分
+                    100 分
                 </div>
                 
 				
@@ -754,6 +754,22 @@ ResultMatcher <span class="token function">redirectedUrlPattern</span><span clas
 <li>执行被测代码</li>
 <li>验证代码是否正确执行</li>
 </ul>
+<h4 id="2-2-4-mock和stub"><a href="#2-2-4-mock和stub" class="headerlink" title="2.2.4-mock和stub"></a>2.2.4-mock和stub</h4><p>stub存在的意图是为了让测试对象可以正常的执行，其实现一般会硬编码一些输入和输出。</p>
+<p>mock除了保证stub的功能之外，还可深入的模拟对象之间的交互方式，如：调用了几次、在某种情况下是否会抛出异常</p>
+<ul>
+<li><p>Mock和Stub都是通过一种更加快捷的方式让我们能够及时迅速的获取到我们期望的对象和数据。</p>
+</li>
+<li><p>Stub更关注于状态，它可以通过硬编码一些输入或者输出，让我们获取我们需要的数据。</p>
+</li>
+<li><p>Mock更关注于行为，它可以记录对象中各个方法都调用情况，如：是否被调用，调用了几次、在某种情况下是否会抛出异常等。</p>
+</li>
+</ul>
+<blockquote>
+<ol>
+<li>stub一个mock对象的方法后，不能在同一个mock对象上再一次stub这个方法，第二次的stub无效。</li>
+<li>不可stub一个非mock对象的方法，这种操作stub是无效的。</li>
+</ol>
+</blockquote>
 <h3 id="2-3-Mockito的使用"><a href="#2-3-Mockito的使用" class="headerlink" title="2.3-Mockito的使用"></a>2.3-Mockito的使用</h3><h4 id="2-3-1-引入pom依赖"><a href="#2-3-1-引入pom依赖" class="headerlink" title="2.3.1-引入pom依赖"></a>2.3.1-引入pom依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.mockito<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>mockito-core<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
@@ -3046,7 +3062,452 @@ List spy <span class="token operator">=</span> <span class="token function">spy<
 <p><code>@SuppressStaticInitializationFor(&quot;BaseEntity&quot;)</code>:表示禁用BaseEntity的静态初始化。注意引号部分通常需要全名，如”com.gitshah.powermock.BaseEntity”。</p>
 <p><code>PowerMockito.suppress(PowerMockito.field(BaseEntity.class</code>:identifier”))`：禁用域。</p>
 </blockquote>
-<h3 id="5-4-SpringBoot整合PowerMock"><a href="#5-4-SpringBoot整合PowerMock" class="headerlink" title="5.4-SpringBoot整合PowerMock"></a>5.4-SpringBoot整合PowerMock</h3>
+<h2 id="6-SpringBoot整合Junit-Mockito-PowerMock"><a href="#6-SpringBoot整合Junit-Mockito-PowerMock" class="headerlink" title="6-SpringBoot整合Junit+Mockito+PowerMock"></a>6-SpringBoot整合Junit+Mockito+PowerMock</h2><h3 id="6-1-添加依赖"><a href="#6-1-添加依赖" class="headerlink" title="6.1-添加依赖"></a>6.1-添加依赖</h3><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>junit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>junit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>4.12<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.powermock<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>powermock-module-junit4<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.0.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.powermock<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>powermock-api-mockito2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.0.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.mockito<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>mockito-core<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.23.4<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>scope</span><span class="token punctuation">></span></span>test<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>scope</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h3 id="6-2-UUID加密算法类"><a href="#6-2-UUID加密算法类" class="headerlink" title="6.2-UUID加密算法类"></a>6.2-UUID加密算法类</h3><pre class=" language-java"><code class="language-java"><span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>codec<span class="token punctuation">.</span>binary<span class="token punctuation">.</span>Base64<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>codec<span class="token punctuation">.</span>digest<span class="token punctuation">.</span>DigestUtils<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>UUID<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Encrypt</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/**
+     * 密码加密
+     * @param password 待加密的密码
+     * @param md5 是否先用 md5 加密
+     * @return 加密后的密码
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> String <span class="token function">passwordGenerator</span><span class="token punctuation">(</span>String password<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        password <span class="token operator">=</span> DigestUtils<span class="token punctuation">.</span><span class="token function">md5Hex</span><span class="token punctuation">(</span>password<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String salt <span class="token operator">=</span> DigestUtils<span class="token punctuation">.</span><span class="token function">sha1Hex</span><span class="token punctuation">(</span>UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String saltString <span class="token operator">=</span> DigestUtils<span class="token punctuation">.</span><span class="token function">sha1Hex</span><span class="token punctuation">(</span>password <span class="token operator">+</span> salt<span class="token punctuation">)</span> <span class="token operator">+</span> salt<span class="token punctuation">;</span>
+        String encryPassword <span class="token operator">=</span> Base64<span class="token punctuation">.</span><span class="token function">encodeBase64String</span><span class="token punctuation">(</span>saltString<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> encryPassword<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>其中，UUID.randomUUID()、DigestUtils.md5Hex()、DigestUtils.sha1Hex()、Base64.encodeBase64String() 均为静态方法，而 uuid.toString() 则为 UUID 实例对象的方法。</p>
+<p>对于 UUID 的 mock，需要两步：</p>
+<p>第一步，是使用 mockito mock 一个 UUID 对象，并 mock 其在代码中使用的方法，这里要 mock 的是 toString() 方法。</p>
+<p>第二步，是使用 powormockito，mock UUID 的 randomUUID() 方法，使其返回上一步 mock 的 uuid 对象，这样我们就能得到预期的 uuid 的方法（这里是 toString）的执行结果。</p>
+<p>DigestUtils 和 Base64 的静态方法直接使用 powermockito 来 mock 就可以。</p>
+<h3 id="6-3-测试类"><a href="#6-3-测试类" class="headerlink" title="6.3-测试类"></a>6.3-测试类</h3><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RunWith</span><span class="token punctuation">(</span>PowerMockRunner<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@PrepareForTest</span><span class="token punctuation">(</span><span class="token punctuation">{</span>UUID<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> DigestUtils<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> Encrypt<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> Base64<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">EncryptTest</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">passwordGeneratorWithMd5</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String randomString <span class="token operator">=</span> <span class="token string">"abcdefg"</span><span class="token punctuation">;</span>
+        String salt <span class="token operator">=</span> <span class="token string">"abcd"</span><span class="token punctuation">;</span>
+        String password <span class="token operator">=</span> <span class="token string">"123456"</span><span class="token punctuation">;</span>
+        String rePassword <span class="token operator">=</span> <span class="token string">"654321"</span><span class="token punctuation">;</span>
+        String twiceSaltMd5 <span class="token operator">=</span> <span class="token string">"hellomd5"</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// mock uuid 对象，使其 toString() 方法返回预定义的 randomString 字符串</span>
+        UUID uuid <span class="token operator">=</span> PowerMockito<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span>UUID<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Mockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>uuid<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>randomString<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// mock UUID 类，使其 randomUUID() 方法返回刚刚 mock 的 uuid 对象</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">mockStatic</span><span class="token punctuation">(</span>UUID<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>uuid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// mock DigestUtils 类，使其 sha1Hex() 方法在接收预定义的 randomString 参数时，返回预定义的 salt 字符串</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">mockStatic</span><span class="token punctuation">(</span>DigestUtils<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>DigestUtils<span class="token punctuation">.</span><span class="token function">sha1Hex</span><span class="token punctuation">(</span>randomString<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>salt<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 使 mock 的 DigestUtils 类的 md5Hex 方法，在接受预定义的 password 时，生成预定义的 rePassword 字符串</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>DigestUtils<span class="token punctuation">.</span><span class="token function">md5Hex</span><span class="token punctuation">(</span>password<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>rePassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 使 mock 的 DigestUtils 类的 sha1Hex() 方法在接收预定义的 rePassword 和 salt 时，返回 预定义的 twiceSaltMd5 字符串</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>DigestUtils<span class="token punctuation">.</span><span class="token function">sha1Hex</span><span class="token punctuation">(</span>rePassword <span class="token operator">+</span> salt<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>twiceSaltMd5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// mock Base64 类，使其encodeBase64String() 方法在接收 预定义的串时，返回预定义的加密后密码</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">mockStatic</span><span class="token punctuation">(</span>Base64<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String imencryptpassword <span class="token operator">=</span> <span class="token string">"imencryptpasswordwithmd5"</span><span class="token punctuation">;</span>
+        PowerMockito<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>Base64<span class="token punctuation">.</span><span class="token function">encodeBase64String</span><span class="token punctuation">(</span><span class="token punctuation">(</span>twiceSaltMd5 <span class="token operator">+</span> salt<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">thenReturn</span><span class="token punctuation">(</span>imencryptpassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 调用加密方法，并验证结果</span>
+        String encryptPassword <span class="token operator">=</span> Encrypt<span class="token punctuation">.</span><span class="token function">passwordGenerator</span><span class="token punctuation">(</span><span class="token string">"123456"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assertEquals</span><span class="token punctuation">(</span>imencryptpassword<span class="token punctuation">,</span> encryptPassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="7-Mock测试工具对比"><a href="#7-Mock测试工具对比" class="headerlink" title="7-Mock测试工具对比"></a>7-Mock测试工具对比</h2><p>目前，这个级别的mock工具有easymock、jMock、Mockito、Unitils Mock、PowerMock、JMockit等等.<br>关于它们的优劣势在JMockit<a href="http://rawgit.com/jmockit/jmockit.github.io/e5f649df0276ef561b1b98004914a0cfd0c290bb/MockingToolkitComparisonMatrix.html" target="_blank" rel="noopener">官网</a>上给出一个简单的比较，结果如下图所示。这个结果可能会偏向JMockit，我们可以作为参考。</p>
+<table>
+<thead>
+<tr>
+<th><strong>Feature</strong></th>
+<th><a href="http://easymock.org/" target="_blank" rel="noopener"><strong>EasyMock</strong></a></th>
+<th><a href="http://jmock.org/" target="_blank" rel="noopener">jMock</a></th>
+<th><a href="http://code.google.com/p/mockito" target="_blank" rel="noopener">Mockito</a></th>
+<th><a href="http://www.unitils.org/summary.html" target="_blank" rel="noopener">Unitils Mock</a></th>
+<th><a href="http://code.google.com/p/powermock" target="_blank" rel="noopener">PowerMock</a>: <code>EasyMock</code>  API</th>
+<th><a href="http://code.google.com/p/powermock" target="_blank" rel="noopener">PowerMock</a>: Mockito  API</th>
+<th><a href="http://code.google.com/p/jmockit" target="_blank" rel="noopener"><strong>JMock it</strong></a></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#constraints" target="_blank" rel="noopener">Invocation count constraints</a>(调用数限制)</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/wiki/MockingToolkitComparisonMatrix#Recording_strict_expectations" target="_blank" rel="noopener">Recording strict expectations</a>(记录严格的预期结果）</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/wiki/MockingToolkitComparisonMatrix#Explicit_verification" target="_blank" rel="noopener">Explicit verification</a>（显式验证）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#partial" target="_blank" rel="noopener">Partial mocking</a>（部分mock）</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/wiki/MockingToolkitComparisonMatrix#No_method_call_to_switch_from_record_to_replay" target="_blank" rel="noopener">No method call to switch from record to replay</a>（切换记录回放时无方法调用）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/wiki/MockingToolkitComparisonMatrix#No_extra_code_for_implicit_verification" target="_blank" rel="noopener">No extra code for implicit verification</a>（隐式验证没有额外代码）</td>
+<td></td>
+<td></td>
+<td><em>N/A</em></td>
+<td><em>N/A</em></td>
+<td></td>
+<td><em>N/A</em></td>
+<td>√</td>
+</tr>
+<tr>
+<td>No extra “prepare for test” code（没有额外的”prepare for test”代码）</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>No need to use <code>@RunWith</code> annotation or base  test class（不需要用@runwith注解和测试基类）</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Consistent syntax between <code>void</code> and non-<code>void</code> methods（空和非空方法的语法一致）</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#hamcrest" target="_blank" rel="noopener">Argument matchers</a> for some parameters only,  not all</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/wiki/MockingToolkitComparisonMatrix#Easier_argument_matching_based_on_properties_of_value_objects" target="_blank" rel="noopener">Easier argument matching based on properties  of value objects</a>（基于值对象属性的简化参数匹配）</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/javadoc/mockit/Cascading.html" target="_blank" rel="noopener">Cascading mocks</a>（级联mock）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#multipleInterfaces" target="_blank" rel="noopener">Support for mocking multiple interfaces</a>（多接口mock）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/source/browse/trunk/main/test/mockit/MockedAnnotationsTest.java" target="_blank" rel="noopener">Support for mocking annotation types</a>（注释类型mock）</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#partiallyOrdered" target="_blank" rel="noopener">Partially ordered expectations</a></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Mocking of constructors and <em>final</em>/<em>static</em>/<em>native</em>/<em>private</em> methods（构造函数、final、static和private方法的mock）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/UsingMocksAndStubs.html" target="_blank" rel="noopener">Declarative application of mocks/stubs to  whole test classes</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/javadoc/mockit/Tested.html" target="_blank" rel="noopener">Auto-injection of mocks</a>（mock的自动注入）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Mocking of “new-ed” objects（“new-ed”对象的mock）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/source/browse/trunk/main/test/mockit/MockedEnumsTest.java" target="_blank" rel="noopener">Support for mocking enum types</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Declarative mocks for the test class (mock  fields)</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#declaration" target="_blank" rel="noopener">Declarative mocks for test methods  (parameters, local fields)</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#matcherFields" target="_blank" rel="noopener">Special fields for “any” argument matching</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/javadoc/mockit/Expectations.html#result" target="_blank" rel="noopener">Use of an special field to specify invocation  results</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/javadoc/mockit/Expectations.html#times" target="_blank" rel="noopener">Use of special fields to specify invocation  count constraints</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/javadoc/mockit/Expectations.html#$" target="_blank" rel="noopener">Expectations with custom error messages</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/CapturingImplementations.html" target="_blank" rel="noopener">On-demand mocking of unspecified implementation classes</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#capturing" target="_blank" rel="noopener">Capture of instances created by code under  test</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/BehaviorBasedTesting.html#iterations" target="_blank" rel="noopener">Recording &amp; verification of expectations in  loops</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://code.google.com/p/jmockit/source/browse/trunk/main/test/mockit/CovariantReturnTypesTest.java" target="_blank" rel="noopener">Support for covariant return types</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="http://jmockit.googlecode.com/svn/trunk/www/tutorial/StateBasedTesting.html" target="_blank" rel="noopener">“Duck typing” mocks for state-based tests</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Single jar file in the classpath is sufficient to  use mocking API（在classpath中的单个jar文件就能够使用mockAPI）</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td><em>N/A</em></td>
+<td><em>N/A</em></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td>6/32</td>
+<td>7/32</td>
+<td>13/31</td>
+<td>11/31</td>
+<td>9/31</td>
+<td>14/30</td>
+<td>32/32</td>
+</tr>
+<tr>
+<td><strong>Total when ignoring JMockit-only features</strong></td>
+<td>6/22</td>
+<td>7/22</td>
+<td>13/21</td>
+<td>11/21</td>
+<td>9/21</td>
+<td>14/20</td>
+<td>22/22</td>
+</tr>
+</tbody></table>
+<p>就目前来讲，是mockit+powermock、JMockit这两种工具使用人数较多。JMockit的功能最为完善，mockit+powermock的用户体验相对较好一点。</p>
+
             </div>
             <hr/>
 
@@ -3528,7 +3989,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">380.6k</span>&nbsp;字
+                class="white-color">381.9k</span>&nbsp;字
             
             
             
