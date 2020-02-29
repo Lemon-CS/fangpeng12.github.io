@@ -456,14 +456,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    11.3k
+                    14.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    42 分
+                    59 分
                 </div>
                 
 				
@@ -1053,7 +1053,300 @@ ac46c019b800        alpine              &quot;/bin/sh&quot;           12 minutes
 <span class="token attr-name">[root@web1</span> <span class="token attr-value">overlay2]# docker rm 9fc796e928d7 #rm时删除一个或多个容器</span>
 9fc796e928d7</code></pre>
 <h3 id="3-13-查看容器详细信息"><a href="#3-13-查看容器详细信息" class="headerlink" title="3.13-查看容器详细信息"></a>3.13-查看容器详细信息</h3><p>并不需要进入到容器里面，通过查看详细信息看到了刚才运行的nginx，宿主机curl ip地址访问一下运行情况。</p>
-<pre><code>docker inspect mynginx</code></pre><h3 id="3-14-查看日志"><a href="#3-14-查看日志" class="headerlink" title="3.14-查看日志"></a>3.14-查看日志</h3><pre><code>[root@web1 ~]# docker logs  -f mynginx</code></pre>
+<pre><code>docker inspect mynginx</code></pre><h3 id="3-14-查看日志"><a href="#3-14-查看日志" class="headerlink" title="3.14-查看日志"></a>3.14-查看日志</h3><pre><code>[root@web1 ~]# docker logs  -f mynginx</code></pre><h2 id="4-docker容器使用"><a href="#4-docker容器使用" class="headerlink" title="4-docker容器使用"></a>4-docker容器使用</h2><ul>
+<li><h3 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a><strong>获取镜像</strong></h3><p>如果我们本地没有 ubuntu 镜像，我们可以使用 docker pull 命令来载入 ubuntu 镜像：</p>
+<pre><code>$ docker pull ubuntu</code></pre></li>
+<li><h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a><strong>启动容器</strong></h3><p>以下命令使用 ubuntu 镜像启动一个容器，参数为以命令行模式进入该容器：</p>
+<pre><code>$ docker run -it ubuntu /bin/bash</code></pre><p>参数说明：</p>
+<ul>
+<li><strong>-i</strong>: 交互式操作。</li>
+<li><strong>-t</strong>: 终端。</li>
+<li><strong>ubuntu</strong>: ubuntu 镜像。</li>
+<li><strong>/bin/bash</strong>：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 /bin/bash。</li>
+</ul>
+<p>要退出终端，直接输入 <strong>exit</strong>:</p>
+<pre><code>root@ed09e4490c57:/# exit</code></pre></li>
+<li><h3 id="启动已停止运行的容器"><a href="#启动已停止运行的容器" class="headerlink" title="启动已停止运行的容器"></a><strong>启动已停止运行的容器</strong></h3><p>查看所有的容器命令如下：</p>
+<pre><code>$ docker ps -a</code></pre><p>使用 docker start 启动一个已停止的容器：</p>
+<pre><code>$ docker start b750bbbcfd88 </code></pre></li>
+<li><h3 id="后台运行"><a href="#后台运行" class="headerlink" title="后台运行"></a><strong>后台运行</strong></h3><p>在大部分的场景下，我们希望 docker 的服务是在后台运行的，我们可以过 <strong>-d</strong> 指定容器的运行模式。</p>
+<pre><code>$ docker run -itd --name ubuntu-test ubuntu /bin/bash</code></pre><p><strong>注：</strong>加了 <strong>-d</strong> 参数默认不会进入容器，想要进入容器需要使用指令 <strong>docker exec</strong>（下面会介绍到）。</p>
+</li>
+<li><p><strong>停止一个容器</strong></p>
+<p>停止容器的命令如下：</p>
+<pre><code>$ docker stop &lt;容器 ID&gt;</code></pre><p>停止的容器可以通过 docker restart 重启：</p>
+<pre><code>$ docker restart &lt;容器 ID&gt;</code></pre></li>
+<li><h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a><strong>进入容器</strong></h3><p>在使用 <strong>-d</strong> 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：</p>
+<ul>
+<li><strong>docker attach</strong></li>
+<li><strong>docker exec</strong>：推荐大家使用 docker exec 命令，因为此退出容器终端，不会导致容器的停止。</li>
+</ul>
+<p><strong>attach 命令</strong></p>
+<p>下面演示了使用 docker attach 命令。</p>
+<pre><code>$ docker attach 1e560fca3906 </code></pre><p><strong>注意：</strong> 如果从这个容器退出，会导致容器的停止。</p>
+<p><strong>exec 命令</strong></p>
+<p>下面演示了使用 docker exec 命令。</p>
+<pre><code>docker exec -it 243c32535da7 /bin/bash</code></pre><p><strong>注意：</strong> 如果从这个容器退出，不会导致容器的停止，这就是为什么推荐大家使用 <strong>docker exec</strong> 的原因。</p>
+<p>更多参数说明请使用 <strong>docker exec –help</strong> 命令查看。</p>
+</li>
+<li><h3 id="导出和导入容器"><a href="#导出和导入容器" class="headerlink" title="导出和导入容器"></a><strong>导出和导入容器</strong></h3><ul>
+<li><h4 id="导出容器"><a href="#导出容器" class="headerlink" title="导出容器"></a><strong>导出容器</strong></h4><p>如果要导出本地某个容器，可以使用 <strong>docker export</strong> 命令。</p>
+<pre><code>$ docker export 1e560fca3906 &gt; ubuntu.tar</code></pre><p>导出容器 1e560fca3906 快照到本地文件 ubuntu.tar。</p>
+</li>
+<li><h4 id="导入容器快照"><a href="#导入容器快照" class="headerlink" title="导入容器快照"></a><strong>导入容器快照</strong></h4><p>可以使用 docker import 从容器快照文件中再导入为镜像，以下实例将快照文件 ubuntu.tar 导入到镜像 test/ubuntu:v1:</p>
+<pre><code>$ cat docker/ubuntu.tar | docker import - test/ubuntu:v1</code></pre></li>
+<li><p>此外，也可以通过指定 URL 或者某个目录来导入，例如：</p>
+<pre><code>$ docker import http://example.com/exampleimage.tgz example/imagerepo</code></pre></li>
+</ul>
+</li>
+<li><h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a><strong>删除容器</strong></h3><p>删除容器使用 <strong>docker rm</strong> 命令：</p>
+<pre><code>$ docker rm -f 1e560fca3906</code></pre></li>
+<li><h3 id="运行一个-web-应用"><a href="#运行一个-web-应用" class="headerlink" title="运行一个 web 应用"></a><strong>运行一个 web 应用</strong></h3><p>前面我们运行的容器并没有一些什么特别的用处。</p>
+<p>接下来让我们尝试使用 docker 构建一个 web 应用程序。</p>
+<p>我们将在docker容器中运行一个 Python Flask 应用来运行一个web应用。</p>
+<pre><code>runoob@runoob:~# docker pull training/webapp  # 载入镜像
+runoob@runoob:~# docker run -d -P training/webapp python app.py</code></pre><p>参数说明:</p>
+<ul>
+<li><strong>-d:</strong>让容器在后台运行。</li>
+<li><strong>-P:</strong>将容器内部使用的网络端口映射到我们使用的主机上。</li>
+</ul>
+</li>
+<li><h3 id="查看-WEB-应用容器"><a href="#查看-WEB-应用容器" class="headerlink" title="查看 WEB 应用容器"></a><strong>查看 WEB 应用容器</strong></h3><p>使用 docker ps 来查看我们正在运行的容器：</p>
+<pre><code>runoob@runoob:~#  docker ps
+CONTAINER ID        IMAGE               COMMAND             ...        PORTS                 
+d3d5e39ed9d3        training/webapp     &quot;python app.py&quot;     ...        0.0.0.0:32769-&gt;5000/tcp</code></pre><p>这里多了端口信息。</p>
+<pre><code>PORTS
+0.0.0.0:32769-&gt;5000/tcp</code></pre><p>Docker 开放了 5000 端口（默认 Python Flask 端口）映射到主机端口 32769 上。</p>
+<p>这时我们可以通过浏览器访问WEB应用。</p>
+<p>我们也可以通过 -p 参数来设置不一样的端口：</p>
+<pre><code>runoob@runoob:~$ docker run -d -p 5000:5000 training/webapp python app.py</code></pre><p><strong>docker ps</strong>查看正在运行的容器</p>
+<pre><code>runoob@runoob:~#  docker ps
+CONTAINER ID        IMAGE                             PORTS                     NAMES
+bf08b7f2cd89        training/webapp     ...        0.0.0.0:5000-&gt;5000/tcp    wizardly_chandrasekhar
+d3d5e39ed9d3        training/webapp     ...        0.0.0.0:32769-&gt;5000/tcp   xenodochial_hoov</code></pre><p>容器内部的 5000 端口映射到我们本地主机的 5000 端口上。</p>
+</li>
+<li><h3 id="网络端口的快捷方式"><a href="#网络端口的快捷方式" class="headerlink" title="网络端口的快捷方式"></a><strong>网络端口的快捷方式</strong></h3><p>通过 <strong>docker ps</strong> 命令可以查看到容器的端口映射，<strong>docker</strong> 还提供了另一个快捷方式 <strong>docker port</strong>，使用 <strong>docker port</strong> 可以查看指定 （ID 或者名字）容器的某个确定端口映射到宿主机的端口号。</p>
+<p>上面我们创建的 web 应用容器 ID 为 <strong>bf08b7f2cd89</strong> 名字为 <strong>wizardly_chandrasekhar</strong>。</p>
+<p>我可以使用 <strong>docker port bf08b7f2cd89</strong> 或 <strong>docker port wizardly_chandrasekhar</strong> 来查看容器端口的映射情况。</p>
+<pre><code>runoob@runoob:~$ docker port bf08b7f2cd89
+5000/tcp -&gt; 0.0.0.0:5000
+runoob@runoob:~$ docker port wizardly_chandrasekhar
+5000/tcp -&gt; 0.0.0.0:5000</code></pre></li>
+<li><h3 id="查看-WEB-应用程序日志"><a href="#查看-WEB-应用程序日志" class="headerlink" title="查看 WEB 应用程序日志"></a><strong>查看 WEB 应用程序日志</strong></h3><p>docker logs [ID或者名字] 可以查看容器内部的标准输出。</p>
+<pre><code>runoob@runoob:~$ docker logs -f bf08b7f2cd89
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+192.168.239.1 - - [09/May/2016 16:30:37] &quot;GET / HTTP/1.1&quot; 200 -
+192.168.239.1 - - [09/May/2016 16:30:37] &quot;GET /favicon.ico HTTP/1.1&quot; 404 -</code></pre><p><strong>-f:</strong> 让 <strong>docker logs</strong> 像使用 <strong>tail -f</strong> 一样来输出容器内部的标准输出。</p>
+<p>从上面，我们可以看到应用程序使用的是 5000 端口并且能够查看到应用程序的访问日志。</p>
+</li>
+<li><h3 id="查看WEB应用程序容器的进程"><a href="#查看WEB应用程序容器的进程" class="headerlink" title="查看WEB应用程序容器的进程"></a><strong>查看WEB应用程序容器的进程</strong></h3><p>我们还可以使用 docker top 来查看容器内部运行的进程</p>
+<pre><code>runoob@runoob:~$ docker top wizardly_chandrasekhar
+UID     PID         PPID          ...       TIME                CMD
+root    23245       23228         ...       00:00:00            python app.py</code></pre></li>
+<li><h3 id="检查-WEB-应用程序"><a href="#检查-WEB-应用程序" class="headerlink" title="检查 WEB 应用程序"></a><strong>检查 WEB 应用程序</strong></h3><p>使用 <strong>docker inspect</strong> 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息。</p>
+<pre><code>runoob@runoob:~$ docker inspect wizardly_chandrasekhar
+[
+    {
+        &quot;Id&quot;: &quot;bf08b7f2cd897b5964943134aa6d373e355c286db9b9885b1f60b6e8f82b2b85&quot;,
+        &quot;Created&quot;: &quot;2018-09-17T01:41:26.174228707Z&quot;,
+        &quot;Path&quot;: &quot;python&quot;,
+        &quot;Args&quot;: [
+            &quot;app.py&quot;
+        ],
+        &quot;State&quot;: {
+            &quot;Status&quot;: &quot;running&quot;,
+            &quot;Running&quot;: true,
+            &quot;Paused&quot;: false,
+            &quot;Restarting&quot;: false,
+            &quot;OOMKilled&quot;: false,
+            &quot;Dead&quot;: false,
+            &quot;Pid&quot;: 23245,
+            &quot;ExitCode&quot;: 0,
+            &quot;Error&quot;: &quot;&quot;,
+            &quot;StartedAt&quot;: &quot;2018-09-17T01:41:26.494185806Z&quot;,
+            &quot;FinishedAt&quot;: &quot;0001-01-01T00:00:00Z&quot;
+        },
+......</code></pre></li>
+<li><h3 id="停止-WEB-应用容器"><a href="#停止-WEB-应用容器" class="headerlink" title="停止 WEB 应用容器"></a><strong>停止 WEB 应用容器</strong></h3><pre><code>runoob@runoob:~$ docker stop wizardly_chandrasekhar   
+wizardly_chandrasekhar</code></pre></li>
+<li><h3 id="重启WEB应用容器"><a href="#重启WEB应用容器" class="headerlink" title="重启WEB应用容器"></a><strong>重启WEB应用容器</strong></h3><p>已经停止的容器，我们可以使用命令 docker start 来启动。</p>
+<pre><code>runoob@runoob:~$ docker start wizardly_chandrasekhar
+wizardly_chandrasekhar</code></pre><p>docker ps -l 查询最后一次创建的容器：</p>
+<pre><code>#  docker ps -l 
+CONTAINER ID        IMAGE                             PORTS                     NAMES
+bf08b7f2cd89        training/webapp     ...        0.0.0.0:5000-&gt;5000/tcp    wizardly_chandrasekhar</code></pre><p>正在运行的容器，我们可以使用 <strong>docker restart</strong> 命令来重启。</p>
+</li>
+<li><h3 id="移除WEB应用容器"><a href="#移除WEB应用容器" class="headerlink" title="移除WEB应用容器"></a><strong>移除WEB应用容器</strong></h3><p>我们可以使用 docker rm 命令来删除不需要的容器</p>
+<pre><code>runoob@runoob:~$ docker rm wizardly_chandrasekhar  
+wizardly_chandrasekhar</code></pre><p>删除容器时，容器必须是停止状态，否则会报如下错误</p>
+<pre><code>runoob@runoob:~$ docker rm wizardly_chandrasekhar
+Error response from daemon: You cannot remove a running container bf08b7f2cd897b5964943134aa6d373e355c286db9b9885b1f60b6e8f82b2b85. Stop the container before attempting removal or force remove</code></pre></li>
+</ul>
+<h2 id="5-docker镜像使用"><a href="#5-docker镜像使用" class="headerlink" title="5-docker镜像使用"></a>5-docker镜像使用</h2><p>当运行容器时，使用的镜像如果在本地中不存在，docker 就会自动从 docker 镜像仓库中下载，默认是从 Docker Hub 公共镜像源下载。</p>
+<ul>
+<li><h3 id="列出镜像列表"><a href="#列出镜像列表" class="headerlink" title="列出镜像列表"></a>列出镜像列表</h3><p>我们可以使用 <strong>docker images</strong> 来列出本地主机上的镜像。</p>
+<pre><code>runoob@runoob:~$ docker images           
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              14.04               90d5884b1ee0        5 days ago          188 MB
+php                 5.6                 f40e9e0f10c8        9 days ago          444.8 MB
+nginx               latest              6f8d099c3adc        12 days ago         182.7 MB
+mysql               5.6                 f2e8d6c772c0        3 weeks ago         324.6 MB
+httpd               latest              02ef73cf1bc0        3 weeks ago         194.4 MB
+ubuntu              15.10               4e3b13c8a266        4 weeks ago         136.3 MB
+hello-world         latest              690ed74de00f        6 months ago        960 B
+training/webapp     latest              6fae60ef3446        11 months ago       348.8 MB</code></pre><p>各个选项说明:</p>
+<ul>
+<li><strong>REPOSITORY：</strong>表示镜像的仓库源</li>
+<li><strong>TAG：</strong>镜像的标签</li>
+<li><strong>IMAGE ID：</strong>镜像ID</li>
+<li><strong>CREATED：</strong>镜像创建时间</li>
+<li><strong>SIZE：</strong>镜像大小</li>
+</ul>
+<p>同一仓库源可以有多个 TAG，代表这个仓库源的不同个版本，如 ubuntu 仓库源里，有 15.10、14.04 等多个不同的版本，我们使用 REPOSITORY:TAG 来定义不同的镜像。</p>
+<p>所以，我们如果要使用版本为15.10的ubuntu系统镜像来运行容器时，命令如下：</p>
+<pre><code>runoob@runoob:~$ docker run -t -i ubuntu:15.10 /bin/bash 
+root@d77ccb2e5cca:/#</code></pre><p>参数说明：</p>
+<ul>
+<li><strong>-i</strong>: 交互式操作。</li>
+<li><strong>-t</strong>: 终端。</li>
+<li><strong>ubuntu:15.10</strong>: 这是指用 ubuntu 15.10 版本镜像为基础来启动容器。</li>
+<li><strong>/bin/bash</strong>：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 /bin/bash。</li>
+</ul>
+<p>如果要使用版本为 14.04 的 ubuntu 系统镜像来运行容器时，命令如下：</p>
+<pre><code>runoob@runoob:~$ docker run -t -i ubuntu:14.04 /bin/bash 
+root@39e968165990:/# </code></pre><p>如果你不指定一个镜像的版本标签，例如你只使用 ubuntu，docker 将默认使用 ubuntu:latest 镜像。</p>
+</li>
+<li><h3 id="获取一个新的镜像"><a href="#获取一个新的镜像" class="headerlink" title="获取一个新的镜像"></a>获取一个新的镜像</h3><p>当我们在本地主机上使用一个不存在的镜像时 Docker 就会自动下载这个镜像。如果我们想预先下载这个镜像，我们可以使用 docker pull 命令来下载它。</p>
+<pre><code>Crunoob@runoob:~$ docker pull ubuntu:13.10
+13.10: Pulling from library/ubuntu
+6599cadaf950: Pull complete 
+23eda618d451: Pull complete 
+f0be3084efe9: Pull complete 
+52de432f084b: Pull complete 
+a3ed95caeb02: Pull complete 
+Digest: sha256:15b79a6654811c8d992ebacdfbd5152fcf3d165e374e264076aa435214a947a3
+Status: Downloaded newer image for ubuntu:13.10</code></pre><p>下载完成后，我们可以直接使用这个镜像来运行容器。</p>
+</li>
+<li><h3 id="查找镜像"><a href="#查找镜像" class="headerlink" title="查找镜像"></a>查找镜像</h3><p>我们可以从 Docker Hub 网站来搜索镜像，Docker Hub 网址为： <strong><a href="https://hub.docker.com/" target="_blank" rel="noopener">https://hub.docker.com/</a></strong></p>
+<p>我们也可以使用 docker search 命令来搜索镜像。比如我们需要一个 httpd 的镜像来作为我们的 web 服务。我们可以通过 docker search 命令搜索 httpd 来寻找适合我们的镜像。</p>
+<pre><code>runoob@runoob:~$  docker search httpd</code></pre><p><img src="/2020/02/29/docker-ru-men-bi-ji/%E6%9F%A5%E6%89%BE%E9%95%9C%E5%83%8F.jpeg" alt="查找镜像"></p>
+<p><strong>NAME:</strong> 镜像仓库源的名称</p>
+<p><strong>DESCRIPTION:</strong> 镜像的描述</p>
+<p><strong>OFFICIAL:</strong> 是否 docker 官方发布</p>
+<p><strong>stars:</strong> 类似 Github 里面的 star，表示点赞、喜欢的意思。</p>
+<p><strong>AUTOMATED:</strong> 自动构建。</p>
+</li>
+<li><h3 id="拖取镜像"><a href="#拖取镜像" class="headerlink" title="拖取镜像"></a>拖取镜像</h3><p>我们决定使用上图中的 httpd 官方版本的镜像，使用命令 docker pull 来下载镜像。</p>
+<pre><code>runoob@runoob:~$ docker pull httpd
+Using default tag: latest
+latest: Pulling from library/httpd
+8b87079b7a06: Pulling fs layer 
+a3ed95caeb02: Download complete 
+0d62ec9c6a76: Download complete 
+a329d50397b9: Download complete 
+ea7c1f032b5c: Waiting 
+be44112b72c7: Waiting</code></pre><p>下载完成后，我们就可以使用这个镜像了。</p>
+<pre><code>runoob@runoob:~$ docker run httpd</code></pre></li>
+<li><h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><p>镜像删除使用 <strong>docker rmi</strong> 命令，比如我们删除 hello-world 镜像：</p>
+<pre><code>$ docker rmi hello-world</code></pre></li>
+<li><h3 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h3><p>当我们从 docker 镜像仓库中下载的镜像不能满足我们的需求时，我们可以通过以下两种方式对镜像进行更改。</p>
+<ul>
+<li>1、从已经创建的容器中更新镜像，并且提交这个镜像</li>
+<li>2、使用 Dockerfile 指令来创建一个新的镜像</li>
+</ul>
+<h4 id="更新镜像"><a href="#更新镜像" class="headerlink" title="更新镜像"></a>更新镜像</h4><p>更新镜像之前，我们需要使用镜像来创建一个容器。</p>
+<pre><code>runoob@runoob:~$ docker run -t -i ubuntu:15.10 /bin/bash
+root@e218edb10161:/# </code></pre><p>在运行的容器内使用 <strong>apt-get update</strong> 命令进行更新。</p>
+<p>在完成操作之后，输入 exit 命令来退出这个容器。</p>
+<p>此时 ID 为 e218edb10161 的容器，是按我们的需求更改的容器。我们可以通过命令 docker commit 来提交容器副本。</p>
+<pre><code>runoob@runoob:~$ docker commit -m=&quot;has update&quot; -a=&quot;runoob&quot; e218edb10161 runoob/ubuntu:v2
+sha256:70bf1840fd7c0d2d8ef0a42a817eb29f854c1af8f7c59fc03ac7bdee9545aff8</code></pre><p>各个参数说明：</p>
+<ul>
+<li><strong>-m:</strong> 提交的描述信息</li>
+<li><strong>-a:</strong> 指定镜像作者</li>
+<li><strong>e218edb10161：</strong>容器 ID</li>
+<li><strong>runoob/ubuntu:v2:</strong> 指定要创建的目标镜像名</li>
+</ul>
+<p>我们可以使用 <strong>docker images</strong> 命令来查看我们的新镜像 <strong>runoob/ubuntu:v2</strong>：</p>
+<pre><code>runoob@runoob:~$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+runoob/ubuntu       v2                  70bf1840fd7c        15 seconds ago      158.5 MB
+ubuntu              14.04               90d5884b1ee0        5 days ago          188 MB
+php                 5.6                 f40e9e0f10c8        9 days ago          444.8 MB
+nginx               latest              6f8d099c3adc        12 days ago         182.7 MB
+mysql               5.6                 f2e8d6c772c0        3 weeks ago         324.6 MB
+httpd               latest              02ef73cf1bc0        3 weeks ago         194.4 MB
+ubuntu              15.10               4e3b13c8a266        4 weeks ago         136.3 MB
+hello-world         latest              690ed74de00f        6 months ago        960 B
+training/webapp     latest              6fae60ef3446        12 months ago       348.8 MB</code></pre><p>使用我们的新镜像 <strong>runoob/ubuntu</strong> 来启动一个容器</p>
+<pre><code>runoob@runoob:~$ docker run -t -i runoob/ubuntu:v2 /bin/bash                            
+root@1a9fbdeb5da3:/#</code></pre><h4 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h4><p>我们使用命令 <strong>docker build</strong> ， 从零开始来创建一个新的镜像。为此，我们需要创建一个 Dockerfile 文件，其中包含一组指令来告诉 Docker 如何构建我们的镜像。</p>
+<pre><code>runoob@runoob:~$ cat Dockerfile 
+FROM    centos:6.7
+MAINTAINER      Fisher &quot;fisher@sudops.com&quot;
+
+RUN     /bin/echo &#39;root:123456&#39; |chpasswd
+RUN     useradd runoob
+RUN     /bin/echo &#39;runoob:123456&#39; |chpasswd
+RUN     /bin/echo -e &quot;LANG=\&quot;en_US.UTF-8\&quot;&quot; &gt;/etc/default/local
+EXPOSE  22
+EXPOSE  80
+CMD     /usr/sbin/sshd -D</code></pre><p>每一个指令都会在镜像上创建一个新的层，每一个指令的前缀都必须是大写的。</p>
+<p>第一条FROM，指定使用哪个镜像源</p>
+<p>RUN 指令告诉docker 在镜像内执行命令，安装了什么。。。</p>
+<p>然后，我们使用 Dockerfile 文件，通过 docker build 命令来构建一个镜像。</p>
+<pre><code>runoob@runoob:~$ docker build -t runoob/centos:6.7 .
+Sending build context to Docker daemon 17.92 kB
+Step 1 : FROM centos:6.7
+ ---&amp;gt; d95b5ca17cc3
+Step 2 : MAINTAINER Fisher &quot;fisher@sudops.com&quot;
+ ---&amp;gt; Using cache
+ ---&amp;gt; 0c92299c6f03
+Step 3 : RUN /bin/echo &#39;root:123456&#39; |chpasswd
+ ---&amp;gt; Using cache
+ ---&amp;gt; 0397ce2fbd0a
+Step 4 : RUN useradd runoob
+......</code></pre><p>参数说明：</p>
+<ul>
+<li><strong>-t</strong> ：指定要创建的目标镜像名</li>
+<li><strong>.</strong> ：Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径</li>
+</ul>
+<p>使用docker images 查看创建的镜像已经在列表中存在,镜像ID为860c279d2fec</p>
+<pre><code>runoob@runoob:~$ docker images 
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+runoob/centos       6.7                 860c279d2fec        About a minute ago   190.6 MB
+runoob/ubuntu       v2                  70bf1840fd7c        17 hours ago         158.5 MB
+ubuntu              14.04               90d5884b1ee0        6 days ago           188 MB
+php                 5.6                 f40e9e0f10c8        10 days ago          444.8 MB
+nginx               latest              6f8d099c3adc        12 days ago          182.7 MB
+mysql               5.6                 f2e8d6c772c0        3 weeks ago          324.6 MB
+httpd               latest              02ef73cf1bc0        3 weeks ago          194.4 MB
+ubuntu              15.10               4e3b13c8a266        5 weeks ago          136.3 MB
+hello-world         latest              690ed74de00f        6 months ago         960 B
+centos              6.7                 d95b5ca17cc3        6 months ago         190.6 MB
+training/webapp     latest              6fae60ef3446        12 months ago        348.8 MB</code></pre><p>我们可以使用新的镜像来创建容器</p>
+<pre><code>runoob@runoob:~$ docker run -t -i runoob/centos:6.7  /bin/bash
+[root@41c28d18b5fb /]# id runoob
+uid=500(runoob) gid=500(runoob) groups=500(runoob)</code></pre><p>从上面看到新镜像已经包含我们创建的用户 runoob。</p>
+<h4 id="设置镜像标签"><a href="#设置镜像标签" class="headerlink" title="设置镜像标签"></a>设置镜像标签</h4><p>我们可以使用 docker tag 命令，为镜像添加一个新的标签。</p>
+<pre><code>runoob@runoob:~$ docker tag 860c279d2fec runoob/centos:dev</code></pre><p>docker tag 镜像ID，这里是 860c279d2fec ,用户名称、镜像源名(repository name)和新的标签名(tag)。</p>
+<p>使用 docker images 命令可以看到，ID为860c279d2fec的镜像多一个标签。</p>
+<pre><code>runoob@runoob:~$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+runoob/centos       6.7                 860c279d2fec        5 hours ago         190.6 MB
+runoob/centos       dev                 860c279d2fec        5 hours ago         190.6 MB
+runoob/ubuntu       v2                  70bf1840fd7c        22 hours ago        158.5 MB
+ubuntu              14.04               90d5884b1ee0        6 days ago          188 MB
+php                 5.6                 f40e9e0f10c8        10 days ago         444.8 MB
+nginx               latest              6f8d099c3adc        13 days ago         182.7 MB
+mysql               5.6                 f2e8d6c772c0        3 weeks ago         324.6 MB
+httpd               latest              02ef73cf1bc0        3 weeks ago         194.4 MB
+ubuntu              15.10               4e3b13c8a266        5 weeks ago         136.3 MB
+hello-world         latest              690ed74de00f        6 months ago        960 B
+centos              6.7                 d95b5ca17cc3        6 months ago        190.6 MB
+training/webapp     latest              6fae60ef3446        12 months ago       348.8 MB</code></pre></li>
+</ul>
+
             </div>
             <hr/>
 
@@ -1527,7 +1820,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">424.4k</span>&nbsp;字
+                class="white-color">427.9k</span>&nbsp;字
             
             
             
