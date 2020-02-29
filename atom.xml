@@ -79,7 +79,7 @@
     <link href="https://fangpeng12.github.io/2020/02/02/jdk-yuan-ma-xiang-jie/"/>
     <id>https://fangpeng12.github.io/2020/02/02/jdk-yuan-ma-xiang-jie/</id>
     <published>2020-02-02T08:15:29.000Z</published>
-    <updated>2020-02-19T14:12:17.495Z</updated>
+    <updated>2020-02-29T07:32:01.414Z</updated>
     
     <summary type="html">
     
@@ -164,7 +164,7 @@
     <link href="https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/"/>
     <id>https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/</id>
     <published>2020-01-17T14:09:50.000Z</published>
-    <updated>2020-02-05T09:09:10.135Z</updated>
+    <updated>2020-02-29T07:33:58.500Z</updated>
     
     <summary type="html">
     
@@ -184,9 +184,9 @@
     
       <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
     
-      <category term="SpringBoot" scheme="https://fangpeng12.github.io/tags/SpringBoot/"/>
-    
       <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
+    
+      <category term="SpringCloud" scheme="https://fangpeng12.github.io/tags/SpringCloud/"/>
     
   </entry>
   
