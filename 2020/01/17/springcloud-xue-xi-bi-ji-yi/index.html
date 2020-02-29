@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    20.3k
+                    30.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    74 分
+                    112 分
                 </div>
                 
 				
@@ -1663,6 +1663,752 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-actuator
 配置文件类：spring-configuration-metadata.json</code></pre></li>
 </ol>
+<h2 id="7-微服务网关zuul开发实战"><a href="#7-微服务网关zuul开发实战" class="headerlink" title="7-微服务网关zuul开发实战"></a>7-微服务网关zuul开发实战</h2><h3 id="7-1-微服务网关介绍和使用场景"><a href="#7-1-微服务网关介绍和使用场景" class="headerlink" title="7.1-微服务网关介绍和使用场景"></a>7.1-微服务网关介绍和使用场景</h3><h4 id="7-1-1-什么是网关？"><a href="#7-1-1-什么是网关？" class="headerlink" title="7.1.1-什么是网关？"></a>7.1.1-什么是网关？</h4><p>API Gateway，是系统的唯一对外的入口，介于客户端和服务器端之间的中间层，处理非业务功能 提供路由请求、鉴权、监控、缓存、限流等功能。</p>
+<ul>
+<li><strong>统一接入：</strong><br>智能路由<br>AB测试、灰度测试<br>负载均衡、容灾处理<br>日志埋点（类似Nignx日志）</li>
+<li><strong>流量监控：</strong><br>限流处理<br>服务降级</li>
+<li><strong>安全防护：</strong><br>鉴权处理<br>监控<br>机器网络隔离</li>
+</ul>
+<h4 id="7-1-2-主流的网关"><a href="#7-1-2-主流的网关" class="headerlink" title="7.1.2-主流的网关"></a>7.1.2-主流的网关</h4><ul>
+<li><strong>zuul：</strong>是Netflix开源的微服务网关，和Eureka,Ribbon,Hystrix等组件配合使用，Zuul 2.0比1.0的性能提高很多。</li>
+<li><strong>kong:</strong> 由Mashape公司开源的，基于Nginx的API gateway。</li>
+<li><strong>nginx+lua：</strong>是一个高性能的HTTP和反向代理服务器,lua是脚本语言，让Nginx执行Lua脚本，并且高并发、非阻塞的处理各种请求</li>
+<li><strong>spring-cloud-gateway：</strong>是spring 出品的 基于spring 的网关项目，集成断路器，路径重写，性能比Zuul好，是Spring官方基于Spring 5.0，Spring Boot 2.0和Project Reactor等技术开发的网关，Spring Cloud Gateway旨在为微服务架构提供一种简单而有效的统一的API路由管理方式。Spring Cloud Gateway作为Spring Cloud生态系中的网关，目标是替代ZUUL，其不仅提供统一的路由方式，并且基于Filter链的方式提供了网关基本的功能，例如：安全，监控/埋点，和限流等。</li>
+</ul>
+<h4 id="7-1-3-微服务网关概述"><a href="#7-1-3-微服务网关概述" class="headerlink" title="7.1.3-微服务网关概述"></a>7.1.3-微服务网关概述</h4><p>不同的微服务一般会有不同的网络地址，而外部客户端可能需要调用多个服务的接口才能完成一个业务需求，如果让客户端直接与各个微服务通信，会有以下的问题：</p>
+<ul>
+<li>客户端会多次请求不同的微服务，增加了客户端的复杂性</li>
+<li>存在跨域请求，在一定场景下处理相对复杂</li>
+<li>认证复杂，每个服务都需要独立认证</li>
+<li>难以重构，随着项目的迭代，可能需要重新划分微服务。例如，可能将多个服务合并成一个或者将一个服务拆分成多个。如果客户端直接与微服务通信，那么重构将会很难实施</li>
+<li>某些微服务可能使用了防火墙 / 浏览器不友好的协议，直接访问会有一定的困难</li>
+</ul>
+<p>以上这些问题可以借助网关解决。</p>
+<p>网关是介于客户端和服务器端之间的中间层，所有的外部请求都会先经过 网关这一层。也就是说，API 的实现方面更多的考虑业务逻辑，而安全、性能、监控可以交由 网关来做，这样既提高业务灵活性又不缺安全性，典型的架构图如图所示：</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%BD%91%E5%85%B3.png" alt="微服务网关"></p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>安全 ，只有网关系统对外进行暴露，微服务可以隐藏在内网，通过防火墙保护。</li>
+<li>易于监控。可以在网关收集监控数据并将其推送到外部系统进行分析。</li>
+<li>易于认证。可以在网关上进行认证，然后再将请求转发到后端的微服务，而无须在每个微服务中进行认证。</li>
+<li>减少了客户端与各个微服务之间的交互次数</li>
+<li>易于统一鉴权。</li>
+</ul>
+<p>总结：微服务网关就是一个系统，通过暴露该微服务网关系统，方便我们进行相关的鉴权，安全控制，日志统一处理，易于监控的相关功能。</p>
+<h3 id="7-2-SpringCloud的网关组件zuul基本使用"><a href="#7-2-SpringCloud的网关组件zuul基本使用" class="headerlink" title="7.2-SpringCloud的网关组件zuul基本使用"></a>7.2-SpringCloud的网关组件zuul基本使用</h3><p>路由在微服务体系结构的一个组成部分。例如，<code>/</code>可以映射到您的Web应用程序，<code>/api/users</code>映射到用户服务，并将<code>/api/shop</code>映射到商店服务。<a href="https://github.com/Netflix/zuul" target="_blank" rel="noopener">Zuul</a>是Netflix的基于JVM的路由器和服务器端负载均衡器。</p>
+<p><a href="http://www.slideshare.net/MikeyCohen1/edge-architecture-ieee-international-conference-on-cloud-engineering-32240146/27" target="_blank" rel="noopener">Netflix使用Zuul</a>进行以下操作：</p>
+<ul>
+<li>认证</li>
+<li>洞察</li>
+<li>压力测试</li>
+<li>金丝雀测试</li>
+<li>动态路由</li>
+<li>服务迁移</li>
+<li>负载脱落</li>
+<li>安全</li>
+<li>静态响应处理</li>
+<li>主动/主动流量管理</li>
+</ul>
+<p>Zuul的规则引擎允许基本上写任何JVM语言编写规则和过滤器，内置Java和Groovy。</p>
+<p>Zuul是NetFlix开源的微服务网关，它可以和Eureka、Ribbon、Hystrix等组件配合使用。Zuul的核心是一些列的过滤器，这些过滤器可以完成以下功能。</p>
+<blockquote>
+<ul>
+<li>身份认证与安全：识别每个资源的验证要求，并拒绝那些与要求不符合的请求。</li>
+<li>审查与监控：在边缘位置追踪有意义的数据和统计结果，从而带来精确的生产视图。</li>
+<li>动态路由：动态的将请求路由到不同的后端集群。</li>
+<li>压力测试：逐渐增加指向集群的流量，以了解性能。</li>
+<li>负载分配：为每一种负载类型分配对应容量，并弃用超出限定值的请求。</li>
+<li>静态响应处理：在边缘位置直接建立部分响应，从而避免其转发到内部集群。</li>
+<li>多区域弹性：跨越AWS Region进行请求路由，旨在实现ELB（Elastic Load Balancing）使用的多样化，以及让系统的便越更贴近系统的使用者。</li>
+</ul>
+</blockquote>
+<p>Spring Cloud对Zuul进行了整合与增强。目前，Zuul使用的默认HTTP客户端是Apache HTTP Client，也可以使用使用其他的。</p>
+<h4 id="7-2-1-添加依赖"><a href="#7-2-1-添加依赖" class="headerlink" title="7.2.1-添加依赖"></a>7.2.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-zuul<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="7-2-2-在启动类上加注解-EnableZuulProxy"><a href="#7-2-2-在启动类上加注解-EnableZuulProxy" class="headerlink" title="7.2.2-在启动类上加注解@EnableZuulProxy"></a>7.2.2-在启动类上加注解<code>@EnableZuulProxy</code></h4><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token annotation punctuation">@EnableZuulProxy</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="7-2-3-添加配置（application-yml）"><a href="#7-2-3-添加配置（application-yml）" class="headerlink" title="7.2.3-添加配置（application.yml）"></a>7.2.3-添加配置（application.yml）</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8083</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> zuul
+
+<span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+    <span class="token key atrule">teacherZuul</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#这个是随意起的，表示路由名称</span>
+      <span class="token key atrule">path</span><span class="token punctuation">:</span> /**  <span class="token comment" spellcheck="true">#配置请求url的请求规则</span>
+      <span class="token comment" spellcheck="true">#url: http://127.0.0.1:8081 #真正的微服务地址</span>
+      <span class="token key atrule">service-id</span><span class="token punctuation">:</span> teacher
+
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">register-with-eureka</span><span class="token punctuation">:</span> <span class="token boolean important">true </span><span class="token comment" spellcheck="true">#是否将自己注册到eureka,默认为true</span>
+    <span class="token key atrule">fetch-registry</span><span class="token punctuation">:</span> <span class="token boolean important">true </span><span class="token comment" spellcheck="true">#是否从eureka中获得注册信息，默认为true</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+       <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//root<span class="token punctuation">:</span>123@127.0.0.1<span class="token punctuation">:</span>1234/eureka/
+  <span class="token key atrule">instance</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefer-ip-address</span><span class="token punctuation">:</span> <span class="token boolean important">true </span><span class="token comment" spellcheck="true">#将自己的ip注册到eureka服务中</span>
+    <span class="token key atrule">ip-address</span><span class="token punctuation">:</span> 127.0.0.1</code></pre>
+<p><strong>默认访问规则：</strong><code>http://gateway:port/service-id/**</code></p>
+<p><strong>自定义路由转发：</strong></p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+         <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+             <span class="token key atrule">order-service</span><span class="token punctuation">:</span> /apigateway/**</code></pre>
+<p><strong>环境隔离配置：</strong><br>需求 ：不想让默认的服务对外暴露接口</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span> 
+            <span class="token key atrule">ignored-patterns</span><span class="token punctuation">:</span>
+                <span class="token punctuation">-</span> /*<span class="token punctuation">-</span>service/api/v1/order/save</code></pre>
+<h4 id="7-2-4-使用Zuul"><a href="#7-2-4-使用Zuul" class="headerlink" title="7.2.4-使用Zuul"></a>7.2.4-使用Zuul</h4><h5 id="1-拦截请求"><a href="#1-拦截请求" class="headerlink" title="1. 拦截请求"></a>1. 拦截请求</h5><p>在服务网关中定义过滤器只需要继承<code>ZuulFilter</code>抽象类实现其定义的四个抽象函数就可对请求进行拦截与过滤。</p>
+<p>比如下面的例子，定义了一个Zuul过滤器，实现了在请求被路由之前检查请求中是否有<code>accessToken</code>参数，若有就进行路由，若没有就拒绝访问，返回<code>401 Unauthorized</code>错误。</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AccessFilter</span> <span class="token keyword">extends</span> <span class="token class-name">ZuulFilter</span>  <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">static</span> Logger log <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span>AccessFilter<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//过滤器类型，前置过滤器</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> String <span class="token function">filterType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">"pre"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+      <span class="token comment" spellcheck="true">//过滤器顺序，越小越先执行</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">filterOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+      <span class="token comment" spellcheck="true">//过滤器是否生效</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">shouldFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+      <span class="token comment" spellcheck="true">//业务逻辑</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Object <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        RequestContext ctx <span class="token operator">=</span> RequestContext<span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        HttpServletRequest request <span class="token operator">=</span> ctx<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>String<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">"%s request to %s"</span><span class="token punctuation">,</span> request<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> request<span class="token punctuation">.</span><span class="token function">getRequestURL</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        Object accessToken <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"accessToken"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>accessToken <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span><span class="token string">"access token is empty"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ctx<span class="token punctuation">.</span><span class="token function">setSendZuulResponse</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ctx<span class="token punctuation">.</span><span class="token function">setResponseStatusCode</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"access token ok"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>自定义过滤器的实现，需要继承<code>ZuulFilter</code>，需要重写实现下面四个方法：</p>
+<ul>
+<li><p><code>filterType</code>：返回一个字符串代表过滤器的类型，在zuul中定义了四种不同生命周期的过滤器类型，具体如下：</p>
+</li>
+<li><p><code>pre</code>：可以在请求被路由之前调用</p>
+</li>
+<li><p><code>routing</code>：在路由请求时候被调用</p>
+</li>
+<li><p><code>post</code>：在routing和error过滤器之后被调用</p>
+</li>
+<li><p><code>error</code>：处理请求时发生错误时被调用</p>
+</li>
+<li><p><code>filterOrder</code>：通过int值来定义过滤器的执行顺序</p>
+</li>
+<li><p><code>shouldFilter</code>：返回一个boolean类型来判断该过滤器是否要执行，所以通过此函数可实现过滤器的开关。在上例中，我们直接返回true，所以该过滤器总是生效。</p>
+</li>
+<li><p><code>run</code>：过滤器的具体逻辑。需要注意，这里我们通过<code>ctx.setSendZuulResponse(false)</code>令zuul过滤该请求，不对其进行路由，然后通过<code>ctx.setResponseStatusCode(401)</code>设置了其返回的错误码，当然我们也可以进一步优化我们的返回，比如，通过<code>ctx.setResponseBody(body)</code>对返回body内容进行编辑等。</p>
+</li>
+</ul>
+<p>在实现了自定义过滤器之后，还需要实例化该过滤器才能生效，我们只需要在应用主类中增加如下内容：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@EnableZuulProxy</span>
+<span class="token annotation punctuation">@SpringCloudApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">new</span> <span class="token class-name">SpringApplicationBuilder</span><span class="token punctuation">(</span>Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">web</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> AccessFilter <span class="token function">accessFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">AccessFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<h5 id="2-自定义Zuul过滤器实现登录鉴权实战"><a href="#2-自定义Zuul过滤器实现登录鉴权实战" class="headerlink" title="2. 自定义Zuul过滤器实现登录鉴权实战"></a>2. 自定义Zuul过滤器实现登录鉴权实战</h5><ul>
+<li><strong>登录过滤器</strong></li>
+</ul>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">package</span> net<span class="token punctuation">.</span>xdclass<span class="token punctuation">.</span>apigateway<span class="token punctuation">.</span>filter<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>ZuulFilter<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>context<span class="token punctuation">.</span>RequestContext<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>exception<span class="token punctuation">.</span>ZuulException<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>commons<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>StringUtils<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpStatus<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span>Component<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServletRequest<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token keyword">static</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>cloud<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>filters<span class="token punctuation">.</span>support<span class="token punctuation">.</span>FilterConstants<span class="token punctuation">.</span>PRE_TYPE<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ * 登录过滤器
+ */</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginFilter</span>  <span class="token keyword">extends</span> <span class="token class-name">ZuulFilter</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 过滤器类型，前置过滤器
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> String <span class="token function">filterType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> PRE_TYPE<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 过滤器顺序，越小越先执行
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">filterOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        <span class="token keyword">return</span> <span class="token number">4</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token comment" spellcheck="true">/**
+     * 过滤器是否生效
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">shouldFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        RequestContext requestContext <span class="token operator">=</span> RequestContext<span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        HttpServletRequest  request <span class="token operator">=</span> requestContext<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+       <span class="token comment" spellcheck="true">//System.out.println(request.getRequestURI()); ///apigateway/product/api/v1/product/list</span>
+        <span class="token comment" spellcheck="true">//System.out.println(request.getRequestURL()); //http://localhost:9000/apigateway/product/api/v1/product/list</span>
+
+        <span class="token comment" spellcheck="true">//ACL</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"/apigateway/order/api/v1/order/save"</span><span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"/apigateway/order/api/v1/order/list"</span><span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"/apigateway/order/api/v1/order/find"</span><span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 业务逻辑
+     * @return
+     * @throws ZuulException
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Object <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ZuulException <span class="token punctuation">{</span>
+
+        <span class="token comment" spellcheck="true">//JWT</span>
+        RequestContext requestContext <span class="token operator">=</span>  RequestContext<span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        HttpServletRequest  request <span class="token operator">=</span> requestContext<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//token对象</span>
+        String token <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span><span class="token string">"token"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span><span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            token  <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"token"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//登录校验逻辑  根据公司情况自定义 JWT</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                requestContext<span class="token punctuation">.</span><span class="token function">setSendZuulResponse</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                requestContext<span class="token punctuation">.</span><span class="token function">setResponseStatusCode</span><span class="token punctuation">(</span>HttpStatus<span class="token punctuation">.</span>UNAUTHORIZED<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<ul>
+<li><strong>订单限流</strong></li>
+</ul>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">package</span> net<span class="token punctuation">.</span>xdclass<span class="token punctuation">.</span>apigateway<span class="token punctuation">.</span>filter<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>google<span class="token punctuation">.</span>common<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>RateLimiter<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>ZuulFilter<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>context<span class="token punctuation">.</span>RequestContext<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>exception<span class="token punctuation">.</span>ZuulException<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpStatus<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span>Component<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServletRequest<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token keyword">static</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>cloud<span class="token punctuation">.</span>netflix<span class="token punctuation">.</span>zuul<span class="token punctuation">.</span>filters<span class="token punctuation">.</span>support<span class="token punctuation">.</span>FilterConstants<span class="token punctuation">.</span>PRE_TYPE<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+ * 订单限流
+ */</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OrderRateLimiterFilter</span> <span class="token keyword">extends</span> <span class="token class-name">ZuulFilter</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//每秒产生1000个令牌</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> RateLimiter RATE_LIMITER <span class="token operator">=</span> RateLimiter<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> String <span class="token function">filterType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> PRE_TYPE<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">filterOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">4</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">shouldFilter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+
+        RequestContext requestContext <span class="token operator">=</span> RequestContext<span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        HttpServletRequest request <span class="token operator">=</span> requestContext<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//只对订单接口限流</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">"/apigateway/order/api/v1/order/save"</span><span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Object <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ZuulException <span class="token punctuation">{</span>
+        RequestContext requestContext <span class="token operator">=</span> RequestContext<span class="token punctuation">.</span><span class="token function">getCurrentContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>RATE_LIMITER<span class="token punctuation">.</span><span class="token function">tryAcquire</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            requestContext<span class="token punctuation">.</span><span class="token function">setSendZuulResponse</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            requestContext<span class="token punctuation">.</span><span class="token function">setResponseStatusCode</span><span class="token punctuation">(</span>HttpStatus<span class="token punctuation">.</span>TOO_MANY_REQUESTS<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p><code>application.yml</code></p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">9000</span>
+
+<span class="token comment" spellcheck="true">#服务的名称</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>gateway
+
+<span class="token comment" spellcheck="true">#指定注册中心地址</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">serviceUrl</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8761/eureka/
+
+<span class="token comment" spellcheck="true">#/order-service/api/v1/order/save?user_id=2&amp;product_id=1</span>
+<span class="token comment" spellcheck="true">#自定义路由映射</span>
+<span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+    <span class="token key atrule">order-service</span><span class="token punctuation">:</span> /apigateway/order/**
+    <span class="token key atrule">product-service</span><span class="token punctuation">:</span> /apigateway/product/**
+  <span class="token comment" spellcheck="true">#统一入口为上面的配置，其他入口忽略</span>
+  <span class="token key atrule">ignored-patterns</span><span class="token punctuation">:</span> /*<span class="token punctuation">-</span>service/**
+  <span class="token comment" spellcheck="true">#处理http请求头为空的问题（Zull会过滤掉cookie等敏感信息）</span>
+  sensitive<span class="token punctuation">-</span>headers<span class="token punctuation">:</span></code></pre>
+<h2 id="8-分布式链路追踪系统Sleuth和ZipKin实战"><a href="#8-分布式链路追踪系统Sleuth和ZipKin实战" class="headerlink" title="8-分布式链路追踪系统Sleuth和ZipKin实战"></a>8-分布式链路追踪系统Sleuth和ZipKin实战</h2><h3 id="8-1-微服务下的链路追踪讲解和重要性"><a href="#8-1-微服务下的链路追踪讲解和重要性" class="headerlink" title="8.1-微服务下的链路追踪讲解和重要性"></a>8.1-微服务下的链路追踪讲解和重要性</h3><h4 id="8-1-1-微服务下的问题"><a href="#8-1-1-微服务下的问题" class="headerlink" title="8.1.1-微服务下的问题"></a>8.1.1-微服务下的问题</h4><p>在大型系统的微服务化构建中，一个系统会被拆分成许多模块。这些模块负责不同的功能，组合成系<br>统，最终可以提供丰富的功能。在这种架构中，一次请求往往需要涉及到多个服务。互联网应用构建在<br>不同的软件模块集上，这些软件模块，有可能是由不同的团队开发、可能使用不同的编程语言来实现、<br>有可能布在了几千台服务器，横跨多个不同的数据中心，也就意味着这种架构形式也会存在一些问题：</p>
+<ul>
+<li>如何快速发现问题？</li>
+<li>如何判断故障影响范围？</li>
+<li>如何梳理服务依赖以及依赖的合理性？</li>
+<li>如何分析链路性能问题以及实时容量规划？</li>
+</ul>
+<p>分布式链路追踪（Distributed Tracing），就是将一次分布式请求还原成调用链路，进行日志记录，性<br>能监控并将 一次分布式请求的调用情况集中展示。比如各个服务节点上的耗时、请求具体到达哪台机器<br>上、每个服务节点的请求状态等等。</p>
+<p>分布式环境下，尤其是微服务架构应用广泛，各个服务按照不同的维度进行拆分，一次请求请求往往需要涉及到多个服务。这些服务之间的调用可能非常复杂。因此，全链路调用的跟踪就变得非常重要，我们需要一些可以帮助理解系统行为、用于分析性能问题的工具，以便发生故障的时候，能够快速定位和解决。</p>
+<p>目前业界比较流行的链路追踪系统如：Twitter的Zipkin，Sleuth, 阿里的鹰眼，美团的Mtrace，大众点评的<br>cat等，大部分都是基于google发表的 Dapper。Dapper阐述了分布式系统，特别是微服务架构中链路<br>追踪的概念、数据表示、埋点、传递、收集、存储与展示等技术细节。</p>
+<h4 id="8-1-2-什么是分布式链路追踪？"><a href="#8-1-2-什么是分布式链路追踪？" class="headerlink" title="8.1.2-什么是分布式链路追踪？"></a>8.1.2-什么是分布式链路追踪？</h4><p>在软件工程中，Tracing 指使用特定的日志记录程序的执行信息，与之相近的还有两个概念，它们分别是 Logging 和 Metrics。</p>
+<ul>
+<li>Logging：用于记录离散的事件，包含程序执行到某一点或某一阶段的详细信息。</li>
+<li>Metrics：可聚合的数据，且通常是固定类型的时序数据，包括 Counter、Gauge、Histogram 等。</li>
+<li>Tracing：记录单个请求的处理流程，其中包括服务调用和处理时长等信息。</li>
+</ul>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/logging-metrics-tracing.png" alt="logging-metrics-tracing"></p>
+<p>同时这三种定义相交的情况也比较常见。</p>
+<ul>
+<li>Logging &amp; Metrics：可聚合的事件。例如分析某对象存储的 Nginx 日志，统计某段时间内 GET、PUT、DELETE、OPTIONS 操作的总数。</li>
+<li>Metrics &amp; Tracing：单个请求中的可计量数据。例如 SQL 执行总时长、gRPC 调用总次数。</li>
+<li>Tracing &amp; Logging：请求阶段的标签数据。例如在 Tracing 的信息中标记详细的错误原因。</li>
+</ul>
+<p>针对每种分析需求，我们都有非常强大的集中式分析工具。</p>
+<ul>
+<li>Logging：ELK，近几年势头最猛的日志分析服务，无须多言。</li>
+<li>Metrics：Prometheus，第二个加入 CNCF 的开源项目，非常好用。</li>
+<li>Tracing：OpenTracing 和 Jaeger，Jaeger 是 Uber 开源的一个兼容。OpenTracing 标准的分布式追踪服务。目前 Jaeger 也加入了 CNCF。</li>
+</ul>
+<h4 id="8-1-3-为什么需要分布式链路追踪"><a href="#8-1-3-为什么需要分布式链路追踪" class="headerlink" title="8.1.3-为什么需要分布式链路追踪"></a>8.1.3-为什么需要分布式链路追踪</h4><p>微服务极大地改变了软件的开发和交付模式，单体应用被拆分为多个微服务，单个服务的复杂度大幅降低，库之间的依赖也转变为服务之间的依赖。由此带来的问题是部署的粒度变得越来越细，众多服务给运维带来巨大压力，不过好在我们有 Kubernetes，可以解决大部分运维方面的难题。</p>
+<p>随着服务数量的增多和内部调用链的复杂化，仅凭借日志和性能监控很难做到“See the Whole Picture”，在进行问题排查或是性能分析的时候，无异于盲人摸象。分布式追踪能够帮助开发者直观分析请求链路，快速定位性能瓶颈，逐渐优化服务间依赖，也有助于开发者从更宏观的角度更好地理解整个分布式系统。</p>
+<h3 id="8-2-Sleuth"><a href="#8-2-Sleuth" class="headerlink" title="8.2-Sleuth"></a>8.2-Sleuth</h3><h4 id="8-2-1-什么是Sleuth？"><a href="#8-2-1-什么是Sleuth？" class="headerlink" title="8.2.1-什么是Sleuth？"></a>8.2.1-什么是Sleuth？</h4><p>Sleuth是Spring Cloud的组件之一，它为Spring Cloud实现了一种分布式追踪解决方案，兼容Zipkin，HTrace和其他基于日志的追踪系统，例如 ELK（Elasticsearch 、Logstash、 Kibana）。</p>
+<p>Spring Cloud Sleuth 为Spring Cloud提供了分布式根据的解决方案。它大量借用了Google Dapper的<br>设计。先来了解一下Sleuth中的术语和相关概念。</p>
+<p>Spring Cloud Sleuth采用的是Google的开源项目Dapper的专业术语。</p>
+<ul>
+<li><strong>Span</strong> ：基本工作单元，例如，在一个新建的span中发送一个RPC等同于发送一个回应请求给<br>RPC，span通过一个64位ID唯一标识，trace以另一个64位ID表示，span还有其他数据信息，比<br>如摘要、时间戳事件、关键值注释(tags)、span的ID、以及进度ID(通常是IP地址)<br>span在不断的启动和停止，同时记录了时间信息，当你创建了一个span，你必须在未来的某个时刻停止它。</li>
+<li><strong>Trace</strong> ：一系列spans组成的一个树状结构，例如，如果你正在跑一个分布式大数据工程，你可能<br>需要创建一个trace。</li>
+<li><strong>Annotation</strong> ：用来及时记录一个事件的存在，一些核心annotations用来定义一个请求的开始和结束</li>
+<li><strong>cs</strong> - Client Sent - 客户端发起一个请求，这个annotion描述了这个span的开始</li>
+<li><strong>sr</strong> - Server Received - 服务端获得请求并准备开始处理它，如果将其sr减去cs时间戳便可得到<br>网络延迟</li>
+<li><strong>ss</strong> - Server Sent - 注解表明请求处理的完成(当请求返回客户端)，如果ss减去sr时间戳便可得<br>到服务端需要的处理请求时间</li>
+<li><strong>cr</strong> - Client Received - 表明span的结束，客户端成功接收到服务端的回复，如果cr减去cs时间<br>戳便可得到客户端从服务端获取回复的所有所需时间。</li>
+</ul>
+<p><strong>例如：</strong>[order-service,96f95a0dd81fe3ab,852ef4cfcdecabf3,false]</p>
+<ol>
+<li>第一个值：spring.application.name的值；</li>
+<li>第二个值：96f95a0dd81fe3ab ，sleuth生成的一个ID，叫Trace ID，用来标识一条请求链路，一条请求链路中包含一个Trace ID，多个Span ID；</li>
+<li>第三个值：852ef4cfcdecabf3、spanid 基本的工作单元，获取元数据，如发送一个http；</li>
+<li>第四个值：false，是否要将该信息输出到zipkin服务中来收集和展示。</li>
+</ol>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Sleuth.png" alt="Sleuth"></p>
+<h4 id="8-2-2-Sleuth实战"><a href="#8-2-2-Sleuth实战" class="headerlink" title="8.2.2-Sleuth实战"></a>8.2.2-Sleuth实战</h4><h5 id="1-添加依赖"><a href="#1-添加依赖" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h5><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-sleuth<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h5 id="2-修改配置文件"><a href="#2-修改配置文件" class="headerlink" title="2. 修改配置文件"></a>2. 修改配置文件</h5><p>修改application.yml添加日志级别</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
+  <span class="token key atrule">level</span><span class="token punctuation">:</span>
+    <span class="token key atrule">root</span><span class="token punctuation">:</span> info
+    <span class="token key atrule">org.springframework.web.servlet.DispatcherServlet</span><span class="token punctuation">:</span> DEBUG
+    <span class="token key atrule">org.springframework.cloud.sleuth</span><span class="token punctuation">:</span> DEBUG</code></pre>
+<h5 id="3-查看日志"><a href="#3-查看日志" class="headerlink" title="3. 查看日志"></a>3. 查看日志</h5><ul>
+<li><p>网关服务日志</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%97%A5%E5%BF%97.png" alt="网关服务日志"></p>
+</li>
+<li><p>订单服务日志</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E8%AE%A2%E5%8D%95%E6%9C%8D%E5%8A%A1%E6%97%A5%E5%BF%97.png" alt="订单服务日志"></p>
+</li>
+<li><p>商品服务日志</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1%E6%97%A5%E5%BF%97.png" alt="商品服务日志"></p>
+</li>
+</ul>
+<h3 id="8-3-ZipKin"><a href="#8-3-ZipKin" class="headerlink" title="8.3-ZipKin"></a>8.3-ZipKin</h3><h4 id="8-3-1-什么是ZipKin？"><a href="#8-3-1-什么是ZipKin？" class="headerlink" title="8.3.1-什么是ZipKin？"></a>8.3.1-什么是ZipKin？</h4><p>Zipkin是一款开源的分布式实时数据追踪系统（Distributed Tracking System），基于 Google Dapper的论文设计而来，由 Twitter 公司开发贡献。其主要功能是聚集来自各个异构系统的实时监控数据。分布式跟踪系统还有其他比较成熟的实现，例如：Naver的Pinpoint、Apache的HTrace、阿里的鹰眼Tracing、京东的Hydra、新浪的Watchman，美团点评的CAT，skywalking等。</p>
+<p>Zipkin 是一个开放源代码分布式的跟踪系统，每个服务向zipkin报告计时数据，zipkin会根据调用关系通过Zipkin UI生成依赖关系图。</p>
+<p>Zipkin提供了可插拔数据存储方式：In-Memory、MySql、Cassandra以及Elasticsearch。为了方便在开发环境我直接采用了In-Memory方式进行存储，生产数据量大的情况则推荐使用Elasticsearch。</p>
+<h4 id="8-3-2-为什么使用ZipKin？"><a href="#8-3-2-为什么使用ZipKin？" class="headerlink" title="8.3.2-为什么使用ZipKin？"></a>8.3.2-为什么使用ZipKin？</h4><p>随着业务越来越复杂，系统也随之进行各种拆分，特别是随着微服务架构和容器技术的兴起，看似简单的一个应用，后台可能有几十个甚至几百个服务在支撑；一个前端的请求可能需要多次的服务调用最后才能完成；当请求变慢或者不可用时，我们无法得知是哪个后台服务引起的，这时就需要解决如何<strong>快速定位服务故障点</strong>，Zipkin分布式跟踪系统就能很好的解决这样的问题。</p>
+<h4 id="8-3-3-ZipKin架构？"><a href="#8-3-3-ZipKin架构？" class="headerlink" title="8.3.3-ZipKin架构？"></a>8.3.3-ZipKin架构？</h4><p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/ZipKin%E6%9E%B6%E6%9E%84.png" alt="ZipKin架构"></p>
+<p>如图所示，Zipkin 主要由四部分构成：收集器、数据存储、查询以及 Web 界面。Zipkin 的收集器负责将各系统报告过来的追踪数据进行接收；而数据存储默认使用 Cassandra，也可以替换为 MySQL；查询服务用来向其他服务提供数据查询的能力，而 Web 服务是官方默认提供的一个图形用户界面。</p>
+<p>而各个异构的系统服务向 Zipkin 报告数据的架构如下图。</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Zipkin%E6%8A%A5%E5%91%8A%E6%95%B0%E6%8D%AE%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt="Zipkin报告数据的架构"></p>
+<h4 id="8-3-4-ZipKin的客户端Brave"><a href="#8-3-4-ZipKin的客户端Brave" class="headerlink" title="8.3.4-ZipKin的客户端Brave"></a>8.3.4-ZipKin的客户端Brave</h4><p>Brave 是用来装备 Java 程序的类库，提供了面向 Standard Servlet、Spring MVC、Http Client、JAX RS、Jersey、Resteasy 和 MySQL 等接口的装备能力，可以通过编写简单的配置和代码，让基于这些框架构建的应用可以向 Zipkin 报告数据。同时 Brave 也提供了非常简单且标准化的接口，在以上封装无法满足要求的时候可以方便扩展与定制。</p>
+<p>如下图是Brave的结构图。Brave利用reporter向zipkin的Collector发送trace信息。</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/ZipKin%E5%AE%A2%E6%88%B7%E7%AB%AF.png" alt="ZipKin客户端"></p>
+<h4 id="8-3-5-启动ZipKin"><a href="#8-3-5-启动ZipKin" class="headerlink" title="8.3.5-启动ZipKin"></a>8.3.5-启动ZipKin</h4><ul>
+<li><p>Docker</p>
+<pre><code>docker run -d -p 9411:9411 openzipkin/zipkin</code></pre></li>
+<li><p>Java</p>
+<pre><code>curl -sSL https://zipkin.io/quickstart.sh | bash -s
+java -jar zipkin.jar</code></pre></li>
+<li><p>源代码运行</p>
+<pre><code># get the latest source
+git clone https://github.com/openzipkin/zipkin
+cd zipkin
+# Build the server and also make its dependencies
+./mvnw -DskipTests --also-make -pl zipkin-server clean install
+# Run the server
+java -jar ./zipkin-server/target/zipkin-server-*exec.jar</code></pre></li>
+</ul>
+<h3 id="8-4-Sleuth-ZipKin实战"><a href="#8-4-Sleuth-ZipKin实战" class="headerlink" title="8.4-Sleuth+ZipKin实战"></a>8.4-Sleuth+ZipKin实战</h3><blockquote>
+<p>sleuth收集跟踪信息通过http请求发送给zipkin server，zipkinserver进行跟踪信息的存储以及提供Rest API即可，Zipkin UI调用其API接口进行数据展示默认存储是内存，可也用mysql、或者elasticsearch等存储</p>
+</blockquote>
+<h4 id="8-4-1-添加依赖"><a href="#8-4-1-添加依赖" class="headerlink" title="8.4.1-添加依赖"></a>8.4.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--包含Sleuth和ZipKin的依赖--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-zipkin<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="8-4-2-添加配置"><a href="#8-4-2-添加配置" class="headerlink" title="8.4.2-添加配置"></a>8.4.2-添加配置</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">zipkin</span><span class="token punctuation">:</span>
+    <span class="token key atrule">base-url</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span><span class="token number">9411</span>
+  <span class="token key atrule">sleuth</span><span class="token punctuation">:</span>
+    <span class="token key atrule">sampler</span><span class="token punctuation">:</span>
+      <span class="token key atrule">percentage</span><span class="token punctuation">:</span> <span class="token number">1.0</span></code></pre>
+<p>这里的<code>base-url</code>是zipkin服务端的地址，<code>percentage</code>是采样比例，设置为1.0时代表全部强求都需要采样。Sleuth默认采样算法的实现是Reservoir sampling，具体的实现类是<code>PercentageBasedSampler</code>，默认的采样比例为: 0.1(即10%)。</p>
+<h4 id="8-4-3-创建服务"><a href="#8-4-3-创建服务" class="headerlink" title="8.4.3-创建服务"></a>8.4.3-创建服务</h4><p>创建order-service和product-service两个服务，并在order-service中通过Feign对product-service进行远程调用。</p>
+<h5 id="1-product-service"><a href="#1-product-service" class="headerlink" title="1. product-service"></a>1. product-service</h5><p> 在product-service的controller中提供一个商品服务：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/api/v1/product"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProductController</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> Logger logger <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 商品服务
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/service"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">productService</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"Product Service Is Called..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"Product Service Is Called..."</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="2-order-service"><a href="#2-order-service" class="headerlink" title="2. order-service"></a>2. order-service</h5><p>由于需要在 order-service 中调用product-service，先创建一个ProductClient：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@FeignClient</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"product-service"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">ProductClient</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/api/v1/product/service"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">productService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>我们直接在order-service的controller中通过ProductClient对product-service进行调用：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/api/v1/order"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OrderController</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> Logger logger <span class="token operator">=</span> LoggerFactory<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> ProductClient productClient<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/service"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">orderService</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"Order Service Is Called..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String ret <span class="token operator">=</span> productClient<span class="token punctuation">.</span><span class="token function">productService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>ret<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"Order Service Is Called..."</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="8-4-4-启动并测试"><a href="#8-4-4-启动并测试" class="headerlink" title="8.4.4-启动并测试"></a>8.4.4-启动并测试</h4><p>按照以下顺序启动应用进行测试：</p>
+<pre><code>==&gt;启动Eureka注册中心，端口号 8761
+
+==&gt;分别通过8771和8781两个端口启动product-service和order-service两个服务</code></pre><p>启动完成之后，Eureka注册中心中注册的服务列表如下：</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Eureka%E6%B3%A8%E5%86%8C%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%88%97%E8%A1%A8.png" alt="Eureka注册的服务列表"></p>
+<p>在浏览器中输入以下地址: <a href="http://localhost:8781/api/v1/order/service，后台打印如下日志：" target="_blank" rel="noopener">http://localhost:8781/api/v1/order/service，后台打印如下日志：</a></p>
+<pre><code>2019-02-27 13:49:17.439  INFO [order-service,895caa4daa30bb0a,895caa4daa30bb0a,true] 2812 --- [nio-8781-exec-2] c.pengjunlee.controller.OrderController  : Order Service Is Called...
+2019-02-27 13:49:17.465  INFO [order-service,895caa4daa30bb0a,895caa4daa30bb0a,true] 2812 --- [nio-8781-exec-2] c.pengjunlee.controller.OrderController  : Product Service Is Called...</code></pre><p>在product-service后台打印如下日志： </p>
+<pre><code>2019-02-27 13:49:17.448  INFO [product-service,895caa4daa30bb0a,9cd122253ea82104,true] 20736 --- [nio-8771-exec-8] c.p.controller.ProductController         : Product Service Is Called...</code></pre><p>正如上面 product-service 和 order-service 中打印的日志所示，Sleuth将Trace Id和Span Id添加到Slf4J MDC（Mapped Diagnostic Context）并在日志中进行了打印，这样，你就能够从日志聚合器中提取任何一个给定的Trace 或者Span 的所有日志了。</p>
+<p>接下来，重点解释一下日志中的 [appname,traceId,spanId,exportable] 各部分所代表的含义：</p>
+<ul>
+<li><p>appname：记录日志的应用的名称，即spring.application.name的值；</p>
+</li>
+<li><p>traceId：Sleuth为一次请求链路生成的唯一ID，一个Trace中可以包含多个Span；</p>
+</li>
+<li><p>spanId：请求链路基本的工作单元，代表发生一次特定的操作，例如：发送一个Http请求；</p>
+</li>
+<li><p>exportable：是否需要将日志导出到 Zipkin；</p>
+</li>
+</ul>
+<p>Sleuth提供了对常见分布式链路追踪数据模型的抽象：Trace、Span、Annotation和键值对Annotation。Spring-Cloud-Sleuth虽然基于htrace，但与Zipkin（dapper）也兼容。</p>
+<p>Sleuth记录时间信息以帮助进行延迟分析。通过使用sleuth，您可以查明应用程序中延迟的原因。</p>
+<p>当spring-cloud-sleuth-zipkin包含在classpath中时，应用程序将生成并收集与zipkin兼容的追踪记录。默认情况下，会通过HTTP将它们发送到本地主机（端口9411）上的Zipkin服务器。您可以通过设置spring.zipkin.baseurl来配置服务的地址。</p>
+<p>如果你依赖的是spring-rabbit，那么应用程序会将追踪记录发送到Rabbit MQ代理，而不是HTTP。</p>
+<p>如果你依赖的是spring-kafka，并设置了spring.zipkin.sender.type:kafka，那么应用程序会将追踪记录发送到Kafka代理而不是HTTP。</p>
+<p><strong>注意</strong>：如果你使用的是Zipkin，请通过设置spring.sleuth.sampler.probability来配置导出Span的概率（默认值：0.1，即10%）。否则，您可能会认为Sleuth不起作用，因为它省略了一些Span。</p>
+<p><strong>注意</strong>：如果你使用的是SLF4J，Trace和Span的追踪记录默认会被记录到MDC，所以日志的用户可以立刻看到。但如果你使用的是其他的日志系统，你还需要对日志的打印格式进行设置才能看到相同的结果：</p>
+<pre><code>logging.pattern.level = %5p [${spring.zipkin.service.name:${spring.application.name:-}},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]</code></pre><h2 id="9-分布式配置中心Config实战"><a href="#9-分布式配置中心Config实战" class="headerlink" title="9-分布式配置中心Config实战"></a>9-分布式配置中心Config实战</h2><h3 id="9-1-微服务下的分布式配置中心"><a href="#9-1-微服务下的分布式配置中心" class="headerlink" title="9.1-微服务下的分布式配置中心"></a>9.1-微服务下的分布式配置中心</h3><h4 id="9-1-1-什么是配置中心？"><a href="#9-1-1-什么是配置中心？" class="headerlink" title="9.1.1-什么是配置中心？"></a>9.1.1-什么是配置中心？</h4><p>顾名思义，就是用来统一管理项目中所有配置的系统，统一管理配置, 快速切换各个环境的配置。</p>
+<h4 id="9-1-2-为什么需要配置中心？"><a href="#9-1-2-为什么需要配置中心？" class="headerlink" title="9.1.2-为什么需要配置中心？"></a>9.1.2-为什么需要配置中心？</h4><ul>
+<li><p>在传统项目中，我们是怎么处理各类配置参数问题的：</p>
+<ol>
+<li>一般是静态化配置。大多数在项目中单独写一个配置文件，例如 “config.conf”，然后将各类 参数配置、应用配置、环境配置、安全配置、业务配置 都写到这个文件里。当项目代码逻辑中需要使用配置的时候，就从这个配置文件中读取。这种做法虽然简单，但如果参数需要修改，就非常的不灵活，甚至需要重启运行中的项目才能生效。相信大多数开发同学都深有体会。</li>
+<li>配置文件无法区分环境。由于配置文件是放在项目中的，但是我们项目可能会有多个环境，例如：测试环境、预发布环境、生产环境。每一个环境所使用的配置参数理论上都是不同的，所以我们在配置文件中根据不同环境配置不同的参数，这些都是手动维护，在项目发布的时候，极其容易因开发人员的失误导致出错。</li>
+<li>配置文件过于分散。如果一个项目中存在多个逻辑模块独立部署，每个模块所使用的配置内容又不相同，传统的做法是会在每一个模块中都放一个配置文件，甚至不同模块的配置文件格式还不一样。那么长期的结果就是配置文件过于分散混乱，难以管理。</li>
+<li>配置修改无法追溯。因为采用的静态配置文件方式，所以当配置进行修改之后，不容易形成记录，更无法追溯是谁修改的、修改时间是什么、修改前是什么内容。既然无法追溯，那么当配置出错时，更没办法回滚配置了。</li>
+</ol>
+<p>上面只是拿配置文件的形式来举例，有的项目会采用数据库配置，虽然灵活一点，但是依旧不能完全解决上述问题。既然传统的项目配置有这么多弊端，那我们看看「配置中心」的方案是如何解决这些痛点的：</p>
+</li>
+<li><p>配置中心的思路就是把项目中各种配置、各种参数、各种开关，全部都放到一个集中的地方进行统一管理，并提供一套标准的接口。当各个服务需要获取配置的时候，就来配置中心的接口拉取。当配置中心中的各种参数有更新的时候，也能通知到各个服务实时的过来同步最新的信息，使之动态更新。</p>
+<p>那么，按照上述思路，我们理想中的配置中心应该具备如下特点：</p>
+<ul>
+<li>配置集中管理、统一标准</li>
+<li>配置与应用分离</li>
+<li>实时更新</li>
+<li>高可用</li>
+</ul>
+<p>具有上述特性的配置中心是如何解决上面传统配置所面临的问题的呢？</p>
+<ol>
+<li>采用“配置集中管理”，可以很好的解决传统的“配置文件过于分散”的问题。所有的配置都集中在配置中心这一个地方管理，不需要每一个项目都自带一个，这样极大的减轻了开发成本。</li>
+<li>采用“配置与应用分离”，可以很好的解决传统的“配置文件无法区分环境”的问题，配置并不跟着环境走，当不同环境有不同需求的时候，就到配置中心获取即可，极大的减轻了运维部署成本。</li>
+<li>具备“实时更新”的功能，就是用来解决传统的“静态化配置”的问题。线上系统需要调整参数的时候，只需要在配置中心动态修改即可。</li>
+<li>既然配置都统一管理了，那配置中心在整个系统中的地位就非常重要了，一旦配置中心不能正常提供服务，就可能会导致项目整体故障，因此“高可用”就是配置中心又一个很关键的指标了。</li>
+</ol>
+</li>
+</ul>
+<h4 id="9-1-3-配置中心的原理和应用"><a href="#9-1-3-配置中心的原理和应用" class="headerlink" title="9.1.3-配置中心的原理和应用"></a>9.1.3-配置中心的原理和应用</h4><p> 配置中心 」的原理不是很复杂。其核心功能也不多，主要是：</p>
+<ol>
+<li>实现配置的记录</li>
+<li>实现配置的读取、更新、取消</li>
+<li>实现配置的查看</li>
+</ol>
+<p>但是围绕着这几个核心功能，我们还需要保障高可行、要实现实时更新、要能方便的使用，还希望有权限管理的功能、操作审计的功能等等，加上这些周边辅助功能之后，一个完善的「 配置中心 也就不那么简单了。</p>
+<p>我们再来看一下在实际项目中如何去选型和应用：</p>
+<p>虽然配置中心的核心原理并不复杂，我们可以根据原理自己去实现一个配置中心，但是如果没有特殊需求，还是不建议重复造轮子了，毕竟业内已经有很多成熟的开源方案可以直接选用了。下面就列举几个比较热门的配置中心开源组件给大家参考：</p>
+<ul>
+<li><p><strong>Apollo</strong></p>
+<p>Apollo是由携程开源的分布式配置中心。</p>
+<p>Apollo的特点有很多，比如：配置更新之后可以实时生效，还可以支持灰度发布功能。并且能对所有的配置进行版本管理、操作审计等功能，提供开放平台API。另外由于Apollo使用的人很多，所以网上的资料也非常的丰富，并且github上资料也写的很详细。</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Aplollo.png" alt="Aplollo"></p>
+<p>上面即是Apollo的基础模型，看结构很简单。但是其功能很多，之前说过配置中心对高可用的要求很高。下面可以继续看一下Apollo的架构：</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Apollo%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt="Apollo的架构"></p>
+<p>更多的Apollo资料可以直接去github上查看，可以说官方文档是非常体贴的。</p>
+</li>
+<li><p><strong>Spring Cloud Config</strong></p>
+<p>这是Spring Cloud中带的配置中心组件。也正是这个原因，所以它和Spring是无缝集成，使用起来非常方便。并且它的配置存储支持Git，不过它没有可视化的操作界面，配置的生效也不是实时的，需要重启或去刷新。所以比较适用于小型项目快速上手。</p>
+<p>![Spring Cloud Config](Spring Cloud Config.png)</p>
+<p>Spring Cloud Config包含了Config Client和Config Server两部分，Config Server 实现配置文件的存储，对外以接口的形式提供获取配置文件，然后Config  Client通过这些接口获取数据。</p>
+</li>
+<li><p><strong>Disconf</strong></p>
+<p>Disconf是由百度开源的分布式配置中心。其实很多一线大厂都有开源自己的配置中心组件，这里挑出百度的Disconf也是因为网上比较火热，易用性也还不错，项目也是托管在github上很容易找到。它是基于Zookeeper来实现配置变更后实时通知和生效的。</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Disconf.png" alt="Disconf"></p>
+</li>
+</ul>
+<h3 id="9-2-SpringCloud的配置中心组件config-server实战"><a href="#9-2-SpringCloud的配置中心组件config-server实战" class="headerlink" title="9.2-SpringCloud的配置中心组件config-server实战"></a>9.2-SpringCloud的配置中心组件config-server实战</h3><p>创建配置中心服务端</p>
+<h4 id="9-2-1-新建-Spring-Boot-项目，引入-config-server-和-starter-web"><a href="#9-2-1-新建-Spring-Boot-项目，引入-config-server-和-starter-web" class="headerlink" title="9.2.1-新建 Spring Boot 项目，引入 config-server 和 starter-web"></a>9.2.1-新建 Spring Boot 项目，引入 config-server 和 starter-web</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependencies</span><span class="token punctuation">></span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-config<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-eureka-server<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="9-2-2-添加相关配置"><a href="#9-2-2-添加相关配置" class="headerlink" title="9.2.2-添加相关配置"></a>9.2.2-添加相关配置</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8089</span>
+
+<span class="token comment" spellcheck="true"># 公共配置</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>server
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">server</span><span class="token punctuation">:</span>
+        <span class="token key atrule">native</span><span class="token punctuation">:</span>
+        <span class="token key atrule">git</span><span class="token punctuation">:</span>
+          <span class="token comment" spellcheck="true"># 配置文件所在仓库</span>
+          <span class="token key atrule">uri</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//github.com/Fangpeng/config<span class="token punctuation">-</span>repo
+          <span class="token key atrule">search-paths</span><span class="token punctuation">:</span> <span class="token string">'{application}'</span>
+          <span class="token comment" spellcheck="true"># github登录账号</span>
+          <span class="token key atrule">username</span><span class="token punctuation">:</span> xxxx
+          <span class="token comment" spellcheck="true"># github登录密码</span>
+          <span class="token key atrule">password</span><span class="token punctuation">:</span> xxxxxx
+          <span class="token comment" spellcheck="true"># 超时时间</span>
+          <span class="token key atrule">timeout</span><span class="token punctuation">:</span> <span class="token number">5</span>
+          <span class="token comment" spellcheck="true"># 配置文件分支</span>
+          <span class="token key atrule">default-label</span><span class="token punctuation">:</span> master
+          <span class="token comment" spellcheck="true"># 配置文件所在根目录</span>
+          <span class="token key atrule">search-paths</span><span class="token punctuation">:</span> config
+
+<span class="token comment" spellcheck="true"># Eureka配置</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>8761/eureka/</code></pre>
+<h4 id="9-2-3-在启动类上添加注解"><a href="#9-2-3-在启动类上添加注解" class="headerlink" title="9.2.3-在启动类上添加注解"></a>9.2.3-在启动类上添加注解</h4><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token annotation punctuation">@EnableConfigServer</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>启动服务，配置中心服务端即搭建成功。</p>
+<p>Spring Cloud Config 有它的一套访问规则，我们通过这套规则在浏览器上直接访问就可以。</p>
+<pre><code>/{application}/{profile}[/{label}]
+/{application}-{profile}.yml
+/{label}/{application}-{profile}.yml
+/{application}-{profile}.properties
+/{label}/{application}-{profile}.properties</code></pre><p>{application} 就是应用名称，对应到配置文件上来，就是配置文件的名称部分，例如我上面创建的配置文件。</p>
+<p>{profile} 就是配置文件的版本，我们的项目有开发版本、测试环境版本、生产环境版本，对应到配置文件上来就是以 application-{profile}.yml 加以区分，例如application-dev.yml、application-sit.yml、application-prod.yml。</p>
+<p>{label} 表示 git 分支，默认是 master 分支，如果项目是以分支做区分也是可以的，那就可以通过不同的 label 来控制访问不同的配置文件了。</p>
+<p>上面的 5 条规则中，我们只看前三条，因为我这里的配置文件都是 yml 格式的。根据这三条规则，我们可以通过以下地址查看配置文件内容:</p>
+<p><code>http://localhost:8089/config-single-client/dev/master</code></p>
+<p><code>http://localhost:8089/config-single-client/prod</code></p>
+<p><code>http://localhost:8089/config-single-client-dev.yml</code></p>
+<p><code>http://localhost:8089/config-single-client-prod.yml</code></p>
+<p><code>http://localhost:8089/master/config-single-client-prod.yml</code></p>
+<p>通过访问以上地址，如果可以正常返回数据，则说明配置中心服务端一切正常。</p>
+<h3 id="9-4-分布式配置中心客户端实战"><a href="#9-4-分布式配置中心客户端实战" class="headerlink" title="9.4-分布式配置中心客户端实战"></a>9.4-分布式配置中心客户端实战</h3><p><em>创建配置中心客户端，使用配置</em></p>
+<p>配置中心服务端好了，配置数据准备好了，接下来，就要在我们的项目中使用它了。</p>
+<h4 id="9-4-1-添加依赖"><a href="#9-4-1-添加依赖" class="headerlink" title="9.4.1-添加依赖"></a>9.4.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+
+<span class="token comment" spellcheck="true">&lt;!-- spring cloud config 客户端包 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-config<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>或者：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- Config-Client 依赖 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-config-client<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="9-4-2-添加配置"><a href="#9-4-2-添加配置" class="headerlink" title="9.4.2-添加配置"></a>9.4.2-添加配置</h4><p>先将product-service中的application.yml文件改名为bootstrap.yml（bootstrap.yml在应用上下文启动阶段加载，比application.yml早），然后再对其内容进行修改：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true"># 设置服务(应用)名称</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> product<span class="token punctuation">-</span>service
+
+<span class="token comment" spellcheck="true"># 指定用于获取配置的配置中心服务(应用)名称</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+        <span class="token key atrule">serviceId</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>server
+        <span class="token comment" spellcheck="true"># github登录账号</span>
+        <span class="token key atrule">username</span><span class="token punctuation">:</span> xxxx
+        <span class="token comment" spellcheck="true"># github登录密码</span>
+        <span class="token key atrule">password</span><span class="token punctuation">:</span> xxxxxx
+      <span class="token key atrule">profile</span><span class="token punctuation">:</span> dev
+      <span class="token comment" spellcheck="true"># 指定分枝版本，默认为master</span>
+      <span class="token key atrule">label</span><span class="token punctuation">:</span> master
+
+<span class="token comment" spellcheck="true"># 指定注册中心地址</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">serviceUrl</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8761/eureka/</code></pre>
+<p>如果不指定配置中心，客户端默认会从<a href="http://localhost:8888/" target="_blank" rel="noopener">http://localhost:8888</a> 加载与服务ID相同的配置。</p>
+<h4 id="9-4-3-在Git仓库创建配置文件"><a href="#9-4-3-在Git仓库创建配置文件" class="headerlink" title="9.4.3-在Git仓库创建配置文件"></a>9.4.3-在Git仓库创建配置文件</h4><p>客户端通过发送Http请求来从配置中心读取配置，这些Http请求的URI遵循以下规则：</p>
+<pre><code>/{name}-{profiles}.properties
+/{name}-{profiles}.yml || /{name}-{profiles}.yaml
+/{label}/{name}-{profiles}.properties
+/{label}/{name}-{profiles}.json
+/{name}/{profiles}/{label:.*}
+/{name}-{profiles}.json
+/{label}/{name}-{profiles}.yml || /{label}/{name}-{profiles}.yaml
+/{name}/{profiles:.*[^-].*}
+/{name}/{profile}/{label}/**
+/{name}/{profile}/{label}/**
+/{name}/{profile}/**</code></pre><p>其中各个参数的含义如下：</p>
+<p><strong><code>name</code></strong> 服务的ID，即spring.application.name的值，本例中为 product-service；<br><code>profiles</code> 激活的profile，通过spring.cloud.config.profile指定，本例中为 dev；<br><code>label</code> 分枝的版本，通过spring.cloud.config.label指定，本例中为默认值 master； </p>
+<p>接下来我们需要按照上述规则，在Git仓库的相应位置创建配置文件。根据bootstrap.yml中的配置，资源请求地址可以为 /master/product-service-dev.yml 。</p>
+<p>在Git仓库的master分枝中创建product-service-dev.yml和product-service-test.yml两个文件，分别将服务的启动端口指定为8771和8772：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true"># product-service-dev.yml</span>
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+<span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8771</span>
+
+<span class="token comment" spellcheck="true"># product-service-test.yml</span>
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+<span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8772</span></code></pre>
+<p>文件创建完成之后，启动配置中心，先在浏览器对两个文件进行访问。</p>
+<p>此时，启动product-service将读取<a href="http://localhost:8888/product-service-dev.yml中的配置，即启动端口为8771。若将" target="_blank" rel="noopener">http://localhost:8888/product-service-dev.yml中的配置，即启动端口为8771。若将</a> bootstrap.yml中的spring.cloud.config.profile的值设置为test，则将读取<a href="http://localhost:8888/product-service-test.yml中的配置，应用的启动端口也会相应地变为8772，证明从配置中心读取配置成功。" target="_blank" rel="noopener">http://localhost:8888/product-service-test.yml中的配置，应用的启动端口也会相应地变为8772，证明从配置中心读取配置成功。</a></p>
+<h2 id="10-微服务消息总线Bus"><a href="#10-微服务消息总线Bus" class="headerlink" title="10-微服务消息总线Bus"></a>10-微服务消息总线Bus</h2><h3 id="10-1-消息总线Bus介绍"><a href="#10-1-消息总线Bus介绍" class="headerlink" title="10.1-消息总线Bus介绍"></a>10.1-消息总线Bus介绍</h3><p>Spring Cloud Bus集成了市面上常见的RabbitMQ和Kafka等消息代理。其会连接微服务系统中所有拥有Bus总线机制的节点，当有数据变更的时候，会通过消息中间件使用消息广播的方式通知所有的微服务节点同步更新数据。（如：微服务配置更新等）。</p>
+<p>在微服务架构中，通常会使用轻量级的消息代理来构建一个共用的消息主题来连接各个微服务实例，它广播的消息会被所有在注册中心的微服务实例监听和消费，也称消息总线。 </p>
+<p>SpringCloud Bus 将分布式的节点用轻量的消息代理连接起来，可以很容易搭建消息总线，配合SpringCloud config 实现微服务应用配置信息的动态更新。</p>
+<p>消息总线其实<strong>通过消息中间主题模式</strong>，<strong>他使用广播消息的机制被所有在注册中心微服务实例进行监听和消费</strong>。以广播形式将消息推送给所有注册中心服务列表</p>
+<p>消息代理属于中间件。设计代理的目的就是为了能够从应用程序中传入消息，并执行一些特别的操作。开源产品很多如ActiveMQ、Kafka、RabbitMQ、RocketMQ等，目前springCloud仅支持RabbitMQ和Kafka。本文采用RabbitMQ实现这一功能。</p>
 
             </div>
             <hr/>
@@ -2147,7 +2893,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">394.7k</span>&nbsp;字
+                class="white-color">404.6k</span>&nbsp;字
             
             
             
