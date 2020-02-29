@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    30.1k
+                    34.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    112 分
+                    132 分
                 </div>
                 
 				
@@ -573,6 +573,7 @@
 <li>微服务：微服务架构模式就是将web应用拆分为一系列小的服务模块，这些模块可以独立地编译、部署，并通过各自暴露的API接口通讯，共同组成一个web应用。</li>
 <li>SpringCloud是基于SpringBoot的一整套微服务框架，提供了一系列可配置的组件，如<strong>配置管理</strong>、<strong>服务发现</strong>、<strong>负载均衡</strong>、<strong>熔断器</strong>、<strong>断路器</strong>、<strong>智能路由</strong>、<strong>微代理</strong>、<strong>控制总线</strong>、<strong>全局锁</strong>、<strong>决策竞选</strong>、<strong>分布式会话</strong>和<strong>集群状态管理</strong>等。</li>
 </ul>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%9B%BE.jpeg" alt="微服务架构图"></p>
 <h3 id="2-2-什么是SpringCloud？"><a href="#2-2-什么是SpringCloud？" class="headerlink" title="2.2-什么是SpringCloud？"></a>2.2-什么是SpringCloud？</h3><p>Spring Cloud是一个基于Spring Boot实现的服务工具治理包，专注于全局的服务治理框架。</p>
 <p>Spring Cloud 是一系列框架的有序集合。<br> 它利用 Spring Boot 的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用 Spring Boot 的开发风格做到一键启动和部署。<br> Spring 并没有重复制造轮子，它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过 Spring Boot 风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。</p>
 <p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/SpringCloud%E7%BB%84%E4%BB%B6%E6%9E%B6%E6%9E%84.png" alt="SpringCloud组件架构"></p>
@@ -585,6 +586,12 @@
 <li>Turbine监控服务间的调用和熔断相关指标。</li>
 </ul>
 <p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/SpringCloud%E6%B5%81%E7%A8%8B.png" alt="SpringCloud流程"></p>
+<p>我所理解的<code>Spring Cloud</code>就是微服务系统架构的一站式解决方案，在平时我们构建微服务的过程中需要做如<strong>服务发现注册</strong>、<strong>配置中心</strong>、<strong>消息总线</strong>、<strong>负载均衡</strong>、<strong>断路器</strong>、<strong>数据监控</strong>等操作，而 Spring Cloud 为我们提供了一套简易的编程模型，使我们能在 Spring Boot 的基础上轻松地实现微服务项目的构建。</p>
+<ul>
+<li><p><strong>SpringCloud版本</strong></p>
+<p>Spring Cloud 的版本号并不是我们通常见的数字版本号，而是一些很奇怪的单词。这些单词均为英国伦敦地铁站的站名。同时根据字母表的顺序来对应版本时间顺序，比如：最早 的 Release 版本 Angel，第二个 Release 版本 Brixton（英国地名），然后是 Camden、 Dalston、Edgware、Finchley、Greenwich、Hoxton。</p>
+</li>
+</ul>
 <h2 id="2-3-微服务技术"><a href="#2-3-微服务技术" class="headerlink" title="2.3-微服务技术"></a>2.3-微服务技术</h2><ul>
 <li><p>Spring Cloud Config ：服务配置中心，将所有的服务的配置文件放到本地仓库或者远程仓库，配置中心负责读取仓库的配置文件，其他服务向配置中心读取配置。SpringCloud Config 使得服务的配置统一管理 并可以在不人为重启服务的情况下进行配置文件的刷新。</p>
 </li>
@@ -775,6 +782,9 @@
 <p><strong>几大服务注册中心的对比：</strong></p>
 <p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%AF%B9%E6%AF%94.png" alt="注册中心对比"></p>
 <h3 id="4-2-SpringCloud微服务核心组件Eureka"><a href="#4-2-SpringCloud微服务核心组件Eureka" class="headerlink" title="4.2-SpringCloud微服务核心组件Eureka"></a>4.2-SpringCloud微服务核心组件Eureka</h3><p>Eureka是Netflix开源的服务发现组件，本身是一个基于REST的服务，包含Server和Client两部分，并且服务端与客户端均采用java编写，所以Eureka主要适用于通过java实现的分布式系统，或是JVM兼容语言构建的系统，Spring Cloud将它集成在子项目Spring Cloud Netflix中。在微服务系统中，我们需要单独创建一个Eureka Server作为注册中心，其他的微服务就相当于客户端，注册到我们的注册中心中。</p>
+<blockquote>
+<p>Eureka是基于REST（代表性状态转移）的服务，主要在AWS云中用于定位服务，以实现负载均衡和中间层服务器的故障转移。我们称此服务为Eureka服务器。Eureka还带有一个基于Java的客户端组件Eureka Client，它使与服务的交互变得更加容易。客户端还具有一个内置的负载平衡器，可以执行基本的循环负载平衡。在Netflix，更复杂的负载均衡器将Eureka包装起来，以基于流量，资源使用，错误条件等多种因素提供加权负载均衡，以提供出色的弹性。</p>
+</blockquote>
 <p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Eureka.png" alt="Eureka"></p>
 <pre class=" language-properties"><code class="language-properties">Register(服务注册)：把自己的IP和端口注册给Eureka。
 Renew(服务续约)：发送心跳包，每30秒发送一次。告诉Eureka自己还活着。
@@ -832,6 +842,25 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 <li>Eureka Client 获取到目标服务器信息，发起服务调用</li>
 <li>Eureka Client 程序关闭时向 Eureka Server 发送取消请求，Eureka Server 将实例从注册表中删除</li>
 </ol>
+<p><strong>服务发现</strong>：其实就是一个“中介”，整个过程中有三个角色：<strong>服务提供者(出租房子的)、服务消费者(租客)、服务中介(房屋中介)</strong>。</p>
+<p><strong>服务提供者</strong>：就是提供一些自己能够执行的一些服务给外界。</p>
+<p><strong>服务消费者</strong>：就是需要使用一些服务的“用户”。</p>
+<p><strong>服务中介</strong>：其实就是服务提供者和服务消费者之间的“桥梁”，服务提供者可以把自己注册到服务中介那里，而服务消费者如需要消费一些服务(使用一些功能)就可以在服务中介中寻找注册在服务中介的服务提供者。</p>
+<p><strong>服务注册 Register</strong>：</p>
+<p>官方解释：当 Eureka 客户端向<code>[Eureka] Server</code>注册时，它提供自身的<strong>元数据</strong>，比如IP地址、端口，运行状况指示符URL，主页等。</p>
+<p>结合中介理解：房东 (提供者<code>[Eureka] Client Provider</code>)在中介 (服务器<code>[Eureka] Server</code>) 那里登记房屋的信息，比如面积，价格，地段等等(元数据<code>metaData</code>)。</p>
+<p><strong>服务续约 Renew</strong>：</p>
+<p>官方解释：<strong>Eureka 客户会每隔30秒(默认情况下)发送一次心跳来续约</strong>。通过续约来告知<code>[Eureka] Server</code>该 Eureka 客户仍然存在，没有出现问题。正常情况下，如果<code>[Eureka] Server</code>在90秒没有收到 Eureka 客户的续约，它会将实例从其注册表中删除。</p>
+<p>结合中介理解：房东 (提供者<code>[Eureka] Client Provider</code>) 定期告诉中介 (服务器<code>[Eureka] Server</code>) 我的房子还租(续约) ，中介 (服务器<code>[Eureka] Server</code>) 收到之后继续保留房屋的信息。</p>
+<p><strong>获取注册列表信息 Fetch Registries</strong>：</p>
+<p>官方解释：Eureka 客户端从服务器获取注册表信息，并将其缓存在本地。客户端会使用该信息查找其他服务，从而进行远程调用。该注册列表信息定期（每30秒钟）更新一次。每次返回注册列表信息可能与 Eureka 客户端的缓存信息不同, Eureka 客户端自动处理。如果由于某种原因导致注册列表信息不能及时匹配，Eureka 客户端则会重新获取整个注册表信息。Eureka 服务器缓存注册列表信息，整个注册表以及每个应用程序的信息进行了压缩，压缩内容和没有压缩的内容完全相同。Eureka 客户端和 Eureka 服务器可以使用JSON / XML格式进行通讯。在默认的情况下 Eureka 客户端使用压缩<code>JSON</code>格式来获取注册列表的信息。</p>
+<p>结合中介理解：租客(消费者<code>[Eureka] Client Consumer</code>) 去中介 (服务器<code>[Eureka] Server</code>) 那里获取所有的房屋信息列表 (客户端列表<code>[Eureka] Client List</code>) ，而且租客为了获取最新的信息会定期向中介 (服务器<code>[Eureka] Server</code>) 那里获取并更新本地列表。</p>
+<p><strong>服务下线 Cancel</strong>：</p>
+<p>官方解释：Eureka客户端在程序关闭时向Eureka服务器发送取消请求。发送请求后，该客户端实例信息将从服务器的实例注册表中删除。该下线请求不会自动完成，它需要调用以下内容：<code>DiscoveryManager.getInstance().shutdownComponent();</code></p>
+<p>结合中介理解：房东 (提供者<code>[Eureka] Client Provider</code>) 告诉中介  (服务器<code>[Eureka] Server</code>) 我的房子不租了，中介之后就将注册的房屋信息从列表中剔除。</p>
+<p><strong>服务剔除 Eviction</strong>：</p>
+<p>官方解释：在默认的情况下，<strong>当Eureka客户端连续90秒(3个续约周期)没有向Eureka服务器发送服务续约，即心跳，Eureka服务器会将该服务实例从服务注册列表删除</strong>，即服务剔除。</p>
+<p>结合中介理解：房东(提供者<code>[Eureka] Client Provider</code>) 会定期联系 中介  (服务器<code>[Eureka] Server</code>) 告诉他我的房子还租(续约)，如果中介  (服务器<code>[Eureka] Server</code>) 长时间没收到提供者的信息，那么中介会将他的房屋信息给下架(服务剔除)。</p>
 <h3 id="4-3-Eureka-Server搭建实战"><a href="#4-3-Eureka-Server搭建实战" class="headerlink" title="4.3-Eureka Server搭建实战"></a>4.3-Eureka Server搭建实战</h3><ol>
 <li><p>创建eureka-server工程</p>
 </li>
@@ -1206,21 +1235,27 @@ Replicate(集群中数据同步)：eureka集群中的数据复制与同步。
 </li>
 </ol>
 </li>
-<li><p>Ribbon修改负载均衡策略</p>
+<li><p><strong>Ribbon修改负载均衡策略</strong></p>
+<p>负载均衡，不管<code>Nginx</code>还是<code>Ribbon</code>都需要其算法的支持，如果我没记错的话<code>Nginx</code>使用的是 轮询和加权轮询算法。而在<code>Ribbon</code>中有更多的负载均衡调度算法，其默认是使用的<code>RoundRobinRule</code>轮询策略。</p>
+<ul>
+<li><strong>RoundRobinRule</strong>：轮询策略。<code>Ribbon</code>默认采用的策略。若经过一轮轮询没有找到可用的<code>provider</code>，其最多轮询 10 轮。若最终还没有找到，则返回 null。</li>
+<li><strong>RandomRule</strong>: 随机策略，从所有可用的 provider 中随机选择一个。</li>
+<li><strong>RetryRule</strong>: 重试策略。先按照 RoundRobinRule 策略获取 provider，若获取失败，则在指定的时限内重试。默认的时限为 500 毫秒。</li>
+</ul>
 <p>在application.yml配置文件中加入：</p>
-<pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true">#自定义负载均衡策略</span>
+</li>
+</ol>
+<pre class=" language-yaml"><code class="language-yaml">   <span class="token comment" spellcheck="true">#自定义负载均衡策略</span>
     <span class="token key atrule">product-service</span><span class="token punctuation">:</span>
-      <span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
-        <span class="token key atrule">NFLoadBalancerRuleClassName</span><span class="token punctuation">:</span> com.netflix.loadbalancer.RandomRule</code></pre>
-<p><strong>策略选择：</strong></p>
+         <span class="token key atrule">ribbon</span><span class="token punctuation">:</span>
+           <span class="token key atrule">NFLoadBalancerRuleClassName</span><span class="token punctuation">:</span> com.netflix.loadbalancer.RandomRule</code></pre>
+<p>   <strong>策略选择：</strong></p>
 <ol>
 <li>如果每个机器配置一样，则建议不修改策略 (推荐)</li>
 <li>如果部分机器配置强，则可以改为 WeightedResponseTimeRule</li>
 </ol>
-</li>
-</ol>
 <h3 id="5-3-微服务调用方式之Feign"><a href="#5-3-微服务调用方式之Feign" class="headerlink" title="5.3-微服务调用方式之Feign"></a>5.3-微服务调用方式之Feign</h3><ol>
-<li><p>Feign是什么？</p>
+<li><p><strong>Feign是什么？</strong></p>
 <p><strong>Feign是Netflix开发的声明式、模板化的HTTP客户端， Feign可以帮助我们更快捷、优雅地调用HTTP API。</strong></p>
 <p>Feign是一个声明式WebService客户端，使用Feign能让编写WebService客户端更加简单，它的使用方法是定义一个接口，然后在上面添加注解,同时也支持JAX-RS标准的注解。Feign也支持可拔插式的编码器和解码器，Spring Cloud对Feign进行了封装，使其支持了Spring MVC标准注解和HttpMessageConverters.Feign可以与Eureka和Ribbon组合使用以支持负载均衡。</p>
 <p><strong>只需要你创建一个接口，然后在上面添加注解即可。</strong></p>
@@ -1723,6 +1758,37 @@ https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#b
 </ul>
 </blockquote>
 <p>Spring Cloud对Zuul进行了整合与增强。目前，Zuul使用的默认HTTP客户端是Apache HTTP Client，也可以使用使用其他的。</p>
+<p>上面的你理解了，那么就能理解关于<code>Zuul</code>最基本的配置了，看下面。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">9000</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token comment" spellcheck="true"># 这里只要注册 Eureka 就行了</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>9997/eureka</code></pre>
+<p>然后在启动类上加入<code>@EnableZuulProxy</code>注解就行了。没错，就是那么简单😃。</p>
+<h3 id="统一前缀"><a href="#统一前缀" class="headerlink" title="统一前缀"></a>统一前缀</h3><p>这个很简单，就是我们可以在前面加一个统一的前缀，比如我们刚刚调用的是<code>localhost:9000/consumer1/studentInfo/update</code>，这个时候我们在<code>yaml</code>配置文件中添加如下。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">prefix</span><span class="token punctuation">:</span> /zuul</code></pre>
+<p>这样我们就需要通过<code>localhost:9000/zuul/consumer1/studentInfo/update</code>来进行访问了。</p>
+<h3 id="路由策略配置"><a href="#路由策略配置" class="headerlink" title="路由策略配置"></a>路由策略配置</h3><p>你会发现前面的访问方式(直接使用服务名)，需要将微服务名称暴露给用户，会存在安全性问题。所以，可以自定义路径来替代微服务名称，即自定义路由策略。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+    <span class="token key atrule">consumer1</span><span class="token punctuation">:</span> /FrancisQ1/**
+    <span class="token key atrule">consumer2</span><span class="token punctuation">:</span> /FrancisQ2/**</code></pre>
+<p>这个时候你就可以使用<code>localhost:9000/zuul/FrancisQ1/studentInfo/update</code>进行访问了。</p>
+<h3 id="服务名屏蔽"><a href="#服务名屏蔽" class="headerlink" title="服务名屏蔽"></a>服务名屏蔽</h3><p>这个时候你别以为你好了，你可以试试，在你配置完路由策略之后使用微服务名称还是可以访问的，这个时候你需要将服务名屏蔽。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ignore-services</span><span class="token punctuation">:</span> <span class="token string">"*"</span></code></pre>
+<h3 id="路径屏蔽"><a href="#路径屏蔽" class="headerlink" title="路径屏蔽"></a>路径屏蔽</h3><p><code>Zuul</code>还可以指定屏蔽掉的路径 URI，即只要用户请求中包含指定的 URI 路径，那么该请求将无法访问到指定的服务。通过该方式可以限制用户的权限。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">zuul</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ignore-patterns</span><span class="token punctuation">:</span> **/auto/**</code></pre>
+<p>这样关于 auto 的请求我们就可以过滤掉了。</p>
+<blockquote>
+<p>** 代表匹配多级任意路径</p>
+<p>*代表匹配一级任意路径</p>
+</blockquote>
+<h3 id="敏感请求头屏蔽"><a href="#敏感请求头屏蔽" class="headerlink" title="敏感请求头屏蔽"></a>敏感请求头屏蔽</h3><p>默认情况下，像 Cookie、Set-Cookie 等敏感请求头信息会被 zuul 屏蔽掉，我们可以将这些默认屏蔽去掉，当然，也可以添加要屏蔽的请求头。</p>
 <h4 id="7-2-1-添加依赖"><a href="#7-2-1-添加依赖" class="headerlink" title="7.2.1-添加依赖"></a>7.2.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-zuul<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
@@ -2409,6 +2475,455 @@ java -jar ./zipkin-server/target/zipkin-server-*exec.jar</code></pre></li>
 <p>SpringCloud Bus 将分布式的节点用轻量的消息代理连接起来，可以很容易搭建消息总线，配合SpringCloud config 实现微服务应用配置信息的动态更新。</p>
 <p>消息总线其实<strong>通过消息中间主题模式</strong>，<strong>他使用广播消息的机制被所有在注册中心微服务实例进行监听和消费</strong>。以广播形式将消息推送给所有注册中心服务列表</p>
 <p>消息代理属于中间件。设计代理的目的就是为了能够从应用程序中传入消息，并执行一些特别的操作。开源产品很多如ActiveMQ、Kafka、RabbitMQ、RocketMQ等，目前springCloud仅支持RabbitMQ和Kafka。本文采用RabbitMQ实现这一功能。</p>
+<h3 id="10-2-Config-Bus实现配置信息刷新"><a href="#10-2-Config-Bus实现配置信息刷新" class="headerlink" title="10.2-Config+Bus实现配置信息刷新"></a>10.2-Config+Bus实现配置信息刷新</h3><p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Config%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%88%B7%E6%96%B0.png" alt="Config客户端刷新"></p>
+<p>上图为客户端的刷新。当git远程仓库有变动的时候，如果我们是去刷新客户端即微服务，那么刷新之后，服务A会获取配置信息，并且发送消息给Ribbit MQ，然后由RibbitMQ发消息通知其他的微服务，然后这些微服务再去本地仓库获取配置信息。</p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/Config%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%88%B7%E6%96%B0.png" alt="Config服务端刷新"></p>
+<p>上图为服务端的刷新。当git仓库发生变动之后，如果是在服务端刷新，那么服务端会直接通知RibbitMQ，由RibbitMQ去通知其他所有的微服务，然后这些微服务再自行去config-server种获取配置信息，而config-server再去git远程仓库拉取最新配置。</p>
+<h4 id="10-2-1-采用bus实现自动刷新配置信息"><a href="#10-2-1-采用bus实现自动刷新配置信息" class="headerlink" title="10.2.1-采用bus实现自动刷新配置信息"></a>10.2.1-采用bus实现自动刷新配置信息</h4><p><strong>配置中心服务端</strong></p>
+<h5 id="1-添加依赖-1"><a href="#1-添加依赖-1" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h5><pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--配置中心结合消息队列--></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-actuator<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-bus-amqp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h5 id="2-添加RabbitMQ配置"><a href="#2-添加RabbitMQ配置" class="headerlink" title="2. 添加RabbitMQ配置"></a>2. 添加RabbitMQ配置</h5><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8009</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>server
+  <span class="token key atrule">rabbitmq</span><span class="token punctuation">:</span>
+    <span class="token key atrule">host</span><span class="token punctuation">:</span> localhost
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5672</span>
+    <span class="token key atrule">username</span><span class="token punctuation">:</span> guest
+    <span class="token key atrule">password</span><span class="token punctuation">:</span> guest
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">server</span><span class="token punctuation">:</span>
+        <span class="token key atrule">git</span><span class="token punctuation">:</span>
+          <span class="token key atrule">uri</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//github.com/ROAOR1/config<span class="token punctuation">-</span>server.git
+          <span class="token key atrule">username</span><span class="token punctuation">:</span>
+          <span class="token key atrule">password</span><span class="token punctuation">:</span>
+          <span class="token key atrule">search-paths</span><span class="token punctuation">:</span> config <span class="token comment" spellcheck="true">#要搜索的路径，填我们刚刚创建的文件夹</span>
+    <span class="token key atrule">bus</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">trace</span><span class="token punctuation">:</span>
+        <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8001/eureka/<span class="token punctuation">,</span>http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8002/eureka/
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoints</span><span class="token punctuation">:</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> bus<span class="token punctuation">-</span>refresh <span class="token comment" spellcheck="true">#暴露出bus-refresh接口</span></code></pre>
+<h5 id="3-启动类不变"><a href="#3-启动类不变" class="headerlink" title="3. 启动类不变"></a>3. 启动类不变</h5><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@EnableEurekaClient</span>
+<span class="token annotation punctuation">@EnableConfigServer</span>
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConfigServerApplication</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>ConfigServer8009Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>配置中心客户端</strong></p>
+<h5 id="1-添加依赖-2"><a href="#1-添加依赖-2" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h5><pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--是用来接收更新的消息，类似心跳检测--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-actuator<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-config<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-eureka-client<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+
+<span class="token comment" spellcheck="true">&lt;!--使用消息总线时加入--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-bus-amqp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h5 id="2-添加配置（application-yml-bootstrap-yml）"><a href="#2-添加配置（application-yml-bootstrap-yml）" class="headerlink" title="2. 添加配置（application.yml+bootstrap.yml）"></a>2. 添加配置（application.yml+bootstrap.yml）</h5><p><code>application.yml</code></p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8012</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>client
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">bus</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">trace</span><span class="token punctuation">:</span>
+        <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">rabbitmq</span><span class="token punctuation">:</span>
+    <span class="token key atrule">host</span><span class="token punctuation">:</span> localhost
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5672</span>
+    <span class="token key atrule">username</span><span class="token punctuation">:</span> guest
+    <span class="token key atrule">password</span><span class="token punctuation">:</span> guest
+<span class="token key atrule">data</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>spring.profiles.active<span class="token punctuation">}</span> <span class="token comment" spellcheck="true">#用这个来加载配置中心中的数据</span></code></pre>
+<p><code>bootstrap.yml</code></p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">config</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> cloud<span class="token punctuation">-</span>config <span class="token comment" spellcheck="true">#对应 {application}</span>
+      <span class="token key atrule">label</span><span class="token punctuation">:</span> master <span class="token comment" spellcheck="true">#对应{label}</span>
+      <span class="token key atrule">profile</span><span class="token punctuation">:</span> dev <span class="token comment" spellcheck="true">#对应{profile}</span>
+      <span class="token key atrule">discovery</span><span class="token punctuation">:</span>
+        <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true </span><span class="token comment" spellcheck="true">#开启 Config 服务发现支持</span>
+        <span class="token key atrule">service-id</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>server <span class="token comment" spellcheck="true">#配置中心Id</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8001/eureka/<span class="token punctuation">,</span>http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>8002/eureka/
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoints</span><span class="token punctuation">:</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> refresh <span class="token comment" spellcheck="true">#暴露了refresh接口</span></code></pre>
+<h5 id="3-启动类"><a href="#3-启动类" class="headerlink" title="3. 启动类"></a>3. 启动类</h5><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@EnableEurekaClient</span>
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConfigClientApplication</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>ConfigClient8012Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h5 id="4-读取配置测试类"><a href="#4-读取配置测试类" class="headerlink" title="4. 读取配置测试类"></a>4. 读取配置测试类</h5><p>需添加<code>@RefreshScope</code>注解</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RefreshScope</span>
+<span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConfigController</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${data}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String data<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/getData"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">getData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="11-Stream消息驱动"><a href="#11-Stream消息驱动" class="headerlink" title="11-Stream消息驱动"></a>11-Stream消息驱动</h2><p>Spring Cloud Stream 的 binder 负责与消息中间件交互（和消息中间件解耦，不需要关注具体的消息中间件）应用通过Spring Cloud Stream插入的input(相当于消费者consumer，它是从队列中接收消息的)和output(相当于生产者producer，它是从队列中发送消息的。)通道与外界交流。当需要升级消息中间件，或者是更换其他消息中间件产品时，我们需要做的就是更换对应的Binder绑定器而不需要修改任何应用逻辑。</p>
+<h3 id="11-1-Stream内置接口"><a href="#11-1-Stream内置接口" class="headerlink" title="11.1-Stream内置接口"></a>11.1-Stream内置接口</h3><p>Stream内置了三个接口，分别是<code>Source</code>，<code>Sink</code>，<code>Processor</code></p>
+<p><strong>Source是输出通道，通道名是output：</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Source</span> <span class="token punctuation">{</span>
+    String OUTPUT <span class="token operator">=</span> <span class="token string">"output"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Output</span><span class="token punctuation">(</span><span class="token string">"output"</span><span class="token punctuation">)</span>
+    MessageChannel <span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>Sink是输入通道，通道名是input：</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Sink</span> <span class="token punctuation">{</span>
+    String INPUT <span class="token operator">=</span> <span class="token string">"input"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Input</span><span class="token punctuation">(</span><span class="token string">"input"</span><span class="token punctuation">)</span>
+    SubscribableChannel <span class="token function">input</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>Processor即是输入通道，也是输出通道，通道名是output，input</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Processor</span> <span class="token keyword">extends</span> <span class="token class-name">Source</span><span class="token punctuation">,</span> Sink <span class="token punctuation">{</span>
+<span class="token punctuation">}</span></code></pre>
+<p>下面我们使用stream提供的三个通道来做一个demo</p>
+<ol>
+<li>生产者发送消息到中转者</li>
+<li>中转者接收消息并对消息做出修改，接着中转者将消息发送给消费者</li>
+<li>消费者消费消息</li>
+</ol>
+<p><strong>下面三个模块的启动类都不变，使用默认的就行。</strong></p>
+<h3 id="11-2-创建消息发送者"><a href="#11-2-创建消息发送者" class="headerlink" title="11.2-创建消息发送者"></a>11.2-创建消息发送者</h3><h4 id="11-2-1-添加依赖"><a href="#11-2-1-添加依赖" class="headerlink" title="11.2.1-添加依赖"></a>11.2.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-stream-rabbit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="11-2-2-添加配置"><a href="#11-2-2-添加配置" class="headerlink" title="11.2.2-添加配置"></a>11.2.2-添加配置</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8013</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> stream<span class="token punctuation">-</span>producer
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">binders</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#在此处配置要绑定的rabbitmq的服务信息</span>
+        <span class="token key atrule">myrabbit</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#自定义的名称</span>
+          <span class="token key atrule">type</span><span class="token punctuation">:</span> rabbit <span class="token comment" spellcheck="true">#消息组件类型</span>
+          <span class="token key atrule">environment</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#设置rabbitmq的相关的环境配置</span>
+            <span class="token key atrule">spring</span><span class="token punctuation">:</span>
+              <span class="token key atrule">rabbitmq</span><span class="token punctuation">:</span>
+                <span class="token key atrule">host</span><span class="token punctuation">:</span> 127.0.0.1
+                <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5672</span>
+                <span class="token key atrule">username</span><span class="token punctuation">:</span> guest
+                <span class="token key atrule">password</span><span class="token punctuation">:</span> guest
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">output</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是stream提供的输出通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> msg <span class="token comment" spellcheck="true">#发送的目的地</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+<h4 id="11-2-3-创建user类"><a href="#11-2-3-创建user类" class="headerlink" title="11.2.3-创建user类"></a>11.2.3-创建user类</h4><pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token keyword">implements</span> <span class="token class-name">Serializable</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> id<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String name<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token function">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token function">User</span><span class="token punctuation">(</span><span class="token keyword">int</span> id<span class="token punctuation">,</span> String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> id<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> id<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setId</span><span class="token punctuation">(</span><span class="token keyword">int</span> id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> id<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> String <span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> name<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setName</span><span class="token punctuation">(</span>String name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> String <span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">"User{"</span> <span class="token operator">+</span>
+                <span class="token string">"id="</span> <span class="token operator">+</span> id <span class="token operator">+</span>
+                <span class="token string">", name='"</span> <span class="token operator">+</span> name <span class="token operator">+</span> <span class="token string">'\''</span> <span class="token operator">+</span>
+                <span class="token string">'}'</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="11-2-4-创建消息发送者"><a href="#11-2-4-创建消息发送者" class="headerlink" title="11.2.4-创建消息发送者"></a>11.2.4-创建消息发送者</h4><pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定输出通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>Source<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Producer</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> Source source<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sendMsg</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//发送消息</span>
+        source<span class="token punctuation">.</span><span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>MessageBuilder<span class="token punctuation">.</span><span class="token function">withPayload</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="11-2-5-提供一个访问接口"><a href="#11-2-5-提供一个访问接口" class="headerlink" title="11.2.5-提供一个访问接口"></a>11.2.5-提供一个访问接口</h4><pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProducerController</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> Producer producer<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/sendMsg"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sendMsg</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token string">"小王"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        producer<span class="token punctuation">.</span><span class="token function">sendMsg</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="11-3-创建消息中转者"><a href="#11-3-创建消息中转者" class="headerlink" title="11.3-创建消息中转者"></a>11.3-创建消息中转者</h3><h4 id="11-3-1-添加依赖"><a href="#11-3-1-添加依赖" class="headerlink" title="11.3.1-添加依赖"></a>11.3.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-stream-rabbit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="11-3-2-添加配置"><a href="#11-3-2-添加配置" class="headerlink" title="11.3.2-添加配置"></a>11.3.2-添加配置</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8014</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> stream<span class="token punctuation">-</span>producer
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">binders</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#在此处配置要绑定的rabbitmq的服务信息</span>
+        <span class="token key atrule">myrabbit</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#自定义的名称</span>
+          <span class="token key atrule">type</span><span class="token punctuation">:</span> rabbit <span class="token comment" spellcheck="true">#消息组件类型</span>
+          <span class="token key atrule">environment</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#设置rabbitmq的相关的环境配置</span>
+            <span class="token key atrule">spring</span><span class="token punctuation">:</span>
+              <span class="token key atrule">rabbitmq</span><span class="token punctuation">:</span>
+                <span class="token key atrule">host</span><span class="token punctuation">:</span> 127.0.0.1
+                <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5672</span>
+                <span class="token key atrule">username</span><span class="token punctuation">:</span> guest
+                <span class="token key atrule">password</span><span class="token punctuation">:</span> guest
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">input</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是stream提供的输入通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> msg <span class="token comment" spellcheck="true">#从该目的地接受消息，上面消息发送者是向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span>
+        <span class="token key atrule">output</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是stream提供的输出通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> transfer<span class="token punctuation">-</span>msg <span class="token comment" spellcheck="true">#消息中转者等会向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+<h4 id="11-3-3-创建消息中转者"><a href="#11-3-3-创建消息中转者" class="headerlink" title="11.3.3-创建消息中转者"></a>11.3.3-创建消息中转者</h4><pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定Processor通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>Processor<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Transfer</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/**
+     * 监控input通道，接收到的消息就是obj，最后发送加工过的消息到output通道
+     * @param obj 接收到的消息
+     * @return 加工后的消息
+     */</span>
+    <span class="token annotation punctuation">@ServiceActivator</span><span class="token punctuation">(</span>inputChannel <span class="token operator">=</span> Processor<span class="token punctuation">.</span>INPUT<span class="token punctuation">,</span> outputChannel <span class="token operator">=</span> Processor<span class="token punctuation">.</span>OUTPUT<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Object <span class="token function">getMsg</span><span class="token punctuation">(</span>Object obj<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//这里先将消息输出，再返回加工后的消息</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"经过中转者加工过的消息:"</span><span class="token operator">+</span>obj<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="11-4-创建消息消费者"><a href="#11-4-创建消息消费者" class="headerlink" title="11.4-创建消息消费者"></a>11.4-创建消息消费者</h3><h4 id="11-4-1-添加依赖"><a href="#11-4-1-添加依赖" class="headerlink" title="11.4.1-添加依赖"></a>11.4.1-添加依赖</h4><pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-stream-rabbit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="11-4-2-添加配置"><a href="#11-4-2-添加配置" class="headerlink" title="11.4.2-添加配置"></a>11.4.2-添加配置</h4><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8015</span>
+<span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> stream<span class="token punctuation">-</span>producer
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">binders</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#在此处配置要绑定的rabbitmq的服务信息</span>
+        <span class="token key atrule">myrabbit</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#自定义的名称</span>
+          <span class="token key atrule">type</span><span class="token punctuation">:</span> rabbit <span class="token comment" spellcheck="true">#消息组件类型</span>
+          <span class="token key atrule">environment</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#设置rabbitmq的相关的环境配置</span>
+            <span class="token key atrule">spring</span><span class="token punctuation">:</span>
+              <span class="token key atrule">rabbitmq</span><span class="token punctuation">:</span>
+                <span class="token key atrule">host</span><span class="token punctuation">:</span> 127.0.0.1
+                <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">5672</span>
+                <span class="token key atrule">username</span><span class="token punctuation">:</span> guest
+                <span class="token key atrule">password</span><span class="token punctuation">:</span> guest
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">input</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是stream提供的输入通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> transfer<span class="token punctuation">-</span>msg <span class="token comment" spellcheck="true">#从该目的地接受消息，上面消息中转者是向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+<h4 id="11-4-3-创建消息消费者"><a href="#11-4-3-创建消息消费者" class="headerlink" title="11.4.3-创建消息消费者"></a>11.4.3-创建消息消费者</h4><pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定输入通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>Sink<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Consumer</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/**
+     * 监控input通道，接收到的消息就是obj
+     * @param obj 接收到的消息
+     */</span>
+    <span class="token annotation punctuation">@StreamListener</span><span class="token punctuation">(</span>Sink<span class="token punctuation">.</span>INPUT<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">getMsg</span><span class="token punctuation">(</span>Object obj<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="11-5-测试"><a href="#11-5-测试" class="headerlink" title="11.5-测试"></a>11.5-测试</h3><p>分别启动这三个模块，访问<a href="http://localhost:8013/sendMsg接口，向消息发送者发送消息，可以看到中转者和消费者分别打印出消息。" target="_blank" rel="noopener">http://localhost:8013/sendMsg接口，向消息发送者发送消息，可以看到中转者和消费者分别打印出消息。</a></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/sendMsg.png" alt="sendMsg"></p>
+<p><img src="/2020/01/17/springcloud-xue-xi-bi-ji-yi/%E6%B6%88%E8%B4%B9Msg.png" alt="消费Msg"></p>
+<p>如果我们有多个消息消费者，而消息每次只需要被消费一次该怎么办呢？</p>
+<p>我们可以将多个消息消费者放到同一个组中，这样他们就会互相竞争，最终只有一个消费者会接收到消息。</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+  <span class="token key atrule">input</span><span class="token punctuation">:</span>
+    <span class="token key atrule">destination</span><span class="token punctuation">:</span> transfer<span class="token punctuation">-</span>msg
+    <span class="token comment" spellcheck="true">#多个消费者分到同一个组中会相互竞争</span>
+    <span class="token key atrule">group</span><span class="token punctuation">:</span> group</code></pre>
+<h3 id="11-6-自定义消息通道"><a href="#11-6-自定义消息通道" class="headerlink" title="11.6-自定义消息通道"></a>11.6-自定义消息通道</h3><p>在实际生产中，我们不可能仅仅使用stream提供的三个通道，这还远远不够，因此我们要自定义消息通道，其实很简单，就是比着葫芦画瓢。</p>
+<ul>
+<li><p>修改消息发送者，模拟一个myOutput通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">MyOutput</span> <span class="token punctuation">{</span>
+    String MYOUTPUT <span class="token operator">=</span> <span class="token string">"myOutput"</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//方法名是什么无所谓</span>
+    <span class="token annotation punctuation">@Output</span><span class="token punctuation">(</span><span class="token string">"myOutput"</span><span class="token punctuation">)</span>
+    MessageChannel <span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改消息发送者，使用我们自定义的发送通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定输出通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>MyOutput<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Producer</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> MyOutput myOutput<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sendMsg</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        myOutput<span class="token punctuation">.</span><span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>MessageBuilder<span class="token punctuation">.</span><span class="token function">withPayload</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改配置文件</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">myOutput</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是自定义的输出通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> msg <span class="token comment" spellcheck="true">#发送的目的地</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+</li>
+<li><p>修改消息中转者，来模拟一个MyTransfer通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">MyTransfer</span> <span class="token punctuation">{</span>
+    String MYOUTPUT <span class="token operator">=</span> <span class="token string">"myOutput"</span><span class="token punctuation">;</span>
+    String MYINPUT <span class="token operator">=</span> <span class="token string">"myInput"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Output</span><span class="token punctuation">(</span><span class="token string">"myOutput"</span><span class="token punctuation">)</span>
+    MessageChannel <span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Input</span><span class="token punctuation">(</span><span class="token string">"myInput"</span><span class="token punctuation">)</span>
+    MessageChannel <span class="token function">input</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改消息中转者，使用我们自定义的中转通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定我们自定义的中转通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>MyTransfer<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Transfer</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/**
+     * 监控myInput通道，接收到的消息就是obj，最后发送加工过的消息到myOutput通道
+     * @param obj 接收到的消息
+     * @return 加工后的消息
+     */</span>
+    <span class="token annotation punctuation">@ServiceActivator</span><span class="token punctuation">(</span>inputChannel <span class="token operator">=</span> MyTransfer<span class="token punctuation">.</span>MYINPUT<span class="token punctuation">,</span> outputChannel <span class="token operator">=</span> MyTransfer<span class="token punctuation">.</span>MYOUTPUT<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Object <span class="token function">getMsg</span><span class="token punctuation">(</span>Object obj<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//这里先将消息输出，再返回加工后的消息</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"经过中转者加工过的消息:"</span><span class="token operator">+</span>obj<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改配置文件</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">myInput</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是我们自定义的输入通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> msg <span class="token comment" spellcheck="true">#从该目的地接受消息，上面消息发送者是向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span>
+        <span class="token key atrule">myOutput</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是我们自定义的输出通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> transfer<span class="token punctuation">-</span>msg <span class="token comment" spellcheck="true">#消息中转者等会向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+</li>
+<li><p>修改消息消费者，我们模拟一个MyInput通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">MyInput</span> <span class="token punctuation">{</span>
+    String MYINPUT <span class="token operator">=</span> <span class="token string">"myInput"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Input</span><span class="token punctuation">(</span><span class="token string">"myInput"</span><span class="token punctuation">)</span>
+    MessageChannel <span class="token function">input</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改消息消费者，换成我们自定义的输入通道</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//绑定我们自定义的输入通道</span>
+<span class="token annotation punctuation">@EnableBinding</span><span class="token punctuation">(</span>MyInput<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Consumer</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/**
+     * 监控myInput通道，接收到的消息就是obj
+     * @param obj 接收到的消息
+     */</span>
+    <span class="token annotation punctuation">@StreamListener</span><span class="token punctuation">(</span>MyInput<span class="token punctuation">.</span>MYINPUT<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">getMsg</span><span class="token punctuation">(</span>Object obj<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>修改配置文件</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">stream</span><span class="token punctuation">:</span>
+      <span class="token key atrule">bindings</span><span class="token punctuation">:</span>
+        <span class="token key atrule">myInput</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#绑定的通道，这里使用的是自定义的输入通道</span>
+          <span class="token key atrule">destination</span><span class="token punctuation">:</span> transfer<span class="token punctuation">-</span>msg <span class="token comment" spellcheck="true">#从该目的地接受消息，上面消息中转者是向这个目的地发送消息</span>
+          <span class="token key atrule">content-type</span><span class="token punctuation">:</span> application/json <span class="token comment" spellcheck="true">#消息类型</span></code></pre>
+</li>
+</ul>
 
             </div>
             <hr/>
@@ -2893,7 +3408,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">404.6k</span>&nbsp;字
+                class="white-color">409.3k</span>&nbsp;字
             
             
             
