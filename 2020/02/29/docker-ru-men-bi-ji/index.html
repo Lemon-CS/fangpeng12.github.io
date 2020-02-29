@@ -1,0 +1,1707 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Docker入门笔记, 空白格的博客">
+    <meta name="description" content="Docker入门1-简介1.1-了解Docker的前生LXCLXC为Linux Container的简写。可以提供轻量级的虚拟化，以便隔离进程和资源，而且不需要提供指令解释机制以及全虚拟化的其他复杂性。相当于C++中的NameSpace。容">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Docker入门笔记 | 空白格的博客</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="空白格的博客" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">空白格的博客</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">空白格的博客</div>
+        <div class="logo-desc">
+            
+            个人技术博客：主要是一些技术杂谈和学习笔记的分享
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/fangpeng12" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #36b3ec;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/fangpeng12" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Docker入门笔记
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Docker/">
+                                <span class="chip bg-color">Docker</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Docker/" class="post-category">
+                                Docker
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-02-29
+                </div>
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    11.3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    42 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Docker入门"><a href="#Docker入门" class="headerlink" title="Docker入门"></a>Docker入门</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1-简介"></a>1-简介</h2><h2 id="1-1-了解Docker的前生LXC"><a href="#1-1-了解Docker的前生LXC" class="headerlink" title="1.1-了解Docker的前生LXC"></a>1.1-了解Docker的前生LXC</h2><p>LXC为Linux Container的简写。可以提供轻量级的虚拟化，以便隔离进程和资源，而且不需要提供指令解释机制以及全虚拟化的其他复杂性。相当于C++中的NameSpace。容器有效地将由单个操作系统管理的资源划分到孤立的组中，以更好地在孤立的组之间平衡有冲突的资源使用需求。</p>
+<p><strong>与传统虚拟化技术相比，它的优势在于：</strong></p>
+<ul>
+<li>与宿主机使用同一个内核，性能损耗小；</li>
+<li>不需要指令级模拟；</li>
+<li>不需要即时(Just-in-time)编译；</li>
+<li>容器可以在CPU核心的本地运行指令，不需要任何专门的解释机制；</li>
+<li>避免了准虚拟化和系统调用替换中的复杂性；</li>
+<li>轻量级隔离，在隔离的同时还提供共享机制，以实现容器与宿主机的资源共享。</li>
+</ul>
+<p>总结：Linux Container是一种轻量级的虚拟化的手段。</p>
+<p>Linux Container提供了在单一可控主机节点上支持多个相互隔离的server container同时执行的机制。Linux Container有点像chroot，提供了一个拥有自己进程和网络空间的虚拟环境，但又有别于虚拟机，因为lxc是一种操作系统层次上的资源的虚拟化。</p>
+<h3 id="1-2-LXC与docker什么关系？"><a href="#1-2-LXC与docker什么关系？" class="headerlink" title="1.2-LXC与docker什么关系？"></a>1.2-LXC与docker什么关系？</h3><p>docker并不是LXC替代品，docker底层使用了LXC来实现，LXC将linux进程沙盒化，使得进程之间相互隔离，并且能够课哦内阁制各进程的资源分配。</p>
+<p>在LXC的基础之上，docker提供了一系列更强大的功能。</p>
+<h3 id="1-3-什么是Docker？"><a href="#1-3-什么是Docker？" class="headerlink" title="1.3-什么是Docker？"></a>1.3-什么是Docker？</h3><p>docker是一个开源的应用容器引擎，基于go语言开发并遵循了apache2.0协议开源。<br>docker可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的linux服务器，也可以实现虚拟化。<br>容器是完全使用沙箱机制，相互之间不会有任何接口（类iphone的app），并且容器开销极其低。</p>
+<p>Docker 是一个开源的应用容器引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在本地编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。</p>
+<p>简单的理解，Docker类似于集装箱，各式各样的货物，经过集装箱的标准化进行托管，而集装箱和集装箱之间没有影响。也就是说，Docker平台就是一个软件集装箱化平台，这就意味着我们自己可以构建应用程序，将其依赖关系一起打包到一个容器中，然后这容器就很容易运送到其他的机器上进行运行，而且非常易于装载、复制、移除，非常适合软件弹性架构。</p>
+<p>因此，就像船只、火车或卡车运输集装箱而不论其内部的货物一样，软件容器充当软件部署的标准单元，其中可以包含不同的代码和依赖项。 按照这种方式容器化软件，开发人员和 IT 专业人员只需进行极少修改或不修改，即可将其部署到不同的环境。</p>
+<p>总而言之，Docker 是一个开放平台，使开发人员和管理员可以在称为容器的松散隔离的环境中构建镜像、交付和运行分布式应用程序。以便在开发、QA 和生产环境之间进行高效的应用程序生命周期管理。</p>
+<p><strong>Docker官方文档：</strong><a href="https://docs.docker.com/" target="_blank" rel="noopener">https://docs.docker.com/</a></p>
+<h3 id="1-4-为什么docker越来越受欢迎"><a href="#1-4-为什么docker越来越受欢迎" class="headerlink" title="1.4-为什么docker越来越受欢迎"></a>1.4-为什么docker越来越受欢迎</h3><p>官方话语：</p>
+<ul>
+<li><p><strong>容器化越来越受欢迎，因为容器是：</strong></p>
+<ul>
+<li><strong>灵活</strong>：即使是最复杂的应用也可以集装箱化。</li>
+<li><strong>轻量级</strong>：容器利用并共享主机内核。</li>
+<li><strong>可互换</strong>：您可以即时部署更新和升级。</li>
+<li><strong>便携式</strong>：您可以在本地构建，部署到云，并在任何地方运行。</li>
+<li><strong>可扩展</strong>：您可以增加并自动分发容器副本。</li>
+<li><strong>可堆叠</strong>：您可以垂直和即时堆叠服务。</li>
+</ul>
+</li>
+<li><p><strong>镜像和容器（contalners）:</strong></p>
+<p>通过镜像启动一个容器，一个镜像是一个可执行的包，其中包括运行应用程序所需要的所有内容包含代码，运行时间，库、环境变量、和配置文件。<br>容器是镜像的运行实例，当被运行时有镜像状态和用户进程，可以使用docker ps 查看。</p>
+</li>
+<li><p><strong>容器和虚拟机:</strong></p>
+<p>容器时在linux上本机运行，并与其他容器共享主机的内核，它运行的一个独立的进程，不占用其他任何可执行文件的内存，非常轻量。</p>
+<p>虚拟机运行的是一个完成的操作系统，通过虚拟机管理程序对主机资源进行虚拟访问，相比之下需要的资源更多。</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/docker%E5%92%8CVM.png" alt="docker和VM"></p>
+</li>
+</ul>
+<h3 id="1-5-容器和虚拟机的区别"><a href="#1-5-容器和虚拟机的区别" class="headerlink" title="1.5-容器和虚拟机的区别"></a>1.5-容器和虚拟机的区别</h3><ul>
+<li><p>启动时间：Docker秒级启动，虚拟机分钟级启动。</p>
+</li>
+<li><p>轻量级：docker镜像大小通常以M为单位，虚拟机以G为单位。容器资源占用小，要比虚拟机部署更快速。</p>
+</li>
+<li><p>性能：docker共享宿主机内核，系统级虚拟化，占用资源少，没有Hypervisor层开销，性能基本接近物理机; 虚拟机需要Hypervisor层支持，虚拟化一些设备，具有完整的GuestOS，虚拟化开销大，因而降低性能，没有容器性能好。</p>
+</li>
+<li><p>安全性：由于共享宿主机内核，只是进程级隔离，因此隔离性和稳定性不如虚拟机，docker具有一定权限访问宿主机内核，存在一定安全隐患。</p>
+</li>
+<li><p>使用要求：VM基于硬件的完全虚拟化，需要硬件CPU虚拟化技术支持; docker共享宿主机内核，可运行在主流的Linux发行版，不用考虑CPU是否支持虚拟化技术。</p>
+</li>
+</ul>
+<p>总结：虚拟机更擅长于彻底隔离整个运行环境。例如，云服务提供商通常采用虚拟机技术隔离不同的用户。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>docker</strong></th>
+<th><strong>虚拟机</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>相同点</strong></td>
+<td>1. 都可在不同的主机之间迁移<br>2. 都具备 root 权限<br>3. 都可以远程控制<br>4. 都有备份、回滚操作</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>操作系统</strong></td>
+<td>在性能上有优势，可以轻易的运行多个操作系统</td>
+<td>可以安装任何系统，但是性能不及容器</td>
+</tr>
+<tr>
+<td><strong>原理</strong></td>
+<td>和宿主机共享内核，所有容器运行在容器引擎之上，容器并非一个完整的操作系统，所有容器共享操作系统，在进程级进行隔离</td>
+<td>每一个虚拟机都建立在虚拟的硬件之上，提供指令级的虚拟，具备一个完整的操作系统</td>
+</tr>
+<tr>
+<td><strong>资源管理</strong></td>
+<td>弹性资源分配：资源可以在没有关闭容器的情况下添加，数据卷也无需重新分配大小</td>
+<td>虚拟机需要重启，虚拟机里边的操作系统需要处理新加入的资源，如磁盘等，都需要重新分区。</td>
+</tr>
+<tr>
+<td><strong>远程管理</strong></td>
+<td>根据操作系统的不同，可以通过 shell 或者远程桌面进行</td>
+<td>远程控制由虚拟化平台提供，可以在虚拟机启动之前连接</td>
+</tr>
+<tr>
+<td><strong>配置</strong></td>
+<td>快速，基本上是一键配置</td>
+<td>配置时间长</td>
+</tr>
+<tr>
+<td><strong>启动时间</strong></td>
+<td>秒级</td>
+<td>分钟级</td>
+</tr>
+<tr>
+<td><strong>硬盘使用</strong></td>
+<td>MB</td>
+<td>GB</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>接近原生态</td>
+<td>弱于原生态</td>
+</tr>
+<tr>
+<td><strong>系统支持数量</strong></td>
+<td>单机支持上千个</td>
+<td>一般不多于几十个</td>
+</tr>
+<tr>
+<td><strong>优点</strong></td>
+<td>高效、集中。一个硬件节点可以运行数以百计的的容器，非常节省资源，QoS 会尽量满足，但不保证一定满足。内核由提供者升级，服务由服务提供者管理</td>
+<td>对操作系统具有绝对权限，对系统版本和系统升级具有完全的管理权限。具有一整套的的资源：CPU、RAM 和磁盘。QoS 是有保证的，每一个虚拟机就像一个真实的物理机一样，可以实现不同的操作系统运行在同一物理节点上。</td>
+</tr>
+<tr>
+<td><strong>缺点</strong></td>
+<td>对内核没有控制权限，只有容器的提供者具备升级权限。只有一个内核运行在物理节点上，几乎不能实现不同的操作系统混合。容器提供者一般仅提供少数的几个操作系统</td>
+<td>每一台虚拟机都具有更大的负载，耗费更多的资源，用户需要全权维护和管理。一台物理机上能够运行的虚拟机非常有限</td>
+</tr>
+</tbody></table>
+<h3 id="1-6-docker版本"><a href="#1-6-docker版本" class="headerlink" title="1.6-docker版本"></a>1.6-docker版本</h3><ul>
+<li><p><code>Docker Community Edition（CE）</code>社区版</p>
+</li>
+<li><p><code>Enterprise Edition(EE)</code> 商业版</p>
+</li>
+</ul>
+<h3 id="1-7-docker和openstack的对比"><a href="#1-7-docker和openstack的对比" class="headerlink" title="1.7-docker和openstack的对比"></a>1.7-docker和openstack的对比</h3><p><img src="/2020/02/29/docker-ru-men-bi-ji/docker%E5%92%8Copenstack.png" alt="docker和openstack"></p>
+<h3 id="1-8-容器在内核中支持2种重要技术"><a href="#1-8-容器在内核中支持2种重要技术" class="headerlink" title="1.8-容器在内核中支持2种重要技术"></a>1.8-容器在内核中支持2种重要技术</h3><p>docker本质就是宿主机的一个进程，docker是通过namespace实现资源隔离，通过cgroup实现资源限制，通过写时复制技术（copy-on-write）实现了高效的文件操作（类似虚拟机的磁盘比如分配500g并不是实际占用物理磁盘500g）</p>
+<ul>
+<li><p><strong>namespaces 名称空间</strong></p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/namespace%E7%9A%84%E5%85%AD%E9%A1%B9%E9%9A%94%E7%A6%BB.png" alt="namespace的六项隔离"></p>
+</li>
+<li><p><strong>control Group 控制组</strong></p>
+<p>cgroup的特点是：　　　　　　</p>
+<ul>
+<li>cgroup的api以一个伪文件系统的实现方式，用户的程序可以通过文件系统实现cgroup的组件管理</li>
+<li>cgroup的组件管理操作单元可以细粒度到线程级别，另外用户可以创建和销毁cgroup，从而实现资源载分配和再利用</li>
+<li>所有资源管理的功能都以子系统的方式实现，接口统一子任务创建之初与其父任务处于同一个cgroup的控制组</li>
+</ul>
+<p>四大功能：</p>
+<ul>
+<li>资源限制：可以对任务使用的资源总额进行限制</li>
+<li>优先级分配：通过分配的cpu时间片数量以及磁盘IO带宽大小，实际上相当于控制了任务运行优先级</li>
+<li>资源统计：可以统计系统的资源使用量，如cpu时长，内存用量等</li>
+<li>任务控制：cgroup可以对任务执行挂起、恢复等操作</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-9-docker的基本概念"><a href="#1-9-docker的基本概念" class="headerlink" title="1.9-docker的基本概念"></a>1.9-docker的基本概念</h3><ul>
+<li><p><code>image</code></p>
+<p><strong>镜像：一个特殊的文件系统</strong></p>
+<p>操作系统分为内核和用户空间。对于 Linux 而言，内核启动后，会挂载 root 文件系统为其提供用户空间支持。而 Docker 镜像（Image），就相当于是一个 root 文件系统。</p>
+<p>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。</p>
+<p>镜像不包含任何动态数据，其内容在构建之后也不会被改变。</p>
+<p>Docker 设计时，就充分利用 Union FS 的技术，将其设计为分层存储的架构。 镜像实际是由多层文件系统联合组成。</p>
+<p>镜像构建时，会一层层构建，前一层是后一层的基础。每一层构建完就不会再发生改变，后一层上的任何改变只发生在自己这一层。</p>
+<p>比如，删除前一层文件的操作，实际不是真的删除前一层的文件，而是仅在当前层标记为该文件已删除。</p>
+<p>在最终容器运行的时候，虽然不会看到这个文件，但是实际上该文件会一直跟随镜像。</p>
+<p>因此，在构建镜像的时候，需要额外小心，每一层尽量只包含该层需要添加的东西，任何额外的东西应该在该层构建结束前清理掉。</p>
+<p>分层存储的特征还使得镜像的复用、定制变的更为容易。甚至可以用之前构建好的镜像作为基础层，然后进一步添加新的层，以定制自己所需的内容，构建新的镜像。</p>
+<blockquote>
+<p><strong>docker镜像就是一个只读模板，比如，一个镜像可以包含一个完整的centos，里面仅安装apache或用户的其他应用，镜像可以用来创建docker容器，另外docker提供了一个很简单的机制来创建镜像或者更新现有的镜像，用户甚至可以直接从其他人那里下周一个已经做好的镜像来直接使用。</strong></p>
+</blockquote>
+</li>
+<li><p><code>container容器</code></p>
+<p><strong>容器：镜像运行时的实体</strong></p>
+<p>镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等 。</p>
+<p>容器的实质是进程，但与直接在宿主执行的进程不同，容器进程运行于属于自己的独立的命名空间。前面讲过镜像使用的是分层存储，容器也是如此。</p>
+<p>容器存储层的生存周期和容器一样，容器消亡时，容器存储层也随之消亡。因此，任何保存于容器存储层的信息都会随容器删除而丢失。</p>
+<p>按照 Docker 最佳实践的要求，容器不应该向其存储层内写入任何数据 ，容器存储层要保持无状态化。</p>
+<p>所有的文件写入操作，都应该使用数据卷（Volume）、或者绑定宿主目录，在这些位置的读写会跳过容器存储层，直接对宿主（或网络存储）发生读写，其性能和稳定性更高。</p>
+<p>数据卷的生存周期独立于容器，容器消亡，数据卷不会消亡。因此， 使用数据卷后，容器可以随意删除、重新 run，数据却不会丢失。</p>
+<p><strong>注意：</strong></p>
+<p>容器在整个应用程序生命周期工作流中提供以下优点：隔离性、可移植性、灵活性、可伸缩性和可控性。 最重要的优点是可在开发和运营之间提供隔离。</p>
+<blockquote>
+<p><strong>docker利用容器来运行应用，容器是从镜像创建的运行实例，它可以被启动，开始、停止、删除、每个容器都是互相隔离的，保证安全的平台，可以把容器看做是要给简易版的linux环境（包括root用户权限、镜像空间、用户空间和网络空间等）和运行再其中的应用程序。</strong></p>
+</blockquote>
+</li>
+<li><p><code>repostory仓库</code></p>
+<p><strong>仓库：集中存放镜像文件的地方</strong></p>
+<p>镜像构建完成后，可以很容易的在当前宿主上运行，但是， 如果需要在其他服务器上使用这个镜像，我们就需要一个集中的存储、分发镜像的服务，Docker Registry 就是这样的服务。</p>
+<p>一个 Docker Registry 中可以包含多个仓库（Repository）；每个仓库可以包含多个标签（Tag）；每个标签对应一个镜像。</p>
+<p>所以说，镜像仓库是 Docker 用来集中存放镜像文件的地方，类似于我们之前常用的代码仓库。</p>
+<p>通常，一个仓库会包含同一个软件不同版本的镜像，而标签就常用于对应该软件的各个版本 。</p>
+<p>我们可以通过&lt;仓库名&gt;:&lt;标签&gt;的格式来指定具体是这个软件哪个版本的镜像。如果不给出标签，将以 latest 作为默认标签。</p>
+<p>这里补充一下 Docker Registry 公开服务和私有 Docker Registry 的概念：</p>
+<p>Docker Registry 公开服务是开放给用户使用、允许用户管理镜像的 Registry 服务。</p>
+<p>一般这类公开服务允许用户免费上传、下载公开的镜像，并可能提供收费服务供用户管理私有镜像。</p>
+<p>最常使用的 Registry 公开服务是官方的 Docker Hub ，这也是默认的 Registry，并拥有大量的高质量的官方镜像，网址为：hub.docker.com/ 。</p>
+<p>在国内访问 Docker Hub 可能会比较慢，国内也有一些云服务商提供类似于 Docker Hub 的公开服务。</p>
+<p>除了使用公开服务外，用户还可以在本地搭建私有 Docker Registry 。Docker 官方提供了 Docker Registry 镜像，可以直接使用做为私有 Registry 服务。</p>
+</li>
+</ul>
+<p>  开源的 Docker Registry 镜像只提供了 Docker Registry API 的服务端实现，足以支持 Docker 命令，不影响使用。但不包含图形界面，以及镜像维护、用户管理、访问控制等高级功能。</p>
+<blockquote>
+<p><strong>仓库是集中存储镜像文件的沧桑，registry是仓库主从服务器，实际上参考注册服务器上存放着多个仓库，每个仓库中又包含了多个镜像，每个镜像有不同的标签（tag）</strong></p>
+<p><strong>仓库分为两种，公有参考，和私有仓库，最大的公开仓库是docker Hub，存放了数量庞大的镜像供用户下周，国内的docker pool，这里仓库的概念与Git类似，registry可以理解为github这样的托管服务。</strong></p>
+</blockquote>
+<h3 id="1-10-docker的主要用途"><a href="#1-10-docker的主要用途" class="headerlink" title="1.10-docker的主要用途"></a>1.10-docker的主要用途</h3><ul>
+<li><p><strong>简化配置</strong></p>
+<p>虚拟机的最大好处是能在你的硬件设施上运行各种配置不一样的平台（软件、系统），Docker在降低额外开销的情况下提供了同样的功能。它能让你将运行环境和配置放在代码中然后部署，同一个Docker的配置可以在不同的环境中使用，这样就降低了硬件要求和应用环境之间耦合度。</p>
+<p><strong>简单的来说，容器镜像打包完成后，它就是个独立的个体了，丢到哪里都能跑，而无需针对各个平台去独立配置。</strong></p>
+</li>
+<li><p><strong>代码流水线（Code Pipeline）管理</strong></p>
+<p>前一个场景对于管理代码的流水线起到了很大的帮助。代码从开发者的机器到最终在生产环境上的部署，需要经过很多的中间环境。而每一个中间环境都有自己微小的差别，Docker给应用提供了一个从开发到上线均一致的环境，让代码的流水线变得简单不少。</p>
+</li>
+<li><p><strong>提高开发效率</strong></p>
+<p>不同的开发环境中，我们都想把两件事做好。一是我们想让开发环境尽量贴近生产环境，二是我们想快速搭建开发环境。</p>
+<p>使用Docker非常简单的就能够实现这两点，而且哪怕是开发环境的机器配置一般的情况下搭建多个生成服务应用。一台一般配置服务器或开发机也能轻松的跑起多个Docker应用，而无需额外增加机器配置。因为Docker有个非常NB的特性，拥有虚拟化的特性，而几乎没有额外的开销。</p>
+</li>
+<li><p><strong>隔离应用</strong></p>
+<p>很多情况下，我们需要在一台服务器上运行多个不同的应用，比如上面提到的提高开发效率的场景等。</p>
+<p>我们经常需要考虑三点，一是因为要降低成本而进行服务器整合，二是将一个整体式的应用拆分成松耦合的单个服务（比如微服务架构），三是还需要考虑应用之间的兼容性。而对于Docker来说，支持起来就非常简单了。同一台机器，我可以同时运行N个Docker web应用，托管到不同的Web服务器（Kestrel、Ngnix、Tomcat），而无需担心他们会搞起3Q大战，也无需担心我的开发机器会跑不起来。</p>
+</li>
+<li><p><strong>整合服务器</strong></p>
+<p>正如通过虚拟机来整合多个应用，Docker隔离应用的能力使得Docker可以整合多个服务器以降低成本。由于没有多个操作系统的内存占用，以及能在多个实例之间共享没有使用的内存，Docker可以比虚拟机提供更好的服务器整合解决方案。</p>
+<p>这就意味着资源得到更有效的利用——可以做更多衣服，而且还没有边角料，成本还更低。</p>
+</li>
+<li><p><strong>调试能力</strong></p>
+<p>Docker提供了很多的工具，这些工具不一定只是针对容器，但是却适用于容器。它们提供了很多的功能，包括可以为容器设置检查点、设置版本和查看两个容器之间的差别，这些特性可以帮助调试Bug。</p>
+</li>
+<li><p><strong>多租户环境</strong></p>
+<p>在多租户的应用中，它可以避免关键应用的重写。比如IoT（物联网）的应用中，开发一个快速、易用的多租户环境。这种多租户的基本代码非常复杂，很难处理，重新规划这样一个应用不但消耗时间，也浪费金钱。</p>
+<p>使用Docker，可以为每一个租户的应用层的多个实例创建隔离的环境，这不仅简单而且成本低廉，当然这一切得益于Docker环境的启动速度和其高效的diff命令。</p>
+<p>就如同我们现在写了一个不支持多租户的业务程序，而实际的业务中经常会出现需要支持多租户或者有新客户需要使用的场景，这是我们通常的简单做法是——部署一套新的代码。当站点达到一定量的适合，要么重写程序，要么维护人员Game over。</p>
+</li>
+<li><p><strong>快速部署</strong></p>
+<p>在虚拟机之前，引入新的硬件资源需要消耗几天的时间。虚拟化技术（Virtualization）将这个时间缩短到了分钟级别。而Docker通过为进程仅仅创建一个容器而无需启动一个操作系统，再次将这个过程缩短到了秒级。</p>
+<p>你可以在服务器中或云端创建销毁资源而无需担心重新启动带来的开销。通常情况下，服务器的资源利用率只有30%，而通过使用Docker并进行有效的资源分配可以提高资源的利用率。</p>
+</li>
+</ul>
+<p><strong>Docker通常用于如下场景：</strong></p>
+<ul>
+<li>web应用的自动化打包和发布；</li>
+<li>自动化测试和持续集成、发布；</li>
+<li>在服务型环境中部署和调整数据库或其他的后台应用；</li>
+<li>从头编译或者扩展现有的OpenShift或Cloud Foundry平台来搭建自己的PaaS环境。</li>
+</ul>
+<blockquote>
+<p>官方就是Bulid 、ship、run any app/any where，编译、装载、运行、任何app/在任意地放都能运行。</p>
+<p>就是实现了应用的封装、部署、运行的生命周期管理只要在glibc的环境下，都可以运行。</p>
+<p>运维生成环境中：docker化。</p>
+<ul>
+<li>发布服务不用担心服务器的运行环境，所有的服务器都是自动分配docker，自动部署，自动安装，自动运行</li>
+<li>再不用担心其他服务引擎的磁盘问题，cpu问题，系统问题了</li>
+<li>资源利用更出色</li>
+<li>自动迁移，可以制作镜像，迁移使用自定义的镜像即可迁移，不会出现什么问题</li>
+<li>管理更加方便了</li>
+</ul>
+</blockquote>
+<h3 id="1-11-docker改变了什么？"><a href="#1-11-docker改变了什么？" class="headerlink" title="1.11-docker改变了什么？"></a>1.11-docker改变了什么？</h3><p>综上所述，Docker到底改变了什么？笔者是这么理解的：</p>
+<ul>
+<li>Docker改变了云服务，使云服务的共融共通的理想逐步成为了可能。并且Docker 已经是云策略的一部分，许多开发者正在计划使用 Docker 将业务迁移到云端。另外，为了避免被云服务供应商绑定，Docker成为很多开发者的首选。</li>
+<li>Docker改变了产品交付，为产品的整个生命周期提供了一整套的解决方案和流程。</li>
+<li>Docker改变了开发方式，提供了简化的环境配置、封装的运行环境以及统一的环境。并且提供了快速部署的方式。</li>
+<li>Docker改变了测试，多版本测试变得极为方便，快速构建测试环境也变得更加简单并且无需开发人员干预或者搭建。</li>
+<li>Docker改变了运维，环境的一致性让运维变得更加简单，同时热更新的支持让运维不再需要半夜加班部署更新，更新可以随时进行。当出现重大问题时，还能快速回滚到指定版本。</li>
+<li>Docker改变了架构，自动化扩容支持让架构变得更加简单，分布式系统也更加易于搭建和支持。同时遗留的单体应用也很易于转变为现代应用。</li>
+</ul>
+<p>总之，在某种程度上，Docker改变了产品开发中的一些游戏规则。虽然Docker是一项技术，但是它也带来了新的思维，新的流程和工作方法，Docker在推动行业的发展，Docker已经在改变世界，并且在逐步的变为事实……</p>
+<ul>
+<li>面向产品：产品交付</li>
+<li>面向开发：简化环境配置</li>
+<li>面向测试：多版本测试</li>
+<li>面向运维：环境一致性</li>
+<li>面向架构：自动化扩容（微服务）</li>
+</ul>
+<h2 id="2-docker架构"><a href="#2-docker架构" class="headerlink" title="2-docker架构"></a>2-docker架构</h2><h3 id="2-1-总体架构"><a href="#2-1-总体架构" class="headerlink" title="2.1-总体架构"></a>2.1-总体架构</h3><p><img src="/2020/02/29/docker-ru-men-bi-ji/docker%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84.png" alt="docker总体架构"></p>
+<ul>
+<li>distribution 负责与docker registry交互，上传洗澡镜像以及v2 registry 有关的源数据</li>
+<li>registry负责docker registry有关的身份认证、镜像查找、镜像验证以及管理registry mirror等交互操作</li>
+<li>image 负责与镜像源数据有关的存储、查找，镜像层的索引、查找以及镜像tar包有关的导入、导出操作</li>
+<li>reference负责存储本地所有镜像的repository和tag名，并维护与镜像id之间的映射关系</li>
+<li>layer模块负责与镜像层和容器层源数据有关的增删改查，并负责将镜像层的增删改查映射到实际存储镜像层文件的graphdriver模块</li>
+<li>graghdriver是所有与容器镜像相关操作的执行者</li>
+</ul>
+<h3 id="2-2-docker架构2"><a href="#2-2-docker架构2" class="headerlink" title="2.2-docker架构2"></a>2.2-docker架构2</h3><p>如果觉得上面架构图比较乱可以看这个架构：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/docker%E6%9E%B6%E6%9E%842.png" alt="docker架构2"></p>
+<p>从上图不难看出，用户是使用Docker Client与Docker Daemon建立通信，并发送请求给后者。</p>
+<p>而Docker Daemon作为Docker架构中的主体部分，首先提供Server的功能使其可以接受Docker Client的请求；而后Engine执行Docker内部的一系列工作，每一项工作都是以一个Job的形式的存在。</p>
+<p>Job的运行过程中，当需要容器镜像时，则从Docker Registry中下载镜像，并通过镜像管理驱动graphdriver将下载镜像以Graph的形式存储；当需要为Docker创建网络环境时，通过网络管理驱动networkdriver创建并配置Docker容器网络环境；当需要限制Docker容器运行资源或执行用户指令等操作时，则通过execdriver来完成。</p>
+<p>而libcontainer是一项独立的容器管理包，networkdriver以及execdriver都是通过libcontainer来实现具体对容器进行的操作。当执行完运行容器的命令后，一个实际的Docker容器就处于运行状态，该容器拥有独立的文件系统，独立并且安全的运行环境等。</p>
+<h3 id="2-3-docker架构3"><a href="#2-3-docker架构3" class="headerlink" title="2.3-docker架构3"></a>2.3-docker架构3</h3><p>再来看看另外一个架构，这个个架构就简单清晰指明了server/client交互，容器和镜像、数据之间的一些联系。</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/docker%E6%9E%B6%E6%9E%843.png" alt="docker架构3"></p>
+<p>docker daemon就是docker的守护进程即server端，可以是远程的，也可以是本地的，这个不是C/S架构吗，客户端Docker client 是通过rest api进行通信。</p>
+<p>docker cli 用来管理容器和镜像，客户端提供一个只读镜像，然后通过镜像可以创建多个容器，这些容器可以只是一个RFS（Root file system根文件系统），也可以ishi一个包含了用户应用的RFS，容器再docker client中只是要给进程，两个进程之间互不可见。</p>
+<p>用户不能与server直接交互，但可以通过与容器这个桥梁来交互，由于是操作系统级别的虚拟技术，中间的损耗几乎可以不计。</p>
+<h3 id="2-4-docker架构各个模块的功能"><a href="#2-4-docker架构各个模块的功能" class="headerlink" title="2.4-docker架构各个模块的功能"></a>2.4-docker架构各个模块的功能</h3><p><strong>主要的模块有：</strong>Docker Client、Docker Daemon、Docker Registry、Graph、Driver、libcontainer以及Docker container。　　　</p>
+<h4 id="1-docker-client"><a href="#1-docker-client" class="headerlink" title="1. docker client"></a>1. docker client</h4><p>docker client 是docker架构中用户用来和docker daemon建立通信的客户端，用户使用的可执行文件为docker，通过docker命令行工具可以发起众多管理container的请求。</p>
+<p>docker client可以通过一下三宗方式和docker daemon建立通信：tcp://host:port;unix:path_to_socket;fd://socketfd。，docker client可以通过设置命令行flag参数的形式设置安全传输层协议(TLS)的有关参数，保证传输的安全性。</p>
+<p>docker client发送容器管理请求后，由docker daemon接受并处理请求，当docker client 接收到返回的请求相应并简单处理后，docker client 一次完整的生命周期就结束了，当需要继续发送容器管理请求时，用户必须再次通过docker可以执行文件创建docker client。</p>
+<h4 id="2-docker-daemon"><a href="#2-docker-daemon" class="headerlink" title="2.docker daemon"></a>2.docker daemon</h4><p>docker daemon 是docker架构中一个常驻在后台的系统进程，功能是：接收处理docker client发送的请求。该守护进程在后台启动一个server，server负载接受docker client发送的请求；接受请求后，server通过路由与分发调度，找到相应的handler来执行请求。</p>
+<p>docker daemon启动所使用的可执行文件也为docker，与docker client启动所使用的可执行文件docker相同，在docker命令执行时，通过传入的参数来判别docker daemon与docker client。</p>
+<p>docker daemon的架构可以分为：<code>docker server</code>、<code>engine</code>、<code>job</code>、<code>daemon</code></p>
+<h4 id="3-docker-server"><a href="#3-docker-server" class="headerlink" title="3. docker server"></a>3. docker server</h4><p>docker server在docker架构中时专门服务于docker client的server，该server的功能时：接受并调度分发docker client发送的请求，架构图如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/server%E5%92%8Cclient.png" alt="server和client"></p>
+<p>在Docker的启动过程中，通过包gorilla/mux（golang的类库解析），创建了一个mux.Router，提供请求的路由功能。在Golang中，gorilla/mux是一个强大的URL路由器以及调度分发器。该mux.Router中添加了众多的路由项，每一个路由项由HTTP请求方法（PUT、POST、GET或DELETE）、URL、Handler三部分组成。</p>
+<p>若Docker Client通过HTTP的形式访问Docker Daemon，创建完mux.Router之后，Docker将Server的监听地址以及mux.Router作为参数，创建一个httpSrv=http.Server{}，最终执行httpSrv.Serve()为请求服务。</p>
+<p>在Server的服务过程中，Server在listener上接受Docker Client的访问请求，并创建一个全新的goroutine来服务该请求。在goroutine中，首先读取请求内容，然后做解析工作，接着找到相应的路由项，随后调用相应的Handler来处理该请求，最后Handler处理完请求之后回复该请求。</p>
+<p><strong>需要注意的是：Docker Server的运行在Docker的启动过程中，是靠一个名为”serveapi”的job的运行来完成的。原则上，Docker Server的运行是众多job中的一个，但是为了强调Docker Server的重要性以及为后续job服务的重要特性，将该”serveapi”的job单独抽离出来分析，理解为Docker Server。</strong></p>
+<h4 id="4-engine"><a href="#4-engine" class="headerlink" title="4. engine"></a>4. engine</h4><p>Engine是Docker架构中的运行引擎，同时也Docker运行的核心模块。它扮演Docker container存储仓库的角色，并且通过执行job的方式来操纵管理这些容器。</p>
+<p>在Engine数据结构的设计与实现过程中，有一个handler对象。该handler对象存储的都是关于众多特定job的handler处理访问。举例说明，Engine的handler对象中有一项为：{“create”: daemon.ContainerCreate,}，则说明当名为”create”的job在运行时，执行的是daemon.ContainerCreate的handler。</p>
+<h4 id="5-job"><a href="#5-job" class="headerlink" title="5. job"></a>5. job</h4><p>一个Job可以认为是Docker架构中Engine内部最基本的工作执行单元。Docker可以做的每一项工作，都可以抽象为一个job。例如：在容器内部运行一个进程，这是一个job；创建一个新的容器，这是一个job，从Internet上下载一个文档，这是一个job；包括之前在Docker Server部分说过的，创建Server服务于HTTP的API，这也是一个job，等等。</p>
+<p>Job的设计者，把Job设计得与Unix进程相仿。比如说：Job有一个名称，有参数，有环境变量，有标准的输入输出，有错误处理，有返回状态等。</p>
+<h4 id="6-docker-registry"><a href="#6-docker-registry" class="headerlink" title="6. docker registry"></a>6. docker registry</h4><p>Docker Registry是一个存储容器镜像的仓库。而容器镜像是在容器被创建时，被加载用来初始化容器的文件架构与目录。</p>
+<p>在Docker的运行过程中，Docker Daemon会与Docker Registry通信，并实现搜索镜像、下载镜像、上传镜像三个功能，这三个功能对应的job名称分别为”search”，”pull” 与 “push”。</p>
+<p>其中，在Docker架构中，Docker可以使用公有的Docker Registry，即大家熟知的Docker Hub，如此一来，Docker获取容器镜像文件时，必须通过互联网访问Docker Hub；同时Docker也允许用户构建本地私有的Docker Registry，这样可以保证容器镜像的获取在内网完成。</p>
+<h4 id="7-Graph"><a href="#7-Graph" class="headerlink" title="7. Graph"></a>7. Graph</h4><p>Graph在Docker架构中扮演已下载容器镜像的保管者，以及已下载容器镜像之间关系的记录者。一方面，Graph存储着本地具有版本信息的文件系统镜像，另一方面也通过GraphDB记录着所有文件系统镜像彼此之间的关系。</p>
+<p>Graph的架构如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/Graph%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt="Graph的架构"></p>
+<p>其中，GraphDB是一个构建在SQLite之上的小型图数据库，实现了节点的命名以及节点之间关联关系的记录。它仅仅实现了大多数图数据库所拥有的一个小的子集，但是提供了简单的接口表示节点之间的关系。</p>
+<p>同时在Graph的本地目录中，关于每一个的容器镜像，具体存储的信息有：该容器镜像的元数据，容器镜像的大小信息，以及该容器镜像所代表的具体rootfs。</p>
+<h4 id="8-driver"><a href="#8-driver" class="headerlink" title="8. driver"></a>8. driver</h4><p>Driver是Docker架构中的驱动模块。通过Driver驱动，Docker可以实现对Docker容器执行环境的定制。由于Docker运行的生命周期中，并非用户所有的操作都是针对Docker容器的管理，另外还有关于Docker运行信息的获取，Graph的存储与记录等。因此，为了将Docker容器的管理从Docker Daemon内部业务逻辑中区分开来，设计了Driver层驱动来接管所有这部分请求。</p>
+<p>在Docker Driver的实现中，可以分为以下三类驱动：graphdriver、networkdriver和execdriver。</p>
+<p>graphdriver主要用于完成容器镜像的管理，包括存储与获取。即当用户需要下载指定的容器镜像时，graphdriver将容器镜像存储在本地的指定目录；同时当用户需要使用指定的容器镜像来创建容器的rootfs时，graphdriver从本地镜像存储目录中获取指定的容器镜像。</p>
+<p>在graphdriver的初始化过程之前，有4种文件系统或类文件系统在其内部注册，它们分别是aufs、btrfs、vfs和devmapper。而Docker在初始化之时，通过获取系统环境变量”DOCKER_DRIVER”来提取所使用driver的指定类型。而之后所有的graph操作，都使用该driver来执行。</p>
+<p>graphdriver的架构如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/graphdriver%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt="graphdriver的架构"></p>
+<p>networkdriver的用途是完成Docker容器网络环境的配置，其中包括Docker启动时为Docker环境创建网桥；Docker容器创建时为其创建专属虚拟网卡设备；以及为Docker容器分配IP、端口并与宿主机做端口映射，设置容器防火墙策略等。networkdriver的架构如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/networkdriver%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt="networkdriver的架构"></p>
+<p>execdriver作为Docker容器的执行驱动，负责创建容器运行命名空间，负责容器资源使用的统计与限制，负责容器内部进程的真正运行等。在execdriver的实现过程中，原先可以使用LXC驱动调用LXC的接口，来操纵容器的配置以及生命周期，而现在execdriver默认使用native驱动，不依赖于LXC。</p>
+<p>具体体现在Daemon启动过程中加载的ExecDriverflag参数，该参数在配置文件已经被设为”native”。这可以认为是Docker在1.2版本上一个很大的改变，或者说Docker实现跨平台的一个先兆。execdriver架构如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/execdriver%E6%9E%B6%E6%9E%84.png" alt="execdriver架构"></p>
+<h4 id="9-libcontainer"><a href="#9-libcontainer" class="headerlink" title="9. libcontainer"></a>9. libcontainer</h4><p>libcontainer是Docker架构中一个使用Go语言设计实现的库，设计初衷是希望该库可以不依靠任何依赖，直接访问内核中与容器相关的API。<br>正是由于libcontainer的存在，Docker可以直接调用libcontainer，而最终操纵容器的namespace、cgroups、apparmor、网络设备以及防火墙规则等。这一系列操作的完成都不需要依赖LXC或者其他包。libcontainer架构如下：</p>
+<p><img src="/2020/02/29/docker-ru-men-bi-ji/libcontainer%E6%9E%B6%E6%9E%84.png" alt="libcontainer架构"></p>
+<p>另外，libcontainer提供了一整套标准的接口来满足上层对容器管理的需求。或者说，libcontainer屏蔽了Docker上层对容器的直接管理。又由于libcontainer使用Go这种跨平台的语言开发实现，且本身又可以被上层多种不同的编程语言访问，因此很难说，未来的Docker就一定会紧紧地和Linux捆绑在一起。而于此同时，Microsoft在其著名云计算平台Azure中，也添加了对Docker的支持，可见Docker的开放程度与业界的火热度。</p>
+<p>暂不谈Docker，由于libcontainer的功能以及其本身与系统的松耦合特性，很有可能会在其他以容器为原型的平台出现，同时也很有可能催生出云计算领域全新的项目。</p>
+<h4 id="10-docker-container"><a href="#10-docker-container" class="headerlink" title="10. docker container"></a>10. docker container</h4><p>Docker container（Docker容器）是Docker架构中服务交付的最终体现形式。</p>
+<p>Docker按照用户的需求与指令，订制相应的Docker容器：</p>
+<ul>
+<li>用户通过指定容器镜像，使得Docker容器可以自定义rootfs等文件系统；</li>
+<li>用户通过指定计算资源的配额，使得Docker容器使用指定的计算资源；</li>
+<li>用户通过配置网络及其安全策略，使得Docker容器拥有独立且安全的网络环境；</li>
+<li>用户通过指定运行的命令，使得Docker容器执行指定的工作。</li>
+</ul>
+<p>![docker container](docker container.png)</p>
+<h2 id="3-docker的使用"><a href="#3-docker的使用" class="headerlink" title="3-docker的使用"></a>3-docker的使用</h2><h3 id="3-1-安装（CentOS）"><a href="#3-1-安装（CentOS）" class="headerlink" title="3.1-安装（CentOS）"></a>3.1-安装（CentOS）</h3><pre><code>yum install docker -y 
+systemctl enable docker
+systemctl start docker</code></pre><p>注意：启动前应当设置源</p>
+<pre><code>vim /usr/lib/systemd/system/docker.service</code></pre><p>这里设置阿里的，注册阿里云账户号每个用户都有：</p>
+<pre><code>[root@web1 ~]# vim /usr/lib/systemd/system/docker.service
+
+[Unit]
+Description=Docker Application Container Engine
+Documentation=http://docs.docker.com
+After=network.target
+Wants=docker-storage-setup.service
+Requires=docker-cleanup.timer
+
+[Service]
+Type=notify
+NotifyAccess=main
+EnvironmentFile=-/run/containers/registries.conf
+EnvironmentFile=-/etc/sysconfig/docker
+EnvironmentFile=-/etc/sysconfig/docker-storage
+EnvironmentFile=-/etc/sysconfig/docker-network
+Environment=GOTRACEBACK=crash
+Environment=DOCKER_HTTP_HOST_COMPAT=1
+Environment=PATH=/usr/libexec/docker:/usr/bin:/usr/sbin
+ExecStart=/usr/bin/dockerd-current --registry-mirror=https://rfcod7oz.mirror.aliyuncs.com  #这个值可以登陆阿里云账号请参考下图
+          --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current 
+          --default-runtime=docker-runc 
+          --exec-opt native.cgroupdriver=systemd 
+          --userland-proxy-path=/usr/libexec/docker/docker-proxy-current 
+          --init-path=/usr/libexec/docker/docker-init-current 
+          --seccomp-profile=/etc/docker/seccomp.json 
+          $OPTIONS 
+          $DOCKER_STORAGE_OPTIONS 
+          $DOCKER_NETWORK_OPTIONS 
+          $ADD_REGISTRY 
+          $BLOCK_REGISTRY 
+          $INSECURE_REGISTRY 
+          $REGISTRIES
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+TimeoutStartSec=0
+Restart=on-abnormal
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target</code></pre><h3 id="3-2-docker版本查询"><a href="#3-2-docker版本查询" class="headerlink" title="3.2-docker版本查询"></a>3.2-docker版本查询</h3><pre><code>[root@web1 ~]# docker version
+Client:
+ Version:         1.13.1
+ API version:     1.26
+ Package version: docker-1.13.1-96.gitb2f74b2.el7.centos.x86_64
+ Go version:      go1.10.3
+ Git commit:      b2f74b2/1.13.1
+ Built:           Wed May  1 14:55:20 2019
+ OS/Arch:         linux/amd64
+
+Server:
+ Version:         1.13.1
+ API version:     1.26 (minimum version 1.12)
+ Package version: docker-1.13.1-96.gitb2f74b2.el7.centos.x86_64
+ Go version:      go1.10.3
+ Git commit:      b2f74b2/1.13.1
+ Built:           Wed May  1 14:55:20 2019
+ OS/Arch:         linux/amd64
+ Experimental:    false</code></pre><h3 id="3-3-搜索下载镜像"><a href="#3-3-搜索下载镜像" class="headerlink" title="3.3-搜索下载镜像"></a>3.3-搜索下载镜像</h3><pre><code>docker pull alpine　　　　　　　　　　#下载镜像
+docker search nginx　　　　　　　　　 #查看镜像
+docker pull nginx</code></pre><h3 id="3-4-查看已经下载的镜像"><a href="#3-4-查看已经下载的镜像" class="headerlink" title="3.4-查看已经下载的镜像"></a>3.4-查看已经下载的镜像</h3><pre><code>[root@web1 ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+zxg/my_nginx        v1                  b164f4c07c64        8 days ago          126 MB
+zxg/my_nginx        latest              f07837869dfc        8 days ago          126 MB
+docker.io/nginx     latest              e445ab08b2be        2 weeks ago         126 MB
+docker.io/alpine    latest              b7b28af77ffe        3 weeks ago         5.58 MB
+docker.io/centos    latest              9f38484d220f        4 months ago        202 MB
+[root@web1 ~]#</code></pre><h3 id="3-5-导出镜像"><a href="#3-5-导出镜像" class="headerlink" title="3.5-导出镜像"></a>3.5-导出镜像</h3><pre><code>docker  save nginx &gt;/tmp/nginx.tar.gz</code></pre><h3 id="3-6-删除镜像"><a href="#3-6-删除镜像" class="headerlink" title="3.6-删除镜像"></a>3.6-删除镜像</h3><pre><code>docker rmi -f nginx</code></pre><h3 id="3-7-导入镜像"><a href="#3-7-导入镜像" class="headerlink" title="3.7-导入镜像"></a>3.7-导入镜像</h3><pre><code>docker load &lt;/tmp/nginx.tar.gz</code></pre><h3 id="3-8-默认配置文件"><a href="#3-8-默认配置文件" class="headerlink" title="3.8-默认配置文件"></a>3.8-默认配置文件</h3><p><code>vim /usr/lib/systemd/system/docker.service</code> </p>
+<pre><code>[Unit]
+Description=Docker Application Container Engine
+Documentation=http://docs.docker.com
+After=network.target
+Wants=docker-storage-setup.service
+Requires=docker-cleanup.timer
+
+[Service]
+Type=notify
+NotifyAccess=main
+EnvironmentFile=-/run/containers/registries.conf
+EnvironmentFile=-/etc/sysconfig/docker
+EnvironmentFile=-/etc/sysconfig/docker-storage
+EnvironmentFile=-/etc/sysconfig/docker-network
+Environment=GOTRACEBACK=crash
+Environment=DOCKER_HTTP_HOST_COMPAT=1
+Environment=PATH=/usr/libexec/docker:/usr/bin:/usr/sbin
+ExecStart=/usr/bin/dockerd-current --registry-mirror=https://rfcod7oz.mirror.aliyuncs.com 
+          --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current 
+          --default-runtime=docker-runc 
+          --exec-opt native.cgroupdriver=systemd 
+          --userland-proxy-path=/usr/libexec/docker/docker-proxy-current 
+          --init-path=/usr/libexec/docker/docker-init-current 
+          --seccomp-profile=/etc/docker/seccomp.json 
+          $OPTIONS 
+          $DOCKER_STORAGE_OPTIONS 
+          $DOCKER_NETWORK_OPTIONS 
+          $ADD_REGISTRY 
+          $BLOCK_REGISTRY 
+          $INSECURE_REGISTRY 
+          $REGISTRIES
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+TimeoutStartSec=0
+Restart=on-abnormal
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+~
+~
+~
+~</code></pre><p>如果更改存储目录就添加　　</p>
+<pre><code>--graph=/opt/docker</code></pre><p>如果更改DNS——默认采用宿主机的dns</p>
+<pre><code>--dns=xxxx的方式指定</code></pre><h3 id="3-9-运行hello-world"><a href="#3-9-运行hello-world" class="headerlink" title="3.9-运行hello world"></a>3.9-运行hello world</h3><p>这里用centos镜像echo一个hello word</p>
+<pre><code>[root@web1 overlay2]#  docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+zxg/my_nginx        v1                  b164f4c07c64        8 days ago          126 MB
+zxg/my_nginx        latest              f07837869dfc        8 days ago          126 MB
+docker.io/nginx     latest              e445ab08b2be        2 weeks ago         126 MB
+docker.io/alpine    latest              b7b28af77ffe        3 weeks ago         5.58 MB
+docker.io/centos    latest              9f38484d220f        4 months ago        202 MB
+[root@web1 overlay2]# docker run centos echo &quot;hello world&quot;
+hello world
+[root@web1 overlay2]#</code></pre><h3 id="3-10-运行一个容器（run）"><a href="#3-10-运行一个容器（run）" class="headerlink" title="3.10-运行一个容器（run）"></a>3.10-运行一个容器（run）</h3><pre><code>[root@web1 overlay2]# docker run -it alpine sh   #运行并进入alpine
+/ #
+/ #
+/ #
+/ #
+/ #
+/ # ls
+bin    etc    lib    mnt    proc   run    srv    tmp    var
+dev    home   media  opt    root   sbin   sys    usr
+/ # cd tmp
+/tmp # exit</code></pre><p>后台运行（-d后台运行）（–name添加一个名字）</p>
+<pre><code>
+[root@web1 overlay2]# docker run -it -d --name test1 alpine
+ac46c019b800d34c37d4f9dcd56c974cb82eca3acf185e5f8f80c8a60075e343
+[root@web1 overlay2]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+ac46c019b800        alpine              &quot;/bin/sh&quot;           5 seconds ago       Up 3 seconds                            test1
+[root@web1 overlay2]#</code></pre><p>还有一种-rm参数，ctrl+c后就删除，可以测试环境用，生成环境用的少</p>
+<pre><code>[root@web1 overlay2]# docker run -it  --rm --name centos nginx
+^C[root@web1 overlay2]#
+##另开一个窗口
+[root@web1 ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+3397b96ea7bd        nginx               &quot;nginx -g &#39;daemon ...&quot;   27 seconds ago      Up 25 seconds       80/tcp              centos
+ac46c019b800        alpine              &quot;/bin/sh&quot;                4 minutes ago       Up 4 minutes                            test1
+[root@web1 ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+ac46c019b800        alpine              &quot;/bin/sh&quot;           4 minutes ago       Up 4 minutes                            test1
+[root@web1 ~]#</code></pre><p>输出详情介绍：</p>
+<p><strong>CONTAINER ID:</strong> 容器 ID。</p>
+<p><strong>IMAGE:</strong> 使用的镜像。</p>
+<p><strong>COMMAND:</strong> 启动容器时运行的命令。</p>
+<p><strong>CREATED:</strong> 容器的创建时间。</p>
+<p><strong>STATUS:</strong> 容器状态。</p>
+<p>状态有7种：</p>
+<ul>
+<li>created（已创建）</li>
+<li>restarting（重启中）</li>
+<li>running（运行中）</li>
+<li>removing（迁移中）</li>
+<li>paused（暂停）</li>
+<li>exited（停止）</li>
+<li>dead（死亡）</li>
+</ul>
+<p><strong>PORTS:</strong> 容器的端口信息和使用的连接类型（tcp\udp）。</p>
+<p><strong>NAMES:</strong> 自动分配的容器名称。</p>
+<h3 id="3-11-如何进入容器"><a href="#3-11-如何进入容器" class="headerlink" title="3.11-如何进入容器"></a>3.11-如何进入容器</h3><p>三种方法，上面已经演示了一种<br>第一种，需要容器本身的pid及util-linux，不推荐，暂时不演示了<br>第二种，不分配bash终端的一种实施操作，不推荐，这种操作如果在开一个窗口也能看到操作的指令，所有人都能看到。</p>
+<pre><code>[root@web1 overlay2]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+9fc796e928d7        nginx               &quot;sh&quot;                2 minutes ago       Up 8 seconds        80/tcp              mynginx
+ac46c019b800        alpine              &quot;/bin/sh&quot;           12 minutes ago      Up 12 minutes                           test1
+[root@web1 overlay2]# docker attach mynginx
+
+#
+#
+#
+#
+# ls
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+# exit　　
+[root@web1 overlay2]# docker attach mynginx
+You cannot attach to a stopped container, start it first
+[root@web1 overlay2]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+ac46c019b800        alpine              &quot;/bin/sh&quot;           13 minutes ago      Up 13 minutes                           test1
+[root@web1 overlay2]#</code></pre><p>第三种：exec方式，终端时分开的，推荐</p>
+<pre><code>[root@web1 overlay2]# docker exec -it mynginx sh
+#
+#
+#
+# ls
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+# exit
+[root@web1 overlay2]#
+[root@web1 overlay2]#
+[root@web1 overlay2]#
+[root@web1 overlay2]# docker pa
+docker: &#39;pa&#39; is not a docker command.
+See &#39;docker --help&#39;
+[root@web1 overlay2]# docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+6fc2d091cfe9        nginx               &quot;nginx -g &#39;daemon ...&quot;   45 seconds ago      Up 43 seconds       80/tcp              mynginx
+ac46c019b800        alpine              &quot;/bin/sh&quot;                16 minutes ago      Up 16 minutes                           test1
+</code></pre><h3 id="3-12-查看docker进程及删除容器"><a href="#3-12-查看docker进程及删除容器" class="headerlink" title="3.12-查看docker进程及删除容器"></a>3.12-查看docker进程及删除容器</h3><p>上面已经演示：</p>
+<pre><code>[root@web1 overlay2]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+9fc796e928d7        nginx               &quot;sh&quot;                2 minutes ago       Up 8 seconds        80/tcp              mynginx
+ac46c019b800        alpine              &quot;/bin/sh&quot;           12 minutes ago      Up 12 minutes                           test1</code></pre><pre class=" language-properties"><code class="language-properties">
+<span class="token attr-name">[root@web1</span> <span class="token attr-value">overlay2]# docker ps -a 　　　　　　#-a :显示所有的容器，包括未运行的</span>
+<span class="token attr-name">CONTAINER</span> <span class="token attr-value">ID        IMAGE               COMMAND                  CREATED             STATUS                          PORTS               NAMES</span>
+<span class="token attr-name">9fc796e928d7</span> <span class="token attr-value">       nginx               "sh"                     4 minutes ago       Exited (0) About a minute ago                       mynginx</span>
+<span class="token attr-name">ac46c019b800</span> <span class="token attr-value">       alpine              "/bin/sh"                15 minutes ago      Up 15 minutes                                       test1</span>
+<span class="token attr-name">3bf234febeaa</span> <span class="token attr-value">       alpine              "sh"                     17 minutes ago      Exited (0) 16 minutes ago                           youthful_lumiere</span>
+<span class="token attr-name">ab113c63f0b4</span> <span class="token attr-value">       centos              "echo 'hello world'"     31 minutes ago      Exited (0) 31 minutes ago                           infallible_torvalds</span>
+<span class="token attr-name">b326027dcf42</span> <span class="token attr-value">       zxg/my_nginx        "nginx"                  8 days ago          Exited (0) 8 days ago                               my_nginx</span>
+<span class="token attr-name">4f1f1ca319f2</span> <span class="token attr-value">       centos              "bash"                   8 days ago          Exited (137) 8 days ago                             musing_lichterman</span>
+<span class="token attr-name">64b4e32991c7</span> <span class="token attr-value">       nginx               "nginx -g 'daemon ..."   12 days ago         Exited (0) 12 days ago                              mynginx1</span>
+<span class="token attr-name">aee506fe7b5a</span> <span class="token attr-value">       alpine              "sh"                     12 days ago         Created                                             infallible_haibt</span>
+<span class="token attr-name">70620c73b9a0</span> <span class="token attr-value">       alpine              "sh"                     12 days ago         Created                                             gallant_volhard</span>
+<span class="token attr-name">7655cbf87bb0</span> <span class="token attr-value">       alpine              "sh"                     12 days ago         Created                                             agitated_brahmagupta</span>
+<span class="token attr-name">33fb949372e8</span> <span class="token attr-value">       fce289e99eb9        "/hello"                 12 days ago         Created                                             elastic_dijkstra</span>
+<span class="token attr-name">9de47616aea4</span> <span class="token attr-value">       fce289e99eb9        "/hello"                 13 days ago         Created                                             confident_fermi</span>
+<span class="token attr-name">[root@web1</span> <span class="token attr-value">overlay2]# docker rm 9fc796e928d7 #rm时删除一个或多个容器</span>
+9fc796e928d7</code></pre>
+<h3 id="3-13-查看容器详细信息"><a href="#3-13-查看容器详细信息" class="headerlink" title="3.13-查看容器详细信息"></a>3.13-查看容器详细信息</h3><p>并不需要进入到容器里面，通过查看详细信息看到了刚才运行的nginx，宿主机curl ip地址访问一下运行情况。</p>
+<pre><code>docker inspect mynginx</code></pre><h3 id="3-14-查看日志"><a href="#3-14-查看日志" class="headerlink" title="3.14-查看日志"></a>3.14-查看日志</h3><pre><code>[root@web1 ~]# docker logs  -f mynginx</code></pre>
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io" rel="external nofollow noreferrer">fangpeng</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io/2020/02/29/docker-ru-men-bi-ji/">https://fangpeng12.github.io/2020/02/29/docker-ru-men-bi-ji/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Docker/">
+                                    <span class="chip bg-color">Docker</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/02/29/docker-ru-men-bi-ji/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="Docker入门笔记">
+                        
+                        <span class="card-title">Docker入门笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Docker容器基础入门笔记
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-02-29
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Docker/" class="post-category">
+                                    Docker
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Docker/">
+                        <span class="chip bg-color">Docker</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/02/21/dan-yuan-ce-shi-zhi-mock/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="单元测试之Mock">
+                        
+                        <span class="card-title">单元测试之Mock</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Mock的使用和详解
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-02-21
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-category">
+                                    单元测试
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">单元测试</span>
+                    </a>
+                    
+                    <a href="/tags/Mock/">
+                        <span class="chip bg-color">Mock</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">424.4k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "21";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/fangpeng12" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
