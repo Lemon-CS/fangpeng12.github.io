@@ -466,14 +466,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    21.8k
+                    25.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    97 分
+                    113 分
                 </div>
                 
 				
@@ -738,6 +738,529 @@
   2) spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,classpath:/test/,file:${web.upload-path} </code></pre><ul>
 <li>文件服务器：fastdfs，阿里云oss，nginx搭建一个简单的文件服务器等</li>
 </ul>
+<h3 id="2-9-构建RESTful-API与单元测试"><a href="#2-9-构建RESTful-API与单元测试" class="headerlink" title="2.9-构建RESTful API与单元测试"></a>2.9-构建RESTful API与单元测试</h3><p>首先，回顾并详细说明一下在<a href="http://blog.didispace.com/spring-boot-learning-21-1-1/" target="_blank" rel="noopener">快速入门</a>中使用的<code>@Controller</code>、<code>@RestController</code>、<code>@RequestMapping</code>注解。如果您对Spring MVC不熟悉并且还没有尝试过快速入门案例，建议先看一下<a href="http://blog.didispace.com/spring-boot-learning-21-1-1/" target="_blank" rel="noopener">快速入门</a>的内容。</p>
+<ul>
+<li><code>@Controller</code>：修饰class，用来创建处理http请求的对象</li>
+<li><code>@RestController</code>：Spring4之后加入的注解，原来在<code>@Controller</code>中返回json需要<code>@ResponseBody</code>来配合，如果直接用<code>@RestController</code>替代<code>@Controller</code>就不需要再配置<code>@ResponseBody</code>，默认返回json格式</li>
+<li><code>@RequestMapping</code>：配置url映射。现在更多的也会直接用以Http Method直接关联的映射注解来定义，比如：<code>GetMapping</code>、<code>PostMapping</code>、<code>DeleteMapping</code>、<code>PutMapping</code>等</li>
+</ul>
+<p>下面我们通过使用Spring MVC来实现一组对User对象操作的RESTful API，配合注释详细说明在Spring MVC中如何映射HTTP请求、如何传参、如何编写单元测试。</p>
+<p><strong>RESTful API具体设计如下：</strong></p>
+<p>![RESTful API](RESTful API.png)</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/users"</span><span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">// 通过这里配置使下面的映射都在/users下</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">// 创建线程安全的Map，模拟users信息的存储</span>
+    <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> User<span class="token operator">></span> users <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">synchronizedMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> User<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/"的GET请求，用来获取用户列表
+     *
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">getUserList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 还可以通过@RequestParam从页面中传递参数来进行查询条件或者翻页信息的传递</span>
+        List<span class="token operator">&lt;</span>User<span class="token operator">></span> r <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span>User<span class="token operator">></span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> r<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/"的POST请求，用来创建User
+     *
+     * @param user
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">postUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// @RequestBody注解用来绑定通过http请求中application/json类型上传的数据</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的GET请求，用来获取url中id值的User信息
+     *
+     * @param id
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> User <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// url中的id可通过@PathVariable绑定到函数的参数中</span>
+        <span class="token keyword">return</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的PUT请求，用来更新User信息
+     *
+     * @param id
+     * @param user
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@PutMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">putUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">,</span> <span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User u <span class="token operator">=</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setAge</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> u<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的DELETE请求，用来删除User
+     *
+     * @param id
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@DeleteMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        users<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p><strong>单元测试：</strong></p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RunWith</span><span class="token punctuation">(</span>SpringRunner<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@SpringBootTest</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Chapter21ApplicationTests</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> MockMvc mvc<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Before</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setUp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mvc <span class="token operator">=</span> MockMvcBuilders<span class="token punctuation">.</span><span class="token function">standaloneSetup</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">UserController</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testUserController</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 测试UserController</span>
+        RequestBuilder request<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 1、get查一下user列表，应该为空</span>
+        request <span class="token operator">=</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"/users/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isOk</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"[]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 2、post提交一个user</span>
+        request <span class="token operator">=</span> <span class="token function">post</span><span class="token punctuation">(</span><span class="token string">"/users/"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">contentType</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token string">"{\"id\":1,\"name\":\"测试大师\",\"age\":20}"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 3、get获取user列表，应该有刚才插入的数据</span>
+        request <span class="token operator">=</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"/users/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isOk</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"[{\"id\":1,\"name\":\"测试大师\",\"age\":20}]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 4、put修改id为1的user</span>
+        request <span class="token operator">=</span> <span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"/users/1"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">contentType</span><span class="token punctuation">(</span>MediaType<span class="token punctuation">.</span>APPLICATION_JSON<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token string">"{\"name\":\"测试终极大师\",\"age\":30}"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 5、get一个id为1的user</span>
+        request <span class="token operator">=</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"/users/1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"{\"id\":1,\"name\":\"测试终极大师\",\"age\":30}"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 6、del删除id为1的user</span>
+        request <span class="token operator">=</span> <span class="token function">delete</span><span class="token punctuation">(</span><span class="token string">"/users/1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 7、get查一下user列表，应该为空</span>
+        request <span class="token operator">=</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"/users/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isOk</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">content</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token function">equalTo</span><span class="token punctuation">(</span><span class="token string">"[]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<h3 id="2-10-使用Swagger2构建强大的API文档"><a href="#2-10-使用Swagger2构建强大的API文档" class="headerlink" title="2.10-使用Swagger2构建强大的API文档"></a>2.10-使用Swagger2构建强大的API文档</h3><p>随着前后端分离架构和微服务架构的流行，我们使用Spring Boot来构建RESTful API项目的场景越来越多。通常我们的一个RESTful API就有可能要服务于多个不同的开发人员或开发团队：IOS开发、Android开发、Web开发甚至其他的后端服务等。为了减少与其他团队平时开发期间的频繁沟通成本，传统做法就是创建一份RESTful API文档来记录所有接口细节，然而这样的做法有以下几个问题：</p>
+<ul>
+<li>由于接口众多，并且细节复杂（需要考虑不同的HTTP请求类型、HTTP头部信息、HTTP请求内容等），高质量地创建这份文档本身就是件非常吃力的事，下游的抱怨声不绝于耳。</li>
+<li>随着时间推移，不断修改接口实现的时候都必须同步修改接口文档，而文档与代码又处于两个不同的媒介，除非有严格的管理机制，不然很容易导致不一致现象。</li>
+</ul>
+<p>为了解决上面这样的问题，本文将介绍RESTful API的重磅好伙伴Swagger2，它可以轻松的整合到Spring Boot中，并与Spring MVC程序配合组织出强大RESTful API文档。它既可以减少我们创建文档的工作量，同时说明内容又整合入实现代码中，让维护文档和修改代码整合为一体，可以让我们在修改代码逻辑的同时方便的修改文档说明。另外Swagger2也提供了强大的页面测试功能来调试每个RESTful API。具体效果如下图所示：</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/Swagger.png" alt="Swagger"></p>
+<ol>
+<li><p>添加swagger-spring-boot-starter依赖</p>
+<p>在<code>pom.xml</code>中加入依赖，具体如下：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.spring4all<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>swagger-spring-boot-starter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.9.0.RELEASE<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+</li>
+<li><p>应用主类中添加<code>@EnableSwagger2Doc</code>注解，具体如下</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@EnableSwagger2Doc</span>
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Chapter22Application</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Chapter22Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>application.properties</code>中配置文档相关内容，比如</p>
+<pre><code>swagger.title=spring-boot-starter-swagger
+swagger.description=Starter for swagger 2.x
+swagger.version=1.4.0.RELEASE
+swagger.license=Apache License, Version 2.0
+swagger.licenseUrl=https://www.apache.org/licenses/LICENSE-2.0.html
+swagger.termsOfServiceUrl=https://github.com/dyc87112/spring-boot-starter-swagger
+swagger.contact.name=didi
+swagger.contact.url=http://blog.didispace.com
+swagger.contact.email=dyc87112@qq.com
+swagger.base-package=com.didispace
+swagger.base-path=/**</code></pre><p>各参数配置含义如下：</p>
+<ul>
+<li><code>swagger.title</code>：标题</li>
+<li><code>swagger.description</code>：描述</li>
+<li><code>swagger.version</code>：版本</li>
+<li><code>swagger.license</code>：许可证</li>
+<li><code>swagger.licenseUrl</code>：许可证URL</li>
+<li><code>swagger.termsOfServiceUrl</code>：服务条款URL</li>
+<li><code>swagger.contact.name</code>：维护人</li>
+<li><code>swagger.contact.url</code>：维护人URL</li>
+<li><code>swagger.contact.email</code>：维护人email</li>
+<li><code>swagger.base-package</code>：swagger扫描的基础包，默认：全扫描</li>
+<li><code>swagger.base-path</code>：需要处理的基础URL规则，默认：/**</li>
+</ul>
+<p>更多配置说明可见官方说明：<a href="https://github.com/SpringForAll/spring-boot-starter-swagger" target="_blank" rel="noopener">https://github.com/SpringForAll/spring-boot-starter-swagger</a></p>
+</li>
+<li><p>启动应用，访问：<code>http://localhost:8080/swagger-ui.html</code>，就可以看到如下的接口文档页面：</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/Swagger.png" alt="Swagger"></p>
+</li>
+<li><p><strong>添加文档内容</strong></p>
+<p>在整合完Swagger之后，在<code>http://localhost:8080/swagger-ui.html</code>页面中可以看到，关于各个接口的描述还都是英文或遵循代码定义的名称产生的。这些内容对用户并不友好，所以我们需要自己增加一些说明来丰富文档内容。如下所示，我们通过<code>@Api</code>，<code>@ApiOperation</code>注解来给API增加说明、通过<code>@ApiImplicitParam</code>、<code>@ApiModel</code>、<code>@ApiModelProperty</code>注解来给参数增加说明。</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Api</span><span class="token punctuation">(</span>tags <span class="token operator">=</span> <span class="token string">"用户管理"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/users"</span><span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">// 通过这里配置使下面的映射都在/users下</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">// 创建线程安全的Map，模拟users信息的存储</span>
+    <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> User<span class="token operator">></span> users <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">synchronizedMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"获取用户列表"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">getUserList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        List<span class="token operator">&lt;</span>User<span class="token operator">></span> r <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> r<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"创建用户"</span><span class="token punctuation">,</span> notes <span class="token operator">=</span> <span class="token string">"根据User对象创建用户"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">postUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"获取用户详细信息"</span><span class="token punctuation">,</span> notes <span class="token operator">=</span> <span class="token string">"根据url的id来获取用户详细信息"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> User <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@PutMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiImplicitParam</span><span class="token punctuation">(</span>paramType <span class="token operator">=</span> <span class="token string">"path"</span><span class="token punctuation">,</span> dataType <span class="token operator">=</span> <span class="token string">"Long"</span><span class="token punctuation">,</span> name <span class="token operator">=</span> <span class="token string">"id"</span><span class="token punctuation">,</span> value <span class="token operator">=</span> <span class="token string">"用户编号"</span><span class="token punctuation">,</span> required <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">,</span> example <span class="token operator">=</span> <span class="token string">"1"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"更新用户详细信息"</span><span class="token punctuation">,</span> notes <span class="token operator">=</span> <span class="token string">"根据url的id来指定更新对象，并根据传过来的user信息来更新用户详细信息"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">putUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">,</span> <span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User u <span class="token operator">=</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setAge</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> u<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@DeleteMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"删除用户"</span><span class="token punctuation">,</span> notes <span class="token operator">=</span> <span class="token string">"根据url的id来指定删除对象"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        users<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token annotation punctuation">@Data</span>
+<span class="token annotation punctuation">@ApiModel</span><span class="token punctuation">(</span>description<span class="token operator">=</span><span class="token string">"用户实体"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户编号"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Long id<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户姓名"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String name<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户年龄"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer age<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>完成上述代码添加后，启动Spring Boot程序，访问：<code>http://localhost:8080/swagger-ui.html</code>，就能看到下面这样带中文说明的文档了（其中标出了各个注解与文档元素的对应关系以供参考）：</p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/Swagger%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86.png" alt="Swagger用户管理"></p>
+<p><img src="/2019/12/25/springboot-bi-ji-er/Swagger%E6%9B%B4%E6%96%B0%E7%94%A8%E6%88%B7.png" alt="Swagger更新用户"></p>
+</li>
+<li><p><strong>API文档访问与调试</strong><br>在上图请求的页面中，我们看到user的Value是个输入框？是的，Swagger除了查看接口功能外，还提供了调试测试功能，我们可以点击上图中右侧的Model Schema（黄色区域：它指明了User的数据结构），此时Value中就有了user对象的模板，我们只需要稍适修改，点击下方“Try it out！”按钮，即可完成了一次请求调用！</p>
+<p>此时，你也可以通过几个GET请求来验证之前的POST请求是否正确。</p>
+<p>相比为这些接口编写文档的工作，我们增加的配置内容是非常少而且精简的，对于原有代码的侵入也在忍受范围之内。因此，在构建RESTful API的同时，加入Swagger来对API文档进行管理，是个不错的选择。</p>
+</li>
+</ol>
+<h3 id="2-11-JSR-303实现请求参数校验"><a href="#2-11-JSR-303实现请求参数校验" class="headerlink" title="2.11-JSR-303实现请求参数校验"></a>2.11-JSR-303实现请求参数校验</h3><p>请求参数的校验是很多新手开发非常容易犯错，或存在较多改进点的常见场景。比较常见的问题主要表现在以下几个方面：</p>
+<ul>
+<li>仅依靠前端框架解决参数校验，缺失服务端的校验。这种情况常见于需要同时开发前后端的时候，虽然程序的正常使用不会有问题，但是开发者忽略了非正常操作。比如绕过前端程序，直接模拟客户端请求，这时候就会突然在前端预设的各种限制，直击各种数据访问接口，使得我们的系统存在安全隐患。</li>
+<li>大量地使用<code>if/else</code>语句嵌套实现，校验逻辑晦涩难通，不利于长期维护。</li>
+</ul>
+<p>所以，针对上面的问题，建议服务端开发在实现接口的时候，对于请求参数必须要有服务端校验以保障数据安全与稳定的系统运行。同时，对于参数的校验实现需要足够优雅，要满足逻辑易读、易维护的基本特点。</p>
+<p>接下来，我们就在本篇教程中详细说说，如何优雅地实现Spring Boot服务端的请求参数校验。</p>
+<h4 id="JSR-303"><a href="#JSR-303" class="headerlink" title="JSR-303"></a>JSR-303</h4><p>在开始动手实践之前，我们先了解一下接下来我们将使用的一项标准规范：JSR-303</p>
+<p><strong>什么是JSR？</strong></p>
+<p>JSR是Java Specification Requests的缩写，意思是Java 规范提案。是指向JCP(Java Community Process)提出新增一个标准化技术规范的正式请求。任何人都可以提交JSR，以向Java平台增添新的API和服务。JSR已成为Java界的一个重要标准。</p>
+<p><strong>JSR-303定义的是什么标准？</strong></p>
+<p>JSR-303 是JAVA EE 6 中的一项子规范，叫做Bean Validation，Hibernate Validator 是 Bean Validation 的参考实现 . Hibernate Validator 提供了 JSR 303 规范中所有内置 constraint 的实现，除此之外还有一些附加的 constraint。</p>
+<p><strong>Bean Validation中内置的constraint</strong></p>
+<p>![Bean Validation](Bean Validation.png)</p>
+<p><strong>Hibernate Validator附加的constraint</strong></p>
+<p>![hibernate Validation](hibernate Validation.png)</p>
+<h4 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h4><p>我们先来做一个简单的例子，比如：定义字段不能为<code>Null</code>。只需要两步</p>
+<p><strong>第一步</strong>：在要校验的字段上添加上<code>@NotNull</code>注解，具体如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
+<span class="token annotation punctuation">@ApiModel</span><span class="token punctuation">(</span>description<span class="token operator">=</span><span class="token string">"用户实体"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户编号"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Long id<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@NotNull</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户姓名"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String name<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@NotNull</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户年龄"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer age<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p><strong>第二步</strong>：在需要校验的参数实体前添加<code>@Valid</code>注解，具体如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"创建用户"</span><span class="token punctuation">,</span> notes <span class="token operator">=</span> <span class="token string">"根据User对象创建用户"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> String <span class="token function">postUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@Valid</span> <span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>完成上面配置之后，启动应用，并用POST请求访问<code>localhost:8080/users/</code>接口，body使用一个空对象，<code>{}</code>。你可以用Postman等测试工具发起，也可以使用curl发起，比如这样：</p>
+<pre><code>curl -X POST \
+  http://localhost:8080/users/ \
+  -H &#39;Content-Type: application/json&#39; \
+  -H &#39;Postman-Token: 72745d04-caa5-44a1-be84-ba9c115f4dfb&#39; \
+  -H &#39;cache-control: no-cache&#39; \
+  -d &#39;{
+
+}&#39;</code></pre><p>不出意外，你可以得到如下结果：</p>
+<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token string">"2019-10-05T05:45:19.221+0000"</span><span class="token punctuation">,</span>
+    <span class="token property">"status"</span><span class="token operator">:</span> <span class="token number">400</span><span class="token punctuation">,</span>
+    <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Bad Request"</span><span class="token punctuation">,</span>
+    <span class="token property">"errors"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token string">"NotNull.user.age"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull.age"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull.java.lang.Integer"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull"</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">"user.age"</span><span class="token punctuation">,</span>
+                        <span class="token string">"age"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"age"</span><span class="token punctuation">,</span>
+                    <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"age"</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"不能为null"</span><span class="token punctuation">,</span>
+            <span class="token property">"objectName"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"field"</span><span class="token operator">:</span> <span class="token string">"age"</span><span class="token punctuation">,</span>
+            <span class="token property">"rejectedValue"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+            <span class="token property">"bindingFailure"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+            <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"NotNull"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token string">"NotNull.user.name"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull.name"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull.java.lang.String"</span><span class="token punctuation">,</span>
+                <span class="token string">"NotNull"</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">"user.name"</span><span class="token punctuation">,</span>
+                        <span class="token string">"name"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+                    <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"name"</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"不能为null"</span><span class="token punctuation">,</span>
+            <span class="token property">"objectName"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"field"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+            <span class="token property">"rejectedValue"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+            <span class="token property">"bindingFailure"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+            <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"NotNull"</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"message"</span><span class="token operator">:</span> <span class="token string">"Validation failed for object='user'. Error count: 2"</span><span class="token punctuation">,</span>
+    <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">"/users/"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>其中返回内容的各参数含义如下：</p>
+<ul>
+<li><code>timestamp</code>：请求时间</li>
+<li><code>status</code>：HTTP返回的状态码，这里返回400，即：请求无效、错误的请求，通常参数校验不通过均为400</li>
+<li><code>error</code>：HTTP返回的错误描述，这里对应的就是400状态的错误描述：Bad Request</li>
+<li><code>errors</code>：具体错误原因，是一个数组类型；因为错误校验可能存在多个字段的错误，比如这里因为定义了两个参数不能为<code>Null</code>，所以存在两条错误记录信息</li>
+<li><code>message</code>：概要错误消息，返回内容中很容易可以知道，这里的错误原因是对user对象的校验失败，其中错误数量为<code>2</code>，而具体的错误信息就定义在上面的<code>errors</code>数组中</li>
+<li><code>path</code>：请求路径</li>
+</ul>
+<p>请求的调用端在拿到这个规范化的错误信息之后，就可以方便的解析并作出对应的措施以完成自己的业务逻辑了。</p>
+<h3 id="尝试一些其他校验"><a href="#尝试一些其他校验" class="headerlink" title="尝试一些其他校验"></a>尝试一些其他校验</h3><p>在完成了上面的例子之后，我们还可以增加一些校验规则，比如：校验字符串的长度、校验数字的大小、校验字符串格式是否为邮箱等。下面我们就来定义一些复杂的校验定义，比如：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
+<span class="token annotation punctuation">@ApiModel</span><span class="token punctuation">(</span>description<span class="token operator">=</span><span class="token string">"用户实体"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户编号"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Long id<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@NotNull</span>
+    <span class="token annotation punctuation">@Size</span><span class="token punctuation">(</span>min <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span> max <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户姓名"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String name<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@NotNull</span>
+    <span class="token annotation punctuation">@Max</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Min</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户年龄"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Integer age<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@NotNull</span>
+    <span class="token annotation punctuation">@Email</span>
+    <span class="token annotation punctuation">@ApiModelProperty</span><span class="token punctuation">(</span><span class="token string">"用户邮箱"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String email<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>发起一个可以出发<code>name</code>、<code>age</code>、<code>email</code>都校验不通过的请求，比如下面这样：</p>
+<pre><code>curl -X POST \
+  http://localhost:8080/users/ \
+  -H &#39;Content-Type: application/json&#39; \
+  -H &#39;Postman-Token: 114db0f0-bdce-4ba5-baf6-01e5104a68a3&#39; \
+  -H &#39;cache-control: no-cache&#39; \
+  -d &#39;{
+    &quot;name&quot;: &quot;abcdefg&quot;,
+    &quot;age&quot;: 8,
+    &quot;email&quot;: &quot;aaaa&quot;
+}&#39;</code></pre><p>我们将得到如下的错误返回：</p>
+<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token string">"2019-10-05T06:24:30.518+0000"</span><span class="token punctuation">,</span>
+    <span class="token property">"status"</span><span class="token operator">:</span> <span class="token number">400</span><span class="token punctuation">,</span>
+    <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Bad Request"</span><span class="token punctuation">,</span>
+    <span class="token property">"errors"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token string">"Size.user.name"</span><span class="token punctuation">,</span>
+                <span class="token string">"Size.name"</span><span class="token punctuation">,</span>
+                <span class="token string">"Size.java.lang.String"</span><span class="token punctuation">,</span>
+                <span class="token string">"Size"</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">"user.name"</span><span class="token punctuation">,</span>
+                        <span class="token string">"name"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+                    <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"name"</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token number">5</span><span class="token punctuation">,</span>
+                <span class="token number">2</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"个数必须在2和5之间"</span><span class="token punctuation">,</span>
+            <span class="token property">"objectName"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"field"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+            <span class="token property">"rejectedValue"</span><span class="token operator">:</span> <span class="token string">"abcdefg"</span><span class="token punctuation">,</span>
+            <span class="token property">"bindingFailure"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+            <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"Size"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token string">"Min.user.age"</span><span class="token punctuation">,</span>
+                <span class="token string">"Min.age"</span><span class="token punctuation">,</span>
+                <span class="token string">"Min.java.lang.Integer"</span><span class="token punctuation">,</span>
+                <span class="token string">"Min"</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">"user.age"</span><span class="token punctuation">,</span>
+                        <span class="token string">"age"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"age"</span><span class="token punctuation">,</span>
+                    <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"age"</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token number">10</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"最小不能小于10"</span><span class="token punctuation">,</span>
+            <span class="token property">"objectName"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"field"</span><span class="token operator">:</span> <span class="token string">"age"</span><span class="token punctuation">,</span>
+            <span class="token property">"rejectedValue"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span>
+            <span class="token property">"bindingFailure"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+            <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"Min"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token string">"Email.user.email"</span><span class="token punctuation">,</span>
+                <span class="token string">"Email.email"</span><span class="token punctuation">,</span>
+                <span class="token string">"Email.java.lang.String"</span><span class="token punctuation">,</span>
+                <span class="token string">"Email"</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">"user.email"</span><span class="token punctuation">,</span>
+                        <span class="token string">"email"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span><span class="token punctuation">,</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"email"</span><span class="token punctuation">,</span>
+                    <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"email"</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token punctuation">{</span>
+                    <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">".*"</span><span class="token punctuation">,</span>
+                    <span class="token property">"codes"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                        <span class="token string">".*"</span>
+                    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                    <span class="token property">"arguments"</span><span class="token operator">:</span> <span class="token null">null</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token property">"defaultMessage"</span><span class="token operator">:</span> <span class="token string">"不是一个合法的电子邮件地址"</span><span class="token punctuation">,</span>
+            <span class="token property">"objectName"</span><span class="token operator">:</span> <span class="token string">"user"</span><span class="token punctuation">,</span>
+            <span class="token property">"field"</span><span class="token operator">:</span> <span class="token string">"email"</span><span class="token punctuation">,</span>
+            <span class="token property">"rejectedValue"</span><span class="token operator">:</span> <span class="token string">"aaaa"</span><span class="token punctuation">,</span>
+            <span class="token property">"bindingFailure"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+            <span class="token property">"code"</span><span class="token operator">:</span> <span class="token string">"Email"</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"message"</span><span class="token operator">:</span> <span class="token string">"Validation failed for object='user'. Error count: 3"</span><span class="token punctuation">,</span>
+    <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">"/users/"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>从<code>errors</code>数组中的各个错误明细中，知道各个字段的<code>defaultMessage</code>，可以看到很清晰的错误描述。</p>
 <h2 id="3-SpringBoot热部署devtool和配置文件自动注入实战"><a href="#3-SpringBoot热部署devtool和配置文件自动注入实战" class="headerlink" title="3-SpringBoot热部署devtool和配置文件自动注入实战"></a>3-SpringBoot热部署devtool和配置文件自动注入实战</h2><h3 id="3-1-使用Dev-tool热部署"><a href="#3-1-使用Dev-tool热部署" class="headerlink" title="3.1-使用Dev-tool热部署"></a>3.1-使用Dev-tool热部署</h3><p><strong>简介:介绍什么是热部署，使用springboot结合dev-tool工具，快速加载启动应用</strong></p>
 <ul>
 <li><p>什么是热部署？</p>
@@ -4376,7 +4899,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">409.3k</span>&nbsp;字
+                class="white-color">413.1k</span>&nbsp;字
             
             
             
