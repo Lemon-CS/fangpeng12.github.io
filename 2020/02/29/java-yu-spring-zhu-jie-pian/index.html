@@ -465,14 +465,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.5k
+                    13.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    21 分
+                    51 分
                 </div>
                 
 				
@@ -837,7 +837,818 @@
 <p>然后，当你进行反射的时候，虚拟机将所有生命周期在 RUNTIME 的注解取出来放到一个 map 中，并创建一个 AnnotationInvocationHandler 实例，把这个 map 传递给它。</p>
 <p>最后，虚拟机将采用 JDK 动态代理机制生成一个目标注解的代理类，并初始化好处理器。</p>
 <p>那么这样，一个注解的实例就创建出来了，它本质上就是一个代理类，你应当去理解好 AnnotationInvocationHandler 中 invoke 方法的实现逻辑，这是核心。一句话概括就是，<strong>通过方法名返回注解属性值</strong>。</p>
-<h2 id="2-Spring注解篇"><a href="#2-Spring注解篇" class="headerlink" title="2-Spring注解篇"></a>2-Spring注解篇</h2>
+<h2 id="2-Spring注解篇"><a href="#2-Spring注解篇" class="headerlink" title="2-Spring注解篇"></a>2-Spring注解篇</h2><h3 id="2-1-XML和注解"><a href="#2-1-XML和注解" class="headerlink" title="2.1-XML和注解"></a>2.1-XML和注解</h3><h4 id="2-1-1-XML"><a href="#2-1-1-XML" class="headerlink" title="2.1.1-XML"></a>2.1.1-XML</h4><ul>
+<li><p>XML优点</p>
+<ol>
+<li><p>xml是集中式的元数据，不需要和代码绑定的；</p>
+<p>在我们开发中，xml配置文件和代码类是区分开的，不需要绑定到代码中。</p>
+</li>
+<li><p>使用xml配置可以让软件更具有扩展性；</p>
+<p>比如，我们在spring中，我们不想使用接口而是想用接口的实现类，这个时候只需要修改xml配置中bean的class值就可以了。</p>
+</li>
+<li><p>对象之间的关系一目了然；</p>
+</li>
+<li><p>类与类间的松藕合，容易扩展、更换；</p>
+</li>
+<li><p>xml定义：可扩展标记语言，标准通用标记语言的子集，简称XML。从这个定义中我们可以发现，xml最大的优势就在于，开发者(程序员)能够为软件量身定做使用的标记，使得xml更通俗易懂；</p>
+</li>
+<li><p>成熟的校验机制，来保证正确。可以使用Schema或者是DTD来对xml的正确性进行校验；</p>
+</li>
+<li><p>基于xml配置的时候，只需要修改xml即可，不需要对现有的程序进行修改；</p>
+</li>
+<li><p>容易与其他系统进行数据交互。数据共享方便。</p>
+</li>
+</ol>
+</li>
+<li><p>XML缺点</p>
+<ol>
+<li><p>应用程序中如果使用了xml配置，需要解析xml的工具或者是是第三方类库的支持；</p>
+</li>
+<li><p>解析xml的时候必然会占用资源，势必会影响到应用程序的性能；</p>
+<p>以java为例，无论是将xml一次性装置到内存中，还是一行一行读取解析的，都会占用资源的。</p>
+</li>
+<li><p>xml配置文件过多，会导致维护变得困难；</p>
+</li>
+<li><p>在程序编译期间无法对其配置项的正确性进行验证，只能在运行期发现；</p>
+</li>
+<li><p>出错后，排错变得困难。往往在配置的时候，一个手误就会出现莫名其妙的错误(虽然事出必有妖，但是排查真难)；</p>
+<p>比如，xml配置bean信息的时候，如果class的值带有空格，这种不好检查的，是比较麻烦的。排查起来很费事。</p>
+</li>
+<li><p>开发的时候，既要维护代码又要维护配置文件，使得开发的效率降低；</p>
+</li>
+<li><p>代码与配置项之间有时候会存在很多“潜规则”.改变了任意一方，都有可能影响到另一方的使用。这是个大坑</p>
+<p>比如：自定义的标记，如果其他开发不清楚这些的话，修改了无论是代码还是xml的配置，都会导致程序不能正常运行。</p>
+</li>
+<li><p>开发工具对xml的验证支持的不是很好。</p>
+<p>比如idea，对xml正确性，如果是自定义的，验证就不是很好。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="2-1-2-注解"><a href="#2-1-2-注解" class="headerlink" title="2.1.2-注解"></a>2.1.2-注解</h4><ul>
+<li>注解优点<ol>
+<li>简化配置；</li>
+<li>注解的解析可以不依赖于第三方库，可以之间使用Java自带的反射；</li>
+<li>注解和代码在一起的，之间在类上，降低了维护两个地方的成本；</li>
+<li>注解如果有问题，在编译期间，就可以验证正确性，如果出错更容易找；</li>
+<li>使用注解开发能够提高开发效率。不用多个地方维护，不用考虑是否存在“潜规则”；</li>
+<li>类型安全。</li>
+</ol>
+</li>
+<li>注解缺点<ol>
+<li>修改的话比较麻烦。如果需要对注解进行修改的话，就需要对整个项目重新编译；</li>
+<li>处理业务类之间的复杂关系，不然xml那样容易修改，也不及xml那样明了；</li>
+<li>在程序中注解太多的话，会影响代码质量，代码简洁会有影响；</li>
+<li>如果后来的人对注解不了解，会给维护带来成本；</li>
+<li>注解功能没有xml配置齐全</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-2-Spring常用注解大全"><a href="#2-2-Spring常用注解大全" class="headerlink" title="2.2-Spring常用注解大全"></a>2.2-Spring常用注解大全</h3><h4 id="2-2-1-Spring部分"><a href="#2-2-1-Spring部分" class="headerlink" title="2.2.1-Spring部分"></a>2.2.1-Spring部分</h4><h5 id="1-声明bean的注解"><a href="#1-声明bean的注解" class="headerlink" title="1. 声明bean的注解"></a>1. 声明bean的注解</h5><ul>
+<li><code>@Component</code>：表示一个带注释的类是一个“组件”，成为Spring管理的Bean。当使用基于注解的配置和类路径扫描时，这些类被视为自动检测的候选对象。同时@Component还是一个元注解；</li>
+<li><code>@Service</code>：组合注解（组合了@Component注解），应用在service层（业务逻辑层）；</li>
+<li><code>@Controller</code>：组合注解（组合了@Component注解），应用在MVC层（控制层）,DispatcherServlet会自动扫描注解了此注解的类，然后将web请求映射到注解了@RequestMapping的方法上；</li>
+<li><code>@Reponsitory</code>：组合注解（组合了@Component注解），应用在dao层（数据访问层）；</li>
+<li><code>@RestController</code>：Spring4之后加入的注解，原来在@Controller中返回json需要@ResponseBody来配合，如果直接用@RestController替代@Controller就不需要再配置@ResponseBody，默认返回json格式。</li>
+</ul>
+<h5 id="2-注入bean的注解"><a href="#2-注入bean的注解" class="headerlink" title="2. 注入bean的注解"></a>2. 注入bean的注解</h5><ul>
+<li><p><code>@Autowired</code>：Spring提供的工具（由Spring的依赖注入工具（BeanPostProcessor、BeanFactoryPostProcessor）自动注入）；</p>
+</li>
+<li><p><code>@Resource</code>：JSR-250提供的注解；</p>
+</li>
+<li><p><code>@Inject</code>：JSR-330提供的注解;</p>
+</li>
+<li><p><code>@Qualifier</code>:此注解是和@Autowired一起使用的。使用此注解可以让你对注入的过程有更多的控制。</p>
+<p>@Qualifier可以被用在单个构造器或者方法的参数上。当上下文有几个相同类型的bean, 使用@Autowired则无法区分要绑定的bean，此时可以使用@Qualifier来指定名称；</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+publicclass User <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token annotation punctuation">@Qualifier</span><span class="token punctuation">(</span><span class="token string">"address1"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> Address address<span class="token punctuation">;</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@Required</code>:此注解用于bean的setter方法上。表示此属性是必须的，必须在配置阶段注入，否则会抛出BeanInitializationExcepion；</p>
+</li>
+<li><p><code>@Lazy</code>：此注解使用在Spring的组件类上。默认的，Spring中Bean的依赖一开始就被创建和配置。如果想要延迟初始化一个bean，那么可以在此类上使用Lazy注解，表示此bean只有在第一次被使用的时候才会被创建和初始化。此注解也可以使用在被@Configuration注解的类上，表示其中所有被@Bean注解的方法都会延迟初始化。</p>
+</li>
+</ul>
+<h6 id="2-1-Autowired，-Resource和-Inject区别与实现原理"><a href="#2-1-Autowired，-Resource和-Inject区别与实现原理" class="headerlink" title="2.1. @Autowired，@Resource和@Inject区别与实现原理"></a>2.1. @Autowired，@Resource和@Inject区别与实现原理</h6><ul>
+<li><p><strong>@Autowired</strong></p>
+<ul>
+<li>@Autowired是spring框架提供的实现依赖注入的注解，主要支持在set方法，field，构造函数中完成bean注入，注入方式为通过类型查找bean，即byType的，如果存在多个同一类型的bean，则使用@Qualifier来指定注入哪个beanName的bean。</li>
+<li>Spring提供的注解，功能与@Inject相似，也是通过AutowiredAnnotationBeanPostProcessor处理，处理的顺序同样是：<ul>
+<li>基于类型</li>
+<li>基于@Qualifier</li>
+<li>基于名称</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>@Resource</strong></p>
+<ul>
+<li>与JDK的@Resource的区别：@Resource是基于bean的名字，即beanName，来从spring的IOC容器查找bean注入的，而@Autowried是基于类型byType来查找bean注入的。</li>
+<li>JDK默认提供的注解，属于JSR-250规范的一部分（其他的还有@PostConstruce/@PreDestroy等），可以标记在属性或者Setter上，Spring通过CommonAnnotationBeanPostProcessor来处理该注解，在实现依赖注入的时候的匹配顺序是：<ul>
+<li>基于名称</li>
+<li>基于类型</li>
+<li>基于@Qualifier</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>@Inject</strong></p>
+<ul>
+<li><p>与JDK的@Inject的区别：@Inject也是基于类型来查找bean注入的，如果需要指定名称beanName，则可以结合使用@Named注解，而@Autowired是结合@Qualifier注解来指定名称beanName。</p>
+</li>
+<li><p>属于JSR-330提供的注解，该规范主要提供Java注入相关的注解，需要手动引入：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>javax.inject<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>javax.inject<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>Spring通过AutowiredAnnotationBeanPostProcessor来处理该注解，处理顺序是：</p>
+<ul>
+<li>基于类型</li>
+<li>基于@Qualifier</li>
+<li>基于名称和@Named</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="2-2-spring依赖注入注解的实现原理"><a href="#2-2-spring依赖注入注解的实现原理" class="headerlink" title="2.2. spring依赖注入注解的实现原理"></a>2.2. spring依赖注入注解的实现原理</h6><ul>
+<li><p><strong>注解处理器</strong></p>
+<ul>
+<li>在spring框架内部实现当中，注解实现注入主要是通过bean后置处理器BeanPostProcessor接口的实现类来生效的。BeanPostProcessor后置处理器是在spring容器启动时，创建bean对象实例后，马上执行的，对bean对象实例进行加工处理。</li>
+<li>@Autowired是通过BeanPostProcessor接口的实现类AutowiredAnnotationBeanPostProcessor来实现对bean对象对其他bean对象的依赖注入的；</li>
+<li>@Resource和@Inject是通过BeanPostProcessor接口的实现类CommonAnnotationBeanPostProcessor来实现的，其中如名字所述，即公共注解CommonAnotation，CommonAnnotationBeanPostProcessor是spring中统一处理JDK中定义的注解的一个BeanPostProcessor。该类会处理的注解还包括@PostConstruct，@PreDestroy等。</li>
+</ul>
+</li>
+<li><p><strong>注解处理器的激活条件</strong></p>
+<ul>
+<li>AutowiredAnnotationBeanPostProcessor和CommonAnnotationBeanPostProcessor添加到spring容器的BeanPostProcessor的条件，即激活这些处理器的条件如下：</li>
+</ul>
+<ol>
+<li>基于xml的spring配置</li>
+</ol>
+<ul>
+<li>在对应的spring容器的配置xml文件中，如applicationContext.xml，添加&lt;context:annotation-config /&gt;和&lt;context:component-scan /&gt;，或者只使用&lt;context:component-scan /&gt;。</li>
+<li>两者的区别是&lt;context:annotation-config /&gt;只查找并激活已经存在的bean，如通过xml文件的bean标签生成加载到spring容器的，而不会去扫描如@Controller等注解的bean，查找到之后进行注入；而&lt;context:component-scan /&gt;除了具有&lt;context:annotation-config /&gt;的功能之外，还会去加载通过basePackages属性指定的包下面的，默认为扫描@Controller，@Service，@Component，@Repository注解的类。不指定basePackages则是类路径下面，或者如果使用注解@ComponentScan方式，则是当前类所在包及其子包下面。</li>
+</ul>
+<p>2.基于配置类的spring配置</p>
+<ul>
+<li>如果是基于配置类而不是基于applicationContext.xml来对spring进行配置，如SpringBoot，则在内部使用的IOC容器实现为AnnotationConfigApplicationContext或者其派生类，在AnnotationConfigApplicationContext内部会自动创建和激活以上的BeanPostProcessor。</li>
+<li>如果同时存在基于xml的配置和配置类的配置，而在注入时间方面，基于注解的注入先于基于XML的注入，所以基于XML的注入会覆盖基于注解的注入。</li>
+</ul>
+</li>
+</ul>
+<h6 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3. 总结"></a>2.3. 总结</h6><ul>
+<li>@Autowired是Spring自带的，@Inject和@Resource都是JDK提供的，其中@Inject是JSR330规范实现的，@Resource是JSR250规范实现的，而Spring通过BeanPostProcessor来提供对JDK规范的支持。</li>
+<li>@Autowired、@Inject用法基本一样，不同之处为@Autowired有一个required属性，表示该注入是否是必须的，即如果为必须的，则如果找不到对应的bean，就无法注入，无法创建当前bean。</li>
+<li>@Autowired、@Inject是默认按照类型匹配的，@Resource是按照名称匹配的。如在spring-boot-data项目中自动生成的redisTemplate的bean，是需要通过byName来注入的。如果需要注入该默认的，则需要使用@Resource来注入，而不是@Autowired。</li>
+<li>对于@Autowire和@Inject，如果同一类型存在多个bean实例，则需要指定注入的beanName。@Autowired和@Qualifier一起使用，@Inject和@Name一起使用。</li>
+</ul>
+<h5 id="3-java配置类相关注解"><a href="#3-java配置类相关注解" class="headerlink" title="3. java配置类相关注解"></a>3. java配置类相关注解</h5><ul>
+<li><code>@Configuration</code> ：声明当前类是一个配置类（相当于一个Spring配置的xml文件），其中内部组合了@Component注解，表明这个类是一个bean（类上）；</li>
+<li><code>@Bean</code>：注解在方法上，声明当前方法的返回值为一个Bean。返回的Bean对应的类中可以定义init()方法和destroy()方法，然后在@Bean(initMethod=”init”,destroyMethod=”destroy”)定义，在构造之后执行init，在销毁之前执行destroy；</li>
+<li><code>@ComponentScan</code>：自动扫描指定包下所有使用@Service,@Component,@Controller,@Repository的类并注册，相当于xml中的ComponentScan；</li>
+<li><code>@WishlyConfiguration</code> ：@Configuration与@ComponentScan的组合注解，可以替代这两个注解。</li>
+</ul>
+<h5 id="4-切面（AOP）相关注解"><a href="#4-切面（AOP）相关注解" class="headerlink" title="4. 切面（AOP）相关注解"></a>4. 切面（AOP）相关注解</h5><ul>
+<li><p><code>@Aspect</code>：声明一个切面（类上）；</p>
+<p>使用@After、@Before、@Around定义建言（advice），可直接将拦截规则（切点）作为参数。</p>
+</li>
+<li><p><code>@After</code>：后置建言（advice），在方法执行之后执行（方法上）；</p>
+</li>
+<li><p><code>@Before</code> ：前置建言（advice），在方法执行之前执行（方法上）；</p>
+</li>
+<li><p><code>@Around</code>：环绕建言（advice），在方法执行之前与之后执行（方法上）；</p>
+</li>
+<li><p><code>@PointCut</code> ：声明切点，即定义拦截规则，确定有哪些方法会被切入，在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）；</p>
+</li>
+<li><p><code>@EnableAspectJAutoProxy</code>：开启Spring对AspectJ的支持。</p>
+</li>
+</ul>
+<h5 id="5-Bean的属性支持"><a href="#5-Bean的属性支持" class="headerlink" title="5. @Bean的属性支持"></a>5. @Bean的属性支持</h5><ul>
+<li><p><code>@Scope</code>：设置Spring容器如何新建Bean实例（方法上，得有@Bean）；</p>
+<p>其设置类型包括：</p>
+<ul>
+<li>Singleton （单例,一个Spring容器中只有一个bean实例，默认模式）,</li>
+<li>Protetype （每次调用新建一个bean）,</li>
+<li>Request （web项目中，给每个http request新建一个bean）,</li>
+<li>Session （web项目中，给每个http session新建一个bean）,</li>
+<li>GlobalSession（给每一个 global http session新建一个Bean实例）。</li>
+</ul>
+</li>
+<li><p><code>@StepScope</code>：在Spring Batch中还有涉及；</p>
+</li>
+<li><p><code>@PostConstruct</code> ：由JSR-250提供，在构造函数执行完之后执行，等价于xml配置文件中bean的initMethod；</p>
+</li>
+<li><p><code>@PreDestory</code>：由JSR-250提供，在Bean销毁之前执行，等价于xml配置文件中bean的destroyMethod。</p>
+</li>
+</ul>
+<h5 id="6-Value和-ConfigurationProperties"><a href="#6-Value和-ConfigurationProperties" class="headerlink" title="6. @Value和@ConfigurationProperties"></a>6. @Value和@ConfigurationProperties</h5><h6 id="6-1-Value"><a href="#6-1-Value" class="headerlink" title="6.1. @Value"></a>6.1. @Value</h6><p>@Value 为属性注入值（属性上），此注解使用在字段、构造器参数和方法参数上。@Value可以指定属性取值的表达式，支持通过#{}使用SpringEL来取值，也支持使用${}来将属性来源中(Properties文件、本地环境变量、系统属性等)的值注入到bean的属性中。此注解值的注入发生在AutowiredAnnotationBeanPostProcessor类中。</p>
+<ul>
+<li><p>注入普通字符</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"Kobe"</span><span class="token punctuation">)</span>
+String name<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入操作系统属性</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"#{systemProperties['os.name']}"</span><span class="token punctuation">)</span>
+String osName<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入表达式结果</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"#{ T(java.lang.Math).random() * 100 }"</span><span class="token punctuation">)</span>
+String randomNumber<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入其它bean属性</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"#{User.name}"</span><span class="token punctuation">)</span>
+String userName<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入文件资源</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"classpath:com/fangpeng/hello/test.txt"</span><span class="token punctuation">)</span>
+Resource file<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入网站资源</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"http://www.google.com"</span><span class="token punctuation">)</span>
+Resource url<span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>注入配置文件</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${book.name}"</span><span class="token punctuation">)</span>
+String bookName<span class="token punctuation">;</span></code></pre>
+</li>
+</ul>
+<p><strong>注入配置使用方法：</strong></p>
+<p>通过@Value将外部配置文件的值动态注入到Bean中。配置文件主要有两类：</p>
+<ul>
+<li>application.properties。application.properties在spring boot启动时默认加载此文件</li>
+<li>自定义属性文件。自定义属性文件通过@PropertySource加载。@PropertySource可以同时加载多个文件，也可以加载单个文件。如果相同第一个属性文件和第二属性文件存在相同key，则最后一个属性文件里的key启作用。</li>
+</ul>
+<ol>
+<li><p>编写配置文件（test.properties）</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">book.name</span><span class="token punctuation">=</span><span class="token attr-value">Java编程思想</span></code></pre>
+</li>
+<li><p><code>@PropertySource</code> 加载配置文件(类上)</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@PropertySource</span><span class="token punctuation">(</span><span class="token string">"classpath:com/fangpeng/hello/test.properties"</span><span class="token punctuation">)</span></code></pre>
+</li>
+</ol>
+<h6 id="6-2-ConfigurationProperties"><a href="#6-2-ConfigurationProperties" class="headerlink" title="6.2. @ConfigurationProperties"></a>6.2. @ConfigurationProperties</h6><p>将属性文件与一个Java类绑定，属性文件中的变量与Java类中的成员变量一一对应，无需完全一致。</p>
+<p>如需将 @ConfigurationProperties 注解的目标类添加到Spring IOC容器中，可以</p>
+<ul>
+<li>使用 @Component 注解目标类，这样项目启动时会自动将该类添加到容器中。</li>
+<li>使用 @EnableConfigurationProperties 间接的将 @ConfigurationProperties 注解的目标类添加到容器中。讲的详细点就是，使用 @ConfigurationProperties 注解 类A，使用 @EnableConfigurationProperties(value = 类A.class) 注解类B，那么容器在加载类B的时候，会先加载类A到容器中，实现了间接的加载。</li>
+</ul>
+<p><strong>具体使用：</strong></p>
+<p>首先在配置文件里面添加配置信息：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">connection.username</span><span class="token punctuation">=</span><span class="token attr-value">admin</span>
+<span class="token attr-name">connection.password</span><span class="token punctuation">=</span><span class="token attr-value">kyjufskifas2jsfs</span>
+<span class="token attr-name">connection.remoteAddress</span><span class="token punctuation">=</span><span class="token attr-value">192.168.1.1</span></code></pre>
+<p>定义一个实体类在装载配置文件信息:</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"connection"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConnectionSettings</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> String username<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String remoteAddress<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String password <span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> String <span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> username<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setUsername</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>username <span class="token operator">=</span> username<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> String <span class="token function">getRemoteAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> remoteAddress<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setRemoteAddress</span><span class="token punctuation">(</span>String remoteAddress<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>remoteAddress <span class="token operator">=</span> remoteAddress<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> String <span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> password<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setPassword</span><span class="token punctuation">(</span>String password<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>password <span class="token operator">=</span> password<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>还可以把@ConfigurationProperties还可以直接定义在@bean的注解上，这是bean实体类就不用@Component和@ConfigurationProperties了:</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DemoApplication</span><span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"connection"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> ConnectionSettings <span class="token function">connectionSettings</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ConnectionSettings</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>DemoApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>需要使用的时候就直接这样子注入:</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/task"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TaskController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    ConnectionSettings conn<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">hellTask</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        String userName <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"hello task !!"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<h6 id="6-3-区别"><a href="#6-3-区别" class="headerlink" title="6.3-区别"></a>6.3-区别</h6><table>
+<thead>
+<tr>
+<th align="left">header 1</th>
+<th align="left">@ConfigurationProperties</th>
+<th align="left">@Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">功能</td>
+<td align="left">批量注入配置文件中的属性</td>
+<td align="left">一个个制定</td>
+</tr>
+<tr>
+<td align="left">松散绑定（松散语法）</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+</tr>
+<tr>
+<td align="left">SpEL</td>
+<td align="left">不支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left">JSR303数据校验</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+</tr>
+<tr>
+<td align="left">复杂类型封装</td>
+<td align="left">支持</td>
+<td align="left">不支持</td>
+</tr>
+</tbody></table>
+<p>配置文件yml还是properties他们都能获取到值；</p>
+<ul>
+<li>松散语法<ol>
+<li>person.firstName: 使用标准模式</li>
+<li>person.first-name: 大写用-</li>
+<li>person.first_name: 大写用_</li>
+<li>PERSON_FIRST_NAME: 推荐属性使用这种写法</li>
+</ol>
+</li>
+</ul>
+<p>如果说，我们只是在某个业务逻辑中需要获取一下配置文件中的某项值，使用@Value；</p>
+<p>如果说，我们专门编写了一个javaBean来和配置文件进行映射，我们就直接使用@ConfigurationProperties；</p>
+<h5 id="7-环境切换"><a href="#7-环境切换" class="headerlink" title="7. 环境切换"></a>7. 环境切换</h5><ul>
+<li><p><code>@Profile</code>：表示当一个或多个指定的文件是活动的时，一个组件是有资格注册的。使用@Profile注解类或者方法，达到在不同情况下选择实例化不同的Bean。@Profile(“dev”)表示为dev时实例化，过设定Environment的ActiveProfiles来设定当前context需要使用的配置环境。（类或方法上）</p>
+</li>
+<li><p><code>@Conditional</code>：Spring4中可以使用此注解定义条件话的bean，通过实现Condition接口，并重写matches方法，从而决定该bean是否被实例化。（方法上）</p>
+<p>作用：必须是@Conditional指定的条件成立，才给容器中添加组件，配置配里面的所有内容才生效；</p>
+<table>
+<thead>
+<tr>
+<th align="left">@Conditional派生注解</th>
+<th align="left">作用（判断是否满足当前条件）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">@@Conditional派生注解</td>
+<td align="left">系统的java版本是否符合要求</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnBean</td>
+<td align="left">容器中存在指定Bean</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnMissingBean</td>
+<td align="left">容器中不存在指定Bean</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnExpression</td>
+<td align="left">满足SpEL表达式指定</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnClass</td>
+<td align="left">系统中有指定的类</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnMissingClass</td>
+<td align="left">系统中没有指定的类</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnSingleCandidate</td>
+<td align="left">容器中只有一个指定的Bean，或者这个Bean是首选Bean</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnProperty</td>
+<td align="left">系统中指定的属性是否有指定的值</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnResource</td>
+<td align="left">类路径下是否存在指定资源文件</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnWebApplication</td>
+<td align="left">当前是web环境</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnNotWebApplication</td>
+<td align="left">当前不是web环境</td>
+</tr>
+<tr>
+<td align="left">@ConditionalOnJndi</td>
+<td align="left">NDI存在指定项</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h5 id="8-异步相关"><a href="#8-异步相关" class="headerlink" title="8. 异步相关"></a>8. 异步相关</h5><ul>
+<li><code>@EnableAsync</code>：配置类中，通过此注解开启对异步任务的支持，叙事性AsyncConfigurer接口（类上）；</li>
+<li><code>@Async</code>：注解在方法上标示这是一个异步方法，在类上标示这个类所有的方法都是异步方法；</li>
+</ul>
+<h5 id="9-定时任务相关"><a href="#9-定时任务相关" class="headerlink" title="9. 定时任务相关"></a>9. 定时任务相关</h5><ul>
+<li><code>@EnableScheduling</code>：注解在配置类上，开启对计划任务的支持；</li>
+<li><code>@Scheduled</code>：注解在方法上，声明该方法是计划任务。支持多种类型的计划任务：cron,fixDelay,fixRate，（需先开启计划任务的支持）；</li>
+</ul>
+<h5 id="10-Enable-注解"><a href="#10-Enable-注解" class="headerlink" title="10. @Enable*注解"></a>10. @Enable*注解</h5><p>通过简单的@Enable<em>来开启一项功能的支持。所有@Enable</em>注解都有一个@Import注解，@Import是用来导入配置类的，这也就意味着这些自动开启的实现其实是导入了一些自动配置的Bean：</p>
+<ol>
+<li><p>直接导入配置类</p>
+</li>
+<li><p>依据条件选择配置类</p>
+</li>
+<li><p>动态注册配置类</p>
+</li>
+</ol>
+<ul>
+<li><code>@EnableAspectJAutoProxy</code> 开启对AspectJ自动代理的支持</li>
+<li><code>@EnableAsync</code> 开启异步方法的支持</li>
+<li><code>@EnableScheduling</code> 开启计划任务的支持</li>
+<li><code>@EnableWebMvc</code> 开启Web MVC的配置支持</li>
+<li><code>@EnableConfigurationProperties</code> 开启对@ConfigurationProperties注解配置Bean的支持</li>
+<li><code>@EnableJpaRepositories</code> 开启对SpringData JPA Repository的支持</li>
+<li><code>@EnableTransactionManagement</code> 开启注解式事务的支持</li>
+<li><code>@EnableTransactionManagement</code> 开启注解式事务的支持</li>
+<li><code>@EnableCaching</code> 开启注解式的缓存支持</li>
+</ul>
+<h5 id="11-测试相关注解"><a href="#11-测试相关注解" class="headerlink" title="11. 测试相关注解"></a>11. 测试相关注解</h5><ul>
+<li><code>@RunWith</code>：运行器，Spring中通常用于对JUnit的支持，是Junit的注解，一般在测试类里使用:@RunWith(SpringJUnit4ClassRunner.class) — SpringJUnit4ClassRunner在JUnit环境下提供Sprng TestContext Framework的功能；</li>
+<li><code>@ContextConfiguration</code>：用来加载配置ApplicationContext，其中classes属性用来加载配置类:@ContextConfiguration(classes = {TestConfig.class(自定义的一个配置类)})；</li>
+</ul>
+<h5 id="12-事务相关注解"><a href="#12-事务相关注解" class="headerlink" title="12. 事务相关注解"></a>12. 事务相关注解</h5><p>事务管理一般有编程式和声明式两种，编程式是直接在代码中进行编写事物处理过程，而声名式则是通过注解方式或者是在xml文件中进行配置，相对编程式很方便。</p>
+<p>而注解方式通过@Transactional 是常见的。我们可以使用@EnableTransactionManagement 注解来启用事务管理功能，该注解可以加在启动类上或者单独加个配置类来处理。</p>
+<ul>
+<li><p><code>@Transactional</code></p>
+<p>当标于类前时, 标示类中所有方法都进行事物处理；标记在方法上，则表示当前方法是一个事务方法；当类级别配置了@Transactional，方法级别也配置了@Transactional，应用程序会以方法级别的事务属性信息来管理事务，即方法级别的事务属性信息会覆盖类级别的相关配置信息。</p>
+<p><strong>Transactional 注解的属性</strong></p>
+<ul>
+<li>name 当在配置文件中有多个 TransactionManager , 可以用该属性指定选择哪个事务管理器。</li>
+<li>propagation 事务的传播行为，默认值为 REQUIRED。</li>
+<li>isolation 事务的隔离度，默认值采用 DEFAULT。</li>
+<li>timeout 事务的超时时间，默认值为-1。如果超过该时间限制但事务还没有完成，则自动回滚事务。</li>
+<li>read-only 指定事务是否为只读事务，默认值为 false；为了忽略那些不需要事务的方法，比如读取数据，可以设置 read-only 为 true。</li>
+<li>rollback-for 用于指定能够触发事务回滚的异常类型，如果有多个异常类型需要指定，各类型之间可以通过逗号分隔。</li>
+<li>no-rollback- for 抛出 no-rollback-for 指定的异常类型，不回滚事务。</li>
+</ul>
+<p><strong>propagation 属性（事务传播性）</strong></p>
+<ul>
+<li>REQUIRED 支持当前已经存在的事务，如果还没有事务，就创建一个新事务。</li>
+<li>MANDATORY 支持当前已经存在的事务，如果还没有事务，就抛出一个异常。</li>
+<li>NESTED 在当前事务中创建一个嵌套事务，如果还没有事务，那么就简单地创建一个新事务。</li>
+<li>REQUIRES_NEW 挂起当前事务，创建一个新事务，如果还没有事务，就简单地创建一个新事务。</li>
+<li>NEVER 强制要求不在事务中运行，如果当前存在一个事务，则抛出异常。</li>
+<li>NOT_SUPPORTED 强制不在事务中运行，如果当前存在一个事务，则挂起该事务。</li>
+<li>SUPPORTS 支持当前事务，如果没有事务那么就不在事务中运行。</li>
+</ul>
+</li>
+<li><p><strong>@Transactional工作原理</strong></p>
+<p>声明式事务管理包含三个组成部分：</p>
+<ul>
+<li>事务的切面</li>
+<li>事务管理器</li>
+<li>EntityManager Proxy本身</li>
+</ul>
+<p><strong>事务的切面</strong></p>
+<p>事务的切面是一个“around（环绕）”切面，在注解的业务方法前后都可以被调用。实现切面的具体类是TransactionInterceptor。事务的切面有两个主要职责：</p>
+<ul>
+<li>在’before’时，切面提供一个调用点，来决定被调用业务方法应该在正在进行事务的范围内运行，还是开始一个新的独立事务。</li>
+<li>在’after’时，切面需要确定事务被提交，回滚或者继续运行。</li>
+</ul>
+<p>在’before’时，事务切面自身不包含任何决策逻辑，是否开始新事务的决策委派给事务管理器完成。</p>
+<p><strong>事务管理器</strong></p>
+<p>事务管理器需要解决下面两个问题：</p>
+<ul>
+<li>新的Entity Manager是否应该被创建？</li>
+<li>是否应该开始新的事务？</li>
+</ul>
+<p>这些需要事务切面’before’逻辑被调用时决定。事务管理器的决策基于以下两点：</p>
+<ul>
+<li>事务是否正在进行</li>
+<li>事务方法的propagation属性（比如REQUIRES_NEW总要开始新事务）</li>
+</ul>
+<p>如果事务管理器确定要创建新事务，那么将：</p>
+<ul>
+<li>创建一个新的entity manager</li>
+<li>entity manager绑定到当前线程</li>
+<li>从数据库连接池中获取连接</li>
+<li>将连接绑定到当前线程</li>
+</ul>
+<p>使用<strong>ThreadLocal</strong>变量将entity manager和数据库连接都绑定到当前线程。事务运行时他们存储在线程中，当它们不再被使用时，事务管理器决定是否将他们清除。程序的任何部分如果需要当前的entity manager和数据库连接都可以从线程中获取。</p>
+<p><strong>EntityManager proxy</strong></p>
+<p>当业务方法调用类似<strong>entityManager.persist()</strong>方法时，这不是由entity manager直接调用的，而是业务方法调用代理，因为事物管理器将entity manage绑定到了线程上，代理从线程获取当前的entity manager。</p>
+</li>
+</ul>
+<h4 id="2-2-2-Spring-MVC部分"><a href="#2-2-2-Spring-MVC部分" class="headerlink" title="2.2.2-Spring MVC部分"></a>2.2.2-Spring MVC部分</h4><ul>
+<li><p><code>@EnableWebMvc</code></p>
+<p>在配置类中开启Web MVC的配置支持，如一些ViewResolver或者MessageConverter等，若无此句，重写WebMvcConfigurerAdapter方法（用于对SpringMVC的配置）；</p>
+</li>
+<li><p><code>@Controller</code></p>
+<p>声明该类为SpringMVC中的Controller；</p>
+</li>
+<li><p><code>@RequestMapping</code></p>
+<p>用于映射Web请求，包括访问路径和参数（类或方法上）；</p>
+<p>@RequestMapping注解的主要用途是将Web请求与请求处理类中的方法进行映射。Spring MVC和Spring WebFlux都通过RquestMappingHandlerMapping和RequestMappingHndlerAdapter两个类来提供对@RequestMapping注解的支持。</p>
+<p>@RequestMapping注解对请求处理类中的请求处理方法进行标注；@RequestMapping注解拥有以下的六个配置属性：</p>
+<ul>
+<li>value:映射的请求URL或者其别名</li>
+<li>method:兼容HTTP的方法名</li>
+<li>params:根据HTTP参数的存在、缺省或值对请求进行过滤</li>
+<li>header:根据HTTP Header的存在、缺省或值对请求进行过滤</li>
+<li>consume:设定在HTTP请求正文中允许使用的媒体类型</li>
+<li>product:在HTTP响应体中允许使用的媒体类型</li>
+</ul>
+<blockquote>
+<p>提示：在使用@RequestMapping之前，请求处理类还需要使用@Controller或@RestController进行标记</p>
+</blockquote>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Controller</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/users"</span><span class="token punctuation">)</span>
+publicclass UserController <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>method <span class="token operator">=</span> RequestMethod<span class="token punctuation">.</span>GET<span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">getUserList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span><span class="token string">"users"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>此外，Spring4.3之后引入了一系列@RequestMapping的变种。如下：</p>
+<ul>
+<li>@GetMapping</li>
+<li>@PostMapping</li>
+<li>@PutMapping</li>
+<li>@PatchMapping</li>
+<li>@DeleteMapping</li>
+</ul>
+<p>分别对应了相应method的RequestMapping配置。</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/users"</span><span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">// 通过这里配置使下面的映射都在/users下</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">// 创建线程安全的Map，模拟users信息的存储</span>
+    <span class="token keyword">static</span> Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> User<span class="token operator">></span> users <span class="token operator">=</span> Collections<span class="token punctuation">.</span><span class="token function">synchronizedMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> User<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/"的GET请求，用来获取用户列表
+     *
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>User<span class="token operator">></span> <span class="token function">getUserList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 还可以通过@RequestParam从页面中传递参数来进行查询条件或者翻页信息的传递</span>
+        List<span class="token operator">&lt;</span>User<span class="token operator">></span> r <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span>User<span class="token operator">></span><span class="token punctuation">(</span>users<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> r<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/"的POST请求，用来创建User
+     *
+     * @param user
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">postUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// @RequestBody注解用来绑定通过http请求中application/json类型上传的数据</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的GET请求，用来获取url中id值的User信息
+     *
+     * @param id
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> User <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// url中的id可通过@PathVariable绑定到函数的参数中</span>
+        <span class="token keyword">return</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的PUT请求，用来更新User信息
+     *
+     * @param id
+     * @param user
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@PutMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">putUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">,</span> <span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User u <span class="token operator">=</span> users<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setName</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        u<span class="token punctuation">.</span><span class="token function">setAge</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        users<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> u<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 处理"/users/{id}"的DELETE请求，用来删除User
+     *
+     * @param id
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@DeleteMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        users<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"success"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@RequestBody</code></p>
+<p>允许request的参数在request体中，而不是在直接链接在地址的后面。此注解放置在参数前，@RequestBody在处理请求方法的参数列表中使用，它可以将请求主体中的参数绑定到一个对象中，请求主体参数是通过HttpMessageConverter传递的，根据请求主体中的参数名与对象的属性名进行匹配并绑定值；</p>
+</li>
+<li><p><code>@ResponseBody</code></p>
+<p>支持将返回值放在response内，而不是一个页面，通常用户返回json数据（返回值旁或方法上）；</p>
+</li>
+<li><p><code>@CookieValue</code></p>
+<p>此注解用在@RequestMapping声明的方法的参数上，可以把HTTP cookie中相应名称的cookie绑定上去;</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@ReuestMapping</span><span class="token punctuation">(</span><span class="token string">"/cookieValue"</span><span class="token punctuation">)</span>
+      <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">getCookieValue</span><span class="token punctuation">(</span><span class="token annotation punctuation">@CookieValue</span><span class="token punctuation">(</span><span class="token string">"JSESSIONID"</span><span class="token punctuation">)</span> String cookie<span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>cookie即http请求中name为JSESSIONID的cookie值。</p>
+</li>
+<li><p><code>@CrossOrigin</code></p>
+<p>此注解用在class和method上用来支持跨域请求，是Spring 4.2后引入的。</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@CrossOrigin</span><span class="token punctuation">(</span>maxAge <span class="token operator">=</span> <span class="token number">3600</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/users"</span><span class="token punctuation">)</span>
+publicclass AccountController <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@CrossOrigin</span><span class="token punctuation">(</span>origins <span class="token operator">=</span> <span class="token string">"http://xx.com"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result <span class="token function">userLogin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// ...</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@PathVariable</code></p>
+<p>放置在参数前，用来接受路径参数，比如@RequestMapping(“/hello/{name}”)申明的路径，将注解放在参数中前，即可获取该值，通常作为Restful的接口实现方法。</p>
+<p>@PathVariable注解是将方法中的参数绑定到请求URI中的模板变量上。可以通过@RequestMapping注解来指定URI的模板变量，然后使用@PathVariable注解将方法中的参数绑定到模板变量上。特别地，@PathVariable注解允许我们使用value或name属性来给参数取一个别名。下面是使用此注解的一个示例：</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/PathVariable.png" alt="PathVariable"></p>
+</li>
+<li><p><code>@RestController</code></p>
+<p>该注解为一个组合注解，相当于@Controller和@ResponseBody的组合，注解在类上，意味着，该Controller的所有方法都默认加上了@ResponseBody；</p>
+</li>
+<li><p><code>@ControllerAdvice</code> </p>
+<p>@ControllerAdvice是@Component注解的一个延伸注解，Spring会自动扫描并检测被@ControllerAdvice所标注的类。@ControllerAdvice需要和@ExceptionHandler、@InitBinder以及@ModelAttribute注解搭配使用，主要是用来处理控制器所抛出的异常信息。首先，我们需要定义一个被@ControllerAdvice所标注的类，在该类中，定义一个用于处理具体异常的方法，并使用@ExceptionHandler注解进行标记。</p>
+<p>此外，在有必要的时候，可以使用@InitBinder在类中进行全局的配置，还可以使用@ModelAttribute配置与视图相关的参数。使用@ControllerAdvice注解，就可以快速的创建统一的，自定义的异常处理类。下面是一个使用@ControllerAdvice的示例代码：</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/ControllerAdvice.png" alt="ControllerAdvice"></p>
+</li>
+<li><p><code>@ExceptionHandler</code></p>
+<p>@ExceptionHander注解用于标注处理特定类型异常类所抛出异常的方法。当控制器中的方法抛出异常时，Spring会自动捕获异常，并将捕获的异常信息传递给被@ExceptionHandler标注的方法。下面是使用该注解的一个示例：</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/ExceptionHandler.png" alt="ExceptionHandler"></p>
+</li>
+<li><p><code>@ResponseStatus</code></p>
+<p>@ResponseStatus注解可以标注请求处理方法。使用此注解，可以指定响应所需要的HTTP STATUS。特别地，我们可以使用HttpStauts类对该注解的value属性进行赋值。下面是使用@ResponseStatus注解的一个示例：</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/ResponseStatus.png" alt="ResponseStatus"></p>
+</li>
+<li><p><code>@InitBinder</code></p>
+<p>此注解使用在方法上，声明对WebDataBinder的初始化(绑定请求参数到JavaBean上的DataBinder)。在controller上使用此注解可以自定义请求参数的绑定。</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/InitBinder.png" alt="InitBinder"></p>
+</li>
+<li><p><code>@MatrixVariable</code></p>
+<p>此注解使用在请求handler方法的参数上，Spring可以注入matrix url中相关的值。这里的矩阵变量可以出现在url中的任何地方，变量之间用;分隔。如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">// GET /pets/42;q=11;r=22</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/pets/{petId}"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">findPet</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> String petId<span class="token punctuation">,</span> <span class="token annotation punctuation">@MatrixVariable</span> <span class="token keyword">int</span> q<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// petId == 42</span>
+    <span class="token comment" spellcheck="true">// q == 11</span>
+<span class="token punctuation">}</span></code></pre>
+<p>需要注意的是默认Spring mvc是不支持矩阵变量的，需要开启。</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">mvc:</span>annotation-driven</span> <span class="token attr-name">enable-matrix-variables</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span></code></pre>
+<p>注解配置则需要如下开启：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+publicclass WebConfig <span class="token keyword">extends</span> <span class="token class-name">WebMvcConfigurerAdapter</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">configurePathMatch</span><span class="token punctuation">(</span>PathMatchConfigurer configurer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        UrlPathHelper urlPathHelper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">UrlPathHelper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        urlPathHelper<span class="token punctuation">.</span><span class="token function">setRemoveSemicolonContent</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        configurer<span class="token punctuation">.</span><span class="token function">setUrlPathHelper</span><span class="token punctuation">(</span>urlPathHelper<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@RequestHeader</code></p>
+<p>此注解用在请求handler方法的参数上，用于将http请求头部的值绑定到参数上。</p>
+</li>
+<li><p><code>@RequestParam</code></p>
+<p>@RequestParam注解用于将方法的参数与Web请求的传递的参数进行绑定。使用@RequestParam可以轻松的访问HTTP请求参数的值。下面是使用该注解的代码示例：</p>
+<p><img src="/2020/02/29/java-yu-spring-zhu-jie-pian/RequestParam.png" alt="RequestParam"></p>
+</li>
+<li><p><code>@SessionAttribute</code></p>
+<p>此注解用于方法的参数上，用于将session中的属性绑定到参数。</p>
+</li>
+<li><p><code>@SessionAttributes</code></p>
+<p>此注解用于type级别，用于将JavaBean对象存储到session中。一般和@ModelAttribute注解一起使用。如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@ModelAttribute</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">public</span> PUser <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// controller和上面的代码在同一controller中</span>
+<span class="token annotation punctuation">@Controller</span>
+<span class="token annotation punctuation">@SeesionAttributes</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"user"</span><span class="token punctuation">,</span> types <span class="token operator">=</span> <span class="token punctuation">{</span>
+    User<span class="token punctuation">.</span><span class="token keyword">class</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+publicclass UserController <span class="token punctuation">{</span><span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@RestControllerAdvice</code></p>
+<p>此注解用于class上，同时引入了@ControllerAdvice和@ResponseBody两个注解。</p>
+</li>
+</ul>
+<h4 id="2-2-3-Spring-Boot注解"><a href="#2-2-3-Spring-Boot注解" class="headerlink" title="2.2.3-Spring Boot注解"></a>2.2.3-Spring Boot注解</h4><ul>
+<li><p><code>@SpringBootApplication</code></p>
+<p>@SpringBootApplication注解是一个快捷的配置注解，在被它标注的类中，可以定义一个或多个Bean，并自动触发自动配置Bean和自动扫描组件。此注解相当于@Configuration、@EnableAutoConfiguration和@ComponentScan的组合。在Spring Boot应用程序的主类中，就使用了此注解。示例代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span><span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String <span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Application<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@EnableAutoConfiguration</code></p>
+<p>@EnableAutoConfiguration注解用于通知Spring，根据当前类路径下引入的依赖包，自动配置与这些依赖包相关的配置项。</p>
+</li>
+<li><p><code>@ConditionalOnClass与@ConditionalOnMissingClass</code></p>
+<p>这两个注解属于类条件注解，它们根据是否存在某个类作为判断依据来决定是否要执行某些配置。下面是一个简单的示例代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token annotation punctuation">@ConditionalOnClass</span><span class="token punctuation">(</span>DataSource<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">MySQLAutoConfiguration</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ConditionalOnBean与@ConditionalOnMissingBean</code></p>
+<p>这两个注解属于对象条件注解，根据是否存在某个对象作为依据来决定是否要执行某些配置方法。示例代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@ConditionalOnBean</span><span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"dataSource"</span><span class="token punctuation">)</span>
+LocalContainerEntityManagerFactoryBean <span class="token function">entityManagerFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span>
+<span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@ConditionalOnMissingBean</span>
+<span class="token keyword">public</span> MyBean <span class="token function">myBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ConditionalOnProperty</code></p>
+<p>@ConditionalOnProperty注解会根据Spring配置文件中的配置项是否满足配置要求，从而决定是否要执行被其标注的方法。示例代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@ConditionalOnProperty</span><span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"alipay"</span><span class="token punctuation">,</span>havingValue<span class="token operator">=</span><span class="token string">"on"</span><span class="token punctuation">)</span>
+Alipay <span class="token function">alipay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Alipay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ConditionalOnResource</code></p>
+<p>此注解用于检测当某个配置文件存在使，则触发被其标注的方法，下面是使用此注解的代码示例：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@ConditionalOnResource</span><span class="token punctuation">(</span>resources <span class="token operator">=</span> <span class="token string">"classpath:website.properties"</span><span class="token punctuation">)</span>
+Properties <span class="token function">addWebsiteProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ConditionalOnWebApplication与@ConditionalOnNotWebApplication</code></p>
+<p>这两个注解用于判断当前的应用程序是否是Web应用程序。如果当前应用是Web应用程序，则使用Spring WebApplicationContext,并定义其会话的生命周期。下面是一个简单的示例：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@ConditionalOnWebApplication</span>
+HealthCheckController <span class="token function">healthCheckController</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ConditionalExpression</code></p>
+<p>此注解可以让我们控制更细粒度的基于表达式的配置条件限制。当表达式满足某个条件或者表达式为真的时候，将会执行被此注解标注的方法。</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@ConditionalException</span><span class="token punctuation">(</span><span class="token string">"${localstore} &amp;&amp; ${local == 'true'}"</span><span class="token punctuation">)</span>
+LocalFileStore <span class="token function">store</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>@ImportResource</code>：导入Spring的配置文件，让配置文件里面的内容生效（xml）；</p>
+</li>
+</ul>
+
             </div>
             <hr/>
 
@@ -1075,58 +1886,36 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/02/29/java-yu-spring-zhu-jie-pian/">
+                <a href="/2020/03/01/lombok-xue-xi-bi-ji/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Java与Spring注解篇">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="Lombok学习笔记">
                         
-                        <span class="card-title">Java与Spring注解篇</span>
+                        <span class="card-title">Lombok学习笔记</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Java和Spring常用注解大全
+                            LombokLombok 是一个非常神奇的 java 类库，会利用注解自动生成 java Bean 中烦人的 Getter、Setter，还能自动生成 logger、ToString、HashCode、Builder 等 java特色的函数
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-02-29
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-01
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Spring/" class="post-category">
-                                    Spring
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            fangpeng
                             
                         </span>
                     </div>
-                </div>
-
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Spring/">
-                        <span class="chip bg-color">Spring</span>
-                    </a>
-                    
-                    <a href="/tags/Java/">
-                        <span class="chip bg-color">Java</span>
-                    </a>
-                    
-                    <a href="/tags/%E6%B3%A8%E8%A7%A3/">
-                        <span class="chip bg-color">注解</span>
-                    </a>
-                    
                 </div>
                 
             </div>
@@ -1323,7 +2112,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">433.5k</span>&nbsp;字
+                class="white-color">449.1k</span>&nbsp;字
             
             
             
