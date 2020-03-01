@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-03-01T12:31:29.945Z</updated>
+  <updated>2020-03-01T12:58:33.946Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -17,11 +17,42 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Java数据校验</title>
+    <link href="https://fangpeng12.github.io/2020/03/01/java-shu-ju-xiao-yan/"/>
+    <id>https://fangpeng12.github.io/2020/03/01/java-shu-ju-xiao-yan/</id>
+    <published>2020-03-01T12:41:31.000Z</published>
+    <updated>2020-03-01T12:58:33.946Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Java数据校验&quot;&gt;&lt;a href=&quot;#Java数据校验&quot; class=&quot;headerlink&quot; title=&quot;Java数据校验&quot;&gt;&lt;/a&gt;Java数据校验&lt;/h1&gt;&lt;h2 id=&quot;1-前言&quot;&gt;&lt;a href=&quot;#1-前言&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Java工具" scheme="https://fangpeng12.github.io/categories/Java%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="数据校验" scheme="https://fangpeng12.github.io/tags/%E6%95%B0%E6%8D%AE%E6%A0%A1%E9%AA%8C/"/>
+    
+      <category term="JSR303" scheme="https://fangpeng12.github.io/tags/JSR303/"/>
+    
+      <category term="Validation" scheme="https://fangpeng12.github.io/tags/Validation/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Lombok学习笔记</title>
     <link href="https://fangpeng12.github.io/2020/03/01/lombok-xue-xi-bi-ji/"/>
     <id>https://fangpeng12.github.io/2020/03/01/lombok-xue-xi-bi-ji/</id>
     <published>2020-03-01T10:17:00.000Z</published>
-    <updated>2020-03-01T12:31:29.945Z</updated>
+    <updated>2020-03-01T12:43:12.411Z</updated>
     
     <summary type="html">
     
@@ -36,6 +67,10 @@
     </summary>
     
     
+      <category term="Java工具" scheme="https://fangpeng12.github.io/categories/Java%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="Lombok" scheme="https://fangpeng12.github.io/tags/Lombok/"/>
     
   </entry>
   
@@ -415,7 +450,7 @@
     <link href="https://fangpeng12.github.io/2019/12/25/springboot-bi-ji-er/"/>
     <id>https://fangpeng12.github.io/2019/12/25/springboot-bi-ji-er/</id>
     <published>2019-12-25T14:09:50.000Z</published>
-    <updated>2020-02-29T09:24:12.150Z</updated>
+    <updated>2020-03-01T12:55:25.037Z</updated>
     
     <summary type="html">
     
