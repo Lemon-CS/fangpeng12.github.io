@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-03-11T15:20:40.707Z</updated>
+  <updated>2020-03-14T06:54:19.245Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -15,6 +15,297 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Guava工具</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/guava-gong-ju/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/guava-gong-ju/</id>
+    <published>2020-03-14T06:53:24.000Z</published>
+    <updated>2020-03-14T06:54:19.245Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="Guava" scheme="https://fangpeng12.github.io/tags/Guava/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java I/O</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/java-io/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/java-io/</id>
+    <published>2020-03-14T06:40:24.000Z</published>
+    <updated>2020-03-14T06:41:19.996Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="I/O" scheme="https://fangpeng12.github.io/tags/I-O/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Git学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/git-xue-xi-bi-ji/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/git-xue-xi-bi-ji/</id>
+    <published>2020-03-14T06:34:43.000Z</published>
+    <updated>2020-03-14T06:47:35.413Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Git" scheme="https://fangpeng12.github.io/categories/Git/"/>
+    
+    
+      <category term="Git" scheme="https://fangpeng12.github.io/tags/Git/"/>
+    
+      <category term="学习笔记" scheme="https://fangpeng12.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>计算机网络</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/ji-suan-ji-wang-luo/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/ji-suan-ji-wang-luo/</id>
+    <published>2020-03-14T06:34:14.000Z</published>
+    <updated>2020-03-14T06:46:56.418Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="计算机网络" scheme="https://fangpeng12.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+    
+      <category term="计算机网络" scheme="https://fangpeng12.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+      <category term="TCP" scheme="https://fangpeng12.github.io/tags/TCP/"/>
+    
+      <category term="HTTP" scheme="https://fangpeng12.github.io/tags/HTTP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JVM虚拟机</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/jvm-xu-ni-ji/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/jvm-xu-ni-ji/</id>
+    <published>2020-03-14T06:33:43.000Z</published>
+    <updated>2020-03-14T06:45:44.440Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="JVM" scheme="https://fangpeng12.github.io/tags/JVM/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/she-ji-mo-shi/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/she-ji-mo-shi/</id>
+    <published>2020-03-14T06:33:29.000Z</published>
+    <updated>2020-03-14T06:44:49.437Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="系统设计" scheme="https://fangpeng12.github.io/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/"/>
+    
+    
+      <category term="设计模式" scheme="https://fangpeng12.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>面向对象设计</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/mian-xiang-dui-xiang-she-ji/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/mian-xiang-dui-xiang-she-ji/</id>
+    <published>2020-03-14T06:33:21.000Z</published>
+    <updated>2020-03-14T06:44:05.666Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="系统设计" scheme="https://fangpeng12.github.io/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/"/>
+    
+    
+      <category term="面向对象" scheme="https://fangpeng12.github.io/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Redis</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/redis/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/redis/</id>
+    <published>2020-03-14T06:32:50.000Z</published>
+    <updated>2020-03-14T06:43:03.757Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://fangpeng12.github.io/categories/Redis/"/>
+    
+    
+      <category term="Redis" scheme="https://fangpeng12.github.io/tags/Redis/"/>
+    
+      <category term="缓存" scheme="https://fangpeng12.github.io/tags/%E7%BC%93%E5%AD%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/mysql/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/mysql/</id>
+    <published>2020-03-14T06:31:42.000Z</published>
+    <updated>2020-03-14T06:42:18.075Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="MySQL" scheme="https://fangpeng12.github.io/categories/MySQL/"/>
+    
+    
+      <category term="MySQL" scheme="https://fangpeng12.github.io/tags/MySQL/"/>
+    
+      <category term="数据库" scheme="https://fangpeng12.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java多线程与并发</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/java-duo-xian-cheng-yu-bing-fa/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/java-duo-xian-cheng-yu-bing-fa/</id>
+    <published>2020-03-14T06:31:11.000Z</published>
+    <updated>2020-03-14T06:39:13.853Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="多线程" scheme="https://fangpeng12.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+      <category term="并发" scheme="https://fangpeng12.github.io/tags/%E5%B9%B6%E5%8F%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java容器</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/java-rong-qi/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/java-rong-qi/</id>
+    <published>2020-03-14T06:30:52.000Z</published>
+    <updated>2020-03-14T06:38:37.327Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="容器" scheme="https://fangpeng12.github.io/tags/%E5%AE%B9%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java基础</title>
+    <link href="https://fangpeng12.github.io/2020/03/14/java-ji-chu/"/>
+    <id>https://fangpeng12.github.io/2020/03/14/java-ji-chu/</id>
+    <published>2020-03-14T06:30:15.000Z</published>
+    <updated>2020-03-14T07:18:15.640Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Java基础&quot;&gt;&lt;a href=&quot;#Java基础&quot; class=&quot;headerlink&quot; title=&quot;Java基础&quot;&gt;&lt;/a&gt;Java基础&lt;/h1&gt;&lt;h2 id=&quot;1-Java介绍&quot;&gt;&lt;a href=&quot;#1-Java介绍&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
+    
+      <category term="Java基础" scheme="https://fangpeng12.github.io/tags/Java%E5%9F%BA%E7%A1%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>畅购商城实战（四）</title>
+    <link href="https://fangpeng12.github.io/2020/03/12/chang-gou-shang-cheng-shi-zhan-si/"/>
+    <id>https://fangpeng12.github.io/2020/03/12/chang-gou-shang-cheng-shi-zhan-si/</id>
+    <published>2020-03-12T12:39:28.000Z</published>
+    <updated>2020-03-14T09:13:37.940Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;第4章-lua、Canal实现广告缓存&quot;&gt;&lt;a href=&quot;#第4章-lua、Canal实现广告缓存&quot; class=&quot;headerlink&quot; title=&quot;第4章 lua、Canal实现广告缓存&quot;&gt;&lt;/a&gt;第4章 lua、Canal实现广告缓存&lt;/h1&gt;&lt;h1
+        
+      
+    
+    </summary>
+    
+    
+      <category term="项目实战" scheme="https://fangpeng12.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
+    
+    
+      <category term="微服务" scheme="https://fangpeng12.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+      <category term="SpringCloud" scheme="https://fangpeng12.github.io/tags/SpringCloud/"/>
+    
+      <category term="项目实战" scheme="https://fangpeng12.github.io/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
+    
+  </entry>
   
   <entry>
     <title>畅购商城实战（三）</title>
@@ -216,377 +507,6 @@
       <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
     
       <category term="注解" scheme="https://fangpeng12.github.io/tags/%E6%B3%A8%E8%A7%A3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Docker入门笔记</title>
-    <link href="https://fangpeng12.github.io/2020/02/29/docker-ru-men-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2020/02/29/docker-ru-men-bi-ji/</id>
-    <published>2020-02-29T09:51:10.000Z</published>
-    <updated>2020-02-29T15:27:22.634Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Docker入门&quot;&gt;&lt;a href=&quot;#Docker入门&quot; class=&quot;headerlink&quot; title=&quot;Docker入门&quot;&gt;&lt;/a&gt;Docker入门&lt;/h1&gt;&lt;h2 id=&quot;1-简介&quot;&gt;&lt;a href=&quot;#1-简介&quot; class=&quot;headerlink&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Docker" scheme="https://fangpeng12.github.io/categories/Docker/"/>
-    
-    
-      <category term="Docker" scheme="https://fangpeng12.github.io/tags/Docker/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>单元测试之Mock</title>
-    <link href="https://fangpeng12.github.io/2020/02/21/dan-yuan-ce-shi-zhi-mock/"/>
-    <id>https://fangpeng12.github.io/2020/02/21/dan-yuan-ce-shi-zhi-mock/</id>
-    <published>2020-02-21T13:32:12.000Z</published>
-    <updated>2020-02-24T13:03:35.300Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;单元测试之Mock&quot;&gt;&lt;a href=&quot;#单元测试之Mock&quot; class=&quot;headerlink&quot; title=&quot;单元测试之Mock&quot;&gt;&lt;/a&gt;单元测试之Mock&lt;/h1&gt;&lt;h2 id=&quot;1-Mock详解&quot;&gt;&lt;a href=&quot;#1-Mock详解&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="单元测试" scheme="https://fangpeng12.github.io/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
-    
-    
-      <category term="单元测试" scheme="https://fangpeng12.github.io/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
-    
-      <category term="Mock" scheme="https://fangpeng12.github.io/tags/Mock/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《阿里巴巴Java开发手册》详解</title>
-    <link href="https://fangpeng12.github.io/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/"/>
-    <id>https://fangpeng12.github.io/2020/02/15/a-li-ba-ba-java-kai-fa-shou-ce-xiang-jie/</id>
-    <published>2020-02-15T12:58:13.000Z</published>
-    <updated>2020-02-21T10:34:21.691Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;《阿里巴巴Java开发手册》详解&quot;&gt;&lt;a href=&quot;#《阿里巴巴Java开发手册》详解&quot; class=&quot;headerlink&quot; title=&quot;《阿里巴巴Java开发手册》详解&quot;&gt;&lt;/a&gt;《阿里巴巴Java开发手册》详解&lt;/h1&gt;&lt;h2 id=&quot;1-编码&quot;&gt;&lt;a
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="开发手册" scheme="https://fangpeng12.github.io/tags/%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>JDK源码详解</title>
-    <link href="https://fangpeng12.github.io/2020/02/02/jdk-yuan-ma-xiang-jie/"/>
-    <id>https://fangpeng12.github.io/2020/02/02/jdk-yuan-ma-xiang-jie/</id>
-    <published>2020-02-02T08:15:29.000Z</published>
-    <updated>2020-02-29T07:32:01.414Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;JDK源码详解&quot;&gt;&lt;a href=&quot;#JDK源码详解&quot; class=&quot;headerlink&quot; title=&quot;JDK源码详解&quot;&gt;&lt;/a&gt;JDK源码详解&lt;/h1&gt;&lt;h2 id=&quot;1-基础&quot;&gt;&lt;a href=&quot;#1-基础&quot; class=&quot;headerlink&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java源码" scheme="https://fangpeng12.github.io/categories/Java%E6%BA%90%E7%A0%81/"/>
-    
-    
-      <category term="JDK 源码" scheme="https://fangpeng12.github.io/tags/JDK-%E6%BA%90%E7%A0%81/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>CSS学习笔记</title>
-    <link href="https://fangpeng12.github.io/2020/01/18/css-xue-xi-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2020/01/18/css-xue-xi-bi-ji/</id>
-    <published>2020-01-18T14:49:00.000Z</published>
-    <updated>2020-01-18T15:13:15.291Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;CSS&quot;&gt;&lt;a href=&quot;#CSS&quot; class=&quot;headerlink&quot; title=&quot;CSS&quot;&gt;&lt;/a&gt;CSS&lt;/h1&gt;&lt;h2 id=&quot;1-1什么是CSS？&quot;&gt;&lt;a href=&quot;#1-1什么是CSS？&quot; class=&quot;headerlink&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-    
-    
-      <category term="css" scheme="https://fangpeng12.github.io/tags/css/"/>
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>HTML学习笔记</title>
-    <link href="https://fangpeng12.github.io/2020/01/18/html-xue-xi-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2020/01/18/html-xue-xi-bi-ji/</id>
-    <published>2020-01-18T14:47:24.000Z</published>
-    <updated>2020-01-18T15:12:57.429Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;HTML学习笔记&quot;&gt;&lt;a href=&quot;#HTML学习笔记&quot; class=&quot;headerlink&quot; title=&quot;HTML学习笔记&quot;&gt;&lt;/a&gt;HTML学习笔记&lt;/h1&gt;&lt;h1 id=&quot;1-HTML初识&quot;&gt;&lt;a href=&quot;#1-HTML初识&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-    
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
-    
-      <category term="html" scheme="https://fangpeng12.github.io/tags/html/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringCloud学习笔记1</title>
-    <link href="https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/"/>
-    <id>https://fangpeng12.github.io/2020/01/17/springcloud-xue-xi-bi-ji-yi/</id>
-    <published>2020-01-17T14:09:50.000Z</published>
-    <updated>2020-02-29T08:57:13.807Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;SpringCloud学习笔记&quot;&gt;&lt;a href=&quot;#SpringCloud学习笔记&quot; class=&quot;headerlink&quot; title=&quot;SpringCloud学习笔记&quot;&gt;&lt;/a&gt;SpringCloud学习笔记&lt;/h1&gt;&lt;h2
-        
-      
-    
-    </summary>
-    
-    
-      <category term="SpringCloud" scheme="https://fangpeng12.github.io/categories/SpringCloud/"/>
-    
-    
-      <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
-    
-      <category term="SpringCloud" scheme="https://fangpeng12.github.io/tags/SpringCloud/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>微服务架构基础</title>
-    <link href="https://fangpeng12.github.io/2020/01/16/wei-fu-wu-jia-gou-ji-chu/"/>
-    <id>https://fangpeng12.github.io/2020/01/16/wei-fu-wu-jia-gou-ji-chu/</id>
-    <published>2020-01-16T14:36:07.000Z</published>
-    <updated>2020-01-18T15:06:52.283Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-      <category term="微服务" scheme="https://fangpeng12.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-    
-      <category term="架构" scheme="https://fangpeng12.github.io/tags/%E6%9E%B6%E6%9E%84/"/>
-    
-      <category term="微服务" scheme="https://fangpeng12.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>分布式架构基础</title>
-    <link href="https://fangpeng12.github.io/2020/01/16/fen-bu-shi-jia-gou-ji-chu/"/>
-    <id>https://fangpeng12.github.io/2020/01/16/fen-bu-shi-jia-gou-ji-chu/</id>
-    <published>2020-01-16T13:53:04.000Z</published>
-    <updated>2020-01-18T15:12:36.807Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;分布式架构基础&quot;&gt;&lt;a href=&quot;#分布式架构基础&quot; class=&quot;headerlink&quot; title=&quot;分布式架构基础&quot;&gt;&lt;/a&gt;分布式架构基础&lt;/h1&gt;&lt;h2 id=&quot;1-分布式系统&quot;&gt;&lt;a href=&quot;#1-分布式系统&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="分布式" scheme="https://fangpeng12.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-    
-      <category term="分布式" scheme="https://fangpeng12.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-      <category term="架构" scheme="https://fangpeng12.github.io/tags/%E6%9E%B6%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>单元测试之Junit</title>
-    <link href="https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/"/>
-    <id>https://fangpeng12.github.io/2020/01/15/dan-yuan-ce-shi-zhi-junit/</id>
-    <published>2020-01-15T14:36:54.000Z</published>
-    <updated>2020-01-19T14:25:22.047Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Junit5单元测试&quot;&gt;&lt;a href=&quot;#Junit5单元测试&quot; class=&quot;headerlink&quot; title=&quot;Junit5单元测试&quot;&gt;&lt;/a&gt;Junit5单元测试&lt;/h1&gt;&lt;h2 id=&quot;1-前言&quot;&gt;&lt;a href=&quot;#1-前言&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="单元测试" scheme="https://fangpeng12.github.io/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
-    
-    
-      <category term="Junit" scheme="https://fangpeng12.github.io/tags/Junit/"/>
-    
-      <category term="单元测试" scheme="https://fangpeng12.github.io/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Angular学习笔记</title>
-    <link href="https://fangpeng12.github.io/2020/01/15/angular-xue-xi-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2020/01/15/angular-xue-xi-bi-ji/</id>
-    <published>2020-01-15T12:36:54.000Z</published>
-    <updated>2020-01-18T15:12:06.294Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Angular学习笔记&quot;&gt;&lt;a href=&quot;#Angular学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Angular学习笔记&quot;&gt;&lt;/a&gt;Angular学习笔记&lt;/h1&gt;&lt;h1 id=&quot;1-Angular入门&quot;&gt;&lt;a
-        
-      
-    
-    </summary>
-    
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-    
-    
-      <category term="前端" scheme="https://fangpeng12.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
-    
-      <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="Angular" scheme="https://fangpeng12.github.io/tags/Angular/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Kafka学习笔记</title>
-    <link href="https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2019/12/25/kafka-xue-xi-bi-ji/</id>
-    <published>2019-12-25T14:09:50.000Z</published>
-    <updated>2020-02-24T15:27:29.529Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Kafka学习笔记&quot;&gt;&lt;a href=&quot;#Kafka学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Kafka学习笔记&quot;&gt;&lt;/a&gt;Kafka学习笔记&lt;/h1&gt;&lt;h1 id=&quot;1-kafka介绍&quot;&gt;&lt;a href=&quot;#1-kafka介绍&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Kafka" scheme="https://fangpeng12.github.io/categories/Kafka/"/>
-    
-    
-      <category term="kafka" scheme="https://fangpeng12.github.io/tags/kafka/"/>
-    
-      <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringBoot学习笔记2</title>
-    <link href="https://fangpeng12.github.io/2019/12/25/springboot-bi-ji-er/"/>
-    <id>https://fangpeng12.github.io/2019/12/25/springboot-bi-ji-er/</id>
-    <published>2019-12-25T14:09:50.000Z</published>
-    <updated>2020-03-01T12:55:25.037Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;SpringBoot2-0学习笔记&quot;&gt;&lt;a href=&quot;#SpringBoot2-0学习笔记&quot; class=&quot;headerlink&quot; title=&quot;SpringBoot2.0学习笔记&quot;&gt;&lt;/a&gt;SpringBoot2.0学习笔记&lt;/h1&gt;&lt;h2
-        
-      
-    
-    </summary>
-    
-    
-      <category term="SpringBoot" scheme="https://fangpeng12.github.io/categories/SpringBoot/"/>
-    
-    
-      <category term="笔记" scheme="https://fangpeng12.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="SpringBoot" scheme="https://fangpeng12.github.io/tags/SpringBoot/"/>
-    
-      <category term="Spring" scheme="https://fangpeng12.github.io/tags/Spring/"/>
     
   </entry>
   
