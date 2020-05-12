@@ -465,7 +465,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-03-21
+                    2020-03-14
                 </div>
                 
 
@@ -506,7 +506,7 @@
 <li>搜索排序</li>
 <li>搜索高亮</li>
 </ul>
-<h2 id="1-品牌统计"><a href="#1-品牌统计" class="headerlink" title="1. 品牌统计"></a>1. 品牌统计</h2><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1.png" alt="品牌统计"></p>
+<h2 id="1-品牌统计"><a href="#1-品牌统计" class="headerlink" title="1. 品牌统计"></a>1. 品牌统计</h2><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1.png" alt="品牌统计"></p>
 <p>用户搜索的时候，除了使用分类搜索外，还有可能使用品牌搜索，所以我们还需要显示品牌数据和规格数据，品牌数据和规格数据的显示比较容易，都可以考虑使用分类统计的方式进行分组实现。</p>
 <h3 id="1-1-品牌统计分析"><a href="#1-1-品牌统计分析" class="headerlink" title="1.1 品牌统计分析"></a>1.1 品牌统计分析</h3><p>看下面的SQL语句，我们在执行搜索的时候，第1条SQL语句是执行搜，第2条语句是根据品牌名字分组查看有多少品牌，大概执行了2个步骤就可以获取数据结果以及品牌统计，我们可以发现他们的搜索条件完全一样。</p>
 <pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 查询所有</span>
@@ -515,12 +515,12 @@
 <span class="token keyword">SELECT</span> brand_name <span class="token keyword">FROM</span>  tb_sku <span class="token keyword">WHERE</span> name <span class="token operator">LIKE</span> <span class="token string">'%手机%'</span> <span class="token keyword">GROUP</span> <span class="token keyword">BY</span> brand_name<span class="token punctuation">;</span></code></pre>
 <p>我们每次执行搜索的时候，需要显示商品品牌名称，这里要显示的品牌名称其实就是符合搜素条件的所有商品的品牌集合，我们可以按照上面的实现思路，使用ES根据分组名称做一次分组查询即可实现。</p>
 <h3 id="1-2-品牌分组统计实现"><a href="#1-2-品牌分组统计实现" class="headerlink" title="1.2 品牌分组统计实现"></a>1.2 品牌分组统计实现</h3><p>修改search微服务的com.changgou.search.service.impl.SkuServiceImpl类，添加一个品牌分组搜索,如图:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1%E5%88%86%E7%BB%84.png" alt="品牌统计"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1%E5%88%86%E7%BB%84.png" alt="品牌统计"></p>
 <p>添加的代码如下:</p>
 <pre><code>//设置分组条件  商品品牌
 nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuBrandgroup&quot;).field(&quot;brandName&quot;).size(50));</code></pre><p>执行获取分组结果:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%8E%B7%E5%8F%96%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="获取分组结果"></p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E9%81%8D%E5%8E%86%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="遍历分组结果"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%8E%B7%E5%8F%96%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="获取分组结果"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E9%81%8D%E5%8E%86%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="遍历分组结果"></p>
 <p>整体代码如下：</p>
 <pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> Map <span class="token function">search</span><span class="token punctuation">(</span>Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> searchMap<span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
@@ -608,8 +608,8 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuBrand
 <span class="token punctuation">}</span>
 </code></pre>
 <h3 id="1-3-测试"><a href="#1-3-测试" class="headerlink" title="1.3 测试"></a>1.3 测试</h3><p>使用PostMan请求<a href="http://localhost:18086/search" target="_blank" rel="noopener">http://localhost:18086/search</a></p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E6%B5%8B%E8%AF%95%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1.png" alt="测试品牌统计"></p>
-<h2 id="2-规格统计"><a href="#2-规格统计" class="headerlink" title="2. 规格统计"></a>2. 规格统计</h2><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1.png" alt="规格统计"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E6%B5%8B%E8%AF%95%E5%93%81%E7%89%8C%E7%BB%9F%E8%AE%A1.png" alt="测试品牌统计"></p>
+<h2 id="2-规格统计"><a href="#2-规格统计" class="headerlink" title="2. 规格统计"></a>2. 规格统计</h2><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1.png" alt="规格统计"></p>
 <p>用户搜索的时候，除了使用分类、品牌搜索外，还有可能使用规格搜索，所以我们还需要显示规格数据，规格数据的显示相比上面2种实现略微较难一些，需要对数据进行处理，我们也可以考虑使用分类统计和品牌统计的方式进行分组实现。</p>
 <h3 id="2-1-规格统计分析"><a href="#2-1-规格统计分析" class="headerlink" title="2.1 规格统计分析"></a>2.1 规格统计分析</h3><p>看下面的SQL语句，我们在执行搜索的时候，第1条SQL语句是执行搜，第2条语句是根据规格分组查看有多少规格，大概执行了2个步骤就可以获取数据结果以及规格统计，我们可以发现他们的搜索条件完全一样。</p>
 <pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 查询所有</span>
@@ -617,7 +617,7 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuBrand
 <span class="token comment" spellcheck="true">-- 根据规格名字分组查询</span>
 <span class="token keyword">SELECT</span> spec <span class="token keyword">FROM</span>  tb_sku <span class="token keyword">WHERE</span> name <span class="token operator">LIKE</span> <span class="token string">'%手机%'</span> <span class="token keyword">GROUP</span> <span class="token keyword">BY</span> spec<span class="token punctuation">;</span></code></pre>
 <p>上述SQL语句执行后的结果如下图：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/SQL%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C.png" alt="1562146722641"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/SQL%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C.png" alt="1562146722641"></p>
 <p>获取到的规格数据我们发现有重复，不过也可以解决，解决思路如下：</p>
 <pre><code>1.获取所有规格数据
 2.将所有规格数据转换成Map
@@ -625,13 +625,13 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuBrand
 4.循环规格的Map，将数据填充到定义的Map&lt;String,Set&gt;中</code></pre><p>我们每次执行搜索的时候，需要显示商品规格数据，这里要显示的规格数据其实就是符合搜素条件的所有商品的规格集合，我们可以按照上面的实现思路，使用ES根据分组名称做一次分组查询，并去除重复数据即可实现。</p>
 <h3 id="2-2-规格统计分组实现"><a href="#2-2-规格统计分组实现" class="headerlink" title="2.2 规格统计分组实现"></a>2.2 规格统计分组实现</h3><p>修改search微服务的com.changgou.search.service.impl.SkuServiceImpl类，添加一个规格分组搜索</p>
 <p>如图:添加规格分组条件</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E6%B7%BB%E5%8A%A0%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1%E5%88%86%E7%BB%84.png" alt="添加规格统计分组"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E6%B7%BB%E5%8A%A0%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1%E5%88%86%E7%BB%84.png" alt="添加规格统计分组"></p>
 <p>上图代码如下:</p>
 <pre><code>//设置分组条件  商品的规格
 nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuSpecgroup&quot;).field(&quot;spec.keyword&quot;).size(100));</code></pre><p>如图:获取规格分组结果:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%8E%B7%E5%8F%96%E8%A7%84%E6%A0%BC%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="获取规格分组结果"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%8E%B7%E5%8F%96%E8%A7%84%E6%A0%BC%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="获取规格分组结果"></p>
 <p>封装调用分组结果的方法:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E5%B0%81%E8%A3%85%E8%B0%83%E7%94%A8%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="封装调用分组结果"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E5%B0%81%E8%A3%85%E8%B0%83%E7%94%A8%E5%88%86%E7%BB%84%E7%BB%93%E6%9E%9C.png" alt="封装调用分组结果"></p>
 <p>上图代码如下:</p>
 <pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
  * 获取规格列表数据
@@ -790,17 +790,17 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuSpecg
     <span class="token keyword">return</span> specMap<span class="token punctuation">;</span>
 <span class="token punctuation">}</span></code></pre>
 <h3 id="2-3-测试"><a href="#2-3-测试" class="headerlink" title="2.3 测试"></a>2.3 测试</h3><p>使用Postman测试访问<a href="http://localhost:18086/search" target="_blank" rel="noopener">http://localhost:18086/search</a>  效果如下：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1%E6%B5%8B%E8%AF%95.png" alt="规格统计测试"></p>
-<h2 id="3-条件筛选"><a href="#3-条件筛选" class="headerlink" title="3 条件筛选"></a>3 条件筛选</h2><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E6%9D%A1%E4%BB%B6%E7%AD%9B%E9%80%89.png" alt="条件筛选"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E7%BB%9F%E8%AE%A1%E6%B5%8B%E8%AF%95.png" alt="规格统计测试"></p>
+<h2 id="3-条件筛选"><a href="#3-条件筛选" class="headerlink" title="3 条件筛选"></a>3 条件筛选</h2><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E6%9D%A1%E4%BB%B6%E7%AD%9B%E9%80%89.png" alt="条件筛选"></p>
 <p>用户有可能会根据分类搜索、品牌搜索，还有可能根据规格搜索，以及价格搜索和排序操作。根据分类和品牌搜索的时候，可以直接根据指定域搜索，而规格搜索的域数据是不确定的，价格是一个区间搜索，所以我们可以分为三段时间，先实现分类、品牌搜素，再实现规格搜索，然后实现价格区间搜索。</p>
 <h3 id="3-1-分类、品牌筛选"><a href="#3-1-分类、品牌筛选" class="headerlink" title="3.1 分类、品牌筛选"></a>3.1 分类、品牌筛选</h3><h4 id="3-1-1-需求分析"><a href="#3-1-1-需求分析" class="headerlink" title="3.1.1 需求分析"></a>3.1.1 需求分析</h4><p>页面每次向后台传入对应的分类和品牌，后台据分类和品牌进行条件过滤即可。</p>
 <h4 id="3-1-2-代码实现"><a href="#3-1-2-代码实现" class="headerlink" title="3.1.2 代码实现"></a>3.1.2 代码实现</h4><p>修改搜索微服务com.changgou.search.service.impl.SkuServiceImpl的search方法，添加分类和品牌过滤,</p>
 <p>添加过滤条件如下:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566485530444.png" alt="添加过滤条件"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566485530444.png" alt="添加过滤条件"></p>
 <p>PS说明: 以上,我们建议使用filter ,它的搜索效率要优于must.可以参考官方文档说明:</p>
 <p><code>https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html</code></p>
 <p>执行过滤查询如下:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566485571034.png" alt="执行过滤查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566485571034.png" alt="执行过滤查询"></p>
 <p>上图整体代码如下：</p>
 <pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
 <span class="token keyword">public</span> Map <span class="token function">search</span><span class="token punctuation">(</span>Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> searchMap<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -878,16 +878,16 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuSpecg
 <span class="token punctuation">}</span></code></pre>
 <h4 id="3-1-3-测试"><a href="#3-1-3-测试" class="headerlink" title="3.1.3 测试"></a>3.1.3 测试</h4><p>测试效果如下：</p>
 <p>访问地址：<a href="http://localhost:18085/search" target="_blank" rel="noopener">http://localhost:18085/search</a></p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1560896754279.png" alt="分类品牌筛选测试"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1560896754279.png" alt="分类品牌筛选测试"></p>
 <p>此时只能搜到华为手环设备</p>
-<h3 id="3-2-规格过滤"><a href="#3-2-规格过滤" class="headerlink" title="3.2 规格过滤"></a>3.2 规格过滤</h3><h4 id="3-2-1-需求分析"><a href="#3-2-1-需求分析" class="headerlink" title="3.2.1 需求分析"></a>3.2.1 需求分析</h4><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E8%BF%87%E6%BB%A4.png" alt="规格过滤"></p>
+<h3 id="3-2-规格过滤"><a href="#3-2-规格过滤" class="headerlink" title="3.2 规格过滤"></a>3.2 规格过滤</h3><h4 id="3-2-1-需求分析"><a href="#3-2-1-需求分析" class="headerlink" title="3.2.1 需求分析"></a>3.2.1 需求分析</h4><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E8%BF%87%E6%BB%A4.png" alt="规格过滤"></p>
 <p>规格这一块，需要向后台发送规格名字以及规格值，我们可以按照一定要求来发送数据，例如规格名字以特殊前缀提交到后台：<code>spec_网络制式：电信4G、spec_显示屏尺寸：4.0-4.9英寸</code></p>
 <p>后台接到数据后，可以根据前缀spec_来区分是否是规格，如果以<code>spec_xxx</code>开始的数据则为规格数据，需要根据指定规格找信息。</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1557763950529.png" alt="索引存储格式"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1557763950529.png" alt="索引存储格式"></p>
 <p>上图是规格的索引存储格式，真实数据在spechMap.规格名字.keyword中，所以找数据也是按照如下格式去找：</p>
 <p><code>spechMap.规格名字.keyword</code></p>
 <h4 id="3-2-2-代码实现"><a href="#3-2-2-代码实现" class="headerlink" title="3.2.2 代码实现"></a>3.2.2 代码实现</h4><p>修改com.changgou.search.service.impl.SkuServiceImpl的search方法，增加规格查询操作，代码如下：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566486164531.png" alt="增加规格查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566486164531.png" alt="增加规格查询"></p>
 <pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//规格过滤查询</span>
 <span class="token keyword">if</span> <span class="token punctuation">(</span>searchMap <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">for</span> <span class="token punctuation">(</span>String key <span class="token operator">:</span> searchMap<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -897,12 +897,12 @@ nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(&quot;skuSpecg
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre>
 <h4 id="3-2-3-测试"><a href="#3-2-3-测试" class="headerlink" title="3.2.3 测试"></a>3.2.3 测试</h4><p>访问地址：<a href="http://localhost:18085/search" target="_blank" rel="noopener">http://localhost:18085/search</a></p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E8%BF%87%E6%BB%A4%E6%B5%8B%E8%AF%95.png" alt="规格过滤测试"></p>
-<h3 id="3-3-价格区间查询"><a href="#3-3-价格区间查询" class="headerlink" title="3.3 价格区间查询"></a>3.3 价格区间查询</h3><h4 id="3-3-1-需求分析"><a href="#3-3-1-需求分析" class="headerlink" title="3.3.1 需求分析"></a>3.3.1 需求分析</h4><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1557750416940.png" alt="价格区间查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%A7%84%E6%A0%BC%E8%BF%87%E6%BB%A4%E6%B5%8B%E8%AF%95.png" alt="规格过滤测试"></p>
+<h3 id="3-3-价格区间查询"><a href="#3-3-价格区间查询" class="headerlink" title="3.3 价格区间查询"></a>3.3 价格区间查询</h3><h4 id="3-3-1-需求分析"><a href="#3-3-1-需求分析" class="headerlink" title="3.3.1 需求分析"></a>3.3.1 需求分析</h4><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1557750416940.png" alt="价格区间查询"></p>
 <p>价格区间查询，每次需要将价格传入到后台，前端传入后台的价格大概是<code>price=0-500</code>或者<code>price=500-1000</code>依次类推，最后一个是<code>price=3000</code>,后台可以根据-分割，如果分割得到的结果最多有2个，第1个表示<code>x&lt;price</code>，第2个表示<code>price&lt;=y</code>。</p>
 <p>1.3.2 代码实现</p>
 <p>修改com.changgou.search.service.impl.SkuServiceImpl的search方法，增加价格区间查询操作，代码如下：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E5%A2%9E%E5%8A%A0%E4%BB%B7%E6%A0%BC%E5%8C%BA%E9%97%B4%E6%9F%A5%E8%AF%A2.png" alt="增加价格区间查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E5%A2%9E%E5%8A%A0%E4%BB%B7%E6%A0%BC%E5%8C%BA%E9%97%B4%E6%9F%A5%E8%AF%A2.png" alt="增加价格区间查询"></p>
 <p>上图代码如下：</p>
 <pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//价格过滤查询</span>
 String price <span class="token operator">=</span> searchMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"price"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -915,7 +915,7 @@ String price <span class="token operator">=</span> searchMap<span class="token p
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre>
 <h4 id="3-3-3-测试"><a href="#3-3-3-测试" class="headerlink" title="3.3.3 测试"></a>3.3.3 测试</h4><p>访问地址：<a href="http://localhost:18085/search" target="_blank" rel="noopener">http://localhost:18085/search</a></p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1560897639380.png" alt="价格区间查询测试"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1560897639380.png" alt="价格区间查询测试"></p>
 <p>效果如下(部分数据)：</p>
 <pre class=" language-json"><code class="language-json"> <span class="token punctuation">[</span>
         <span class="token punctuation">{</span>
@@ -959,10 +959,10 @@ String price <span class="token operator">=</span> searchMap<span class="token p
             <span class="token punctuation">}</span>
         <span class="token punctuation">}</span>
     <span class="token punctuation">]</span></code></pre>
-<h2 id="4-搜索分页"><a href="#4-搜索分页" class="headerlink" title="4 搜索分页"></a>4 搜索分页</h2><h3 id="4-1-分页分析"><a href="#4-1-分页分析" class="headerlink" title="4.1 分页分析"></a>4.1 分页分析</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1557901053775.png" alt="搜索分页"></p>
+<h2 id="4-搜索分页"><a href="#4-搜索分页" class="headerlink" title="4 搜索分页"></a>4 搜索分页</h2><h3 id="4-1-分页分析"><a href="#4-1-分页分析" class="headerlink" title="4.1 分页分析"></a>4.1 分页分析</h3><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1557901053775.png" alt="搜索分页"></p>
 <p>页面需要实现分页搜索，所以我们后台每次查询的时候，需要实现分页。用户页面每次会传入当前页和每页查询多少条数据，当然如果不传入每页显示多少条数据，默认查询30条即可。</p>
 <h3 id="4-2-分页实现"><a href="#4-2-分页实现" class="headerlink" title="4.2 分页实现"></a>4.2 分页实现</h3><p>分页使用PageRequest.of( pageNo- 1, pageSize);实现，第1个参数表示第N页，从0开始，第2个参数表示每页显示多少条，实现代码如下：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566486449377.png" alt="构建分页查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566486449377.png" alt="构建分页查询"></p>
 <p>上图代码如下：</p>
 <pre class=" language-java"><code class="language-java">         <span class="token comment" spellcheck="true">//略</span>
 
@@ -989,15 +989,15 @@ String price <span class="token operator">=</span> searchMap<span class="token p
         NativeSearchQuery query <span class="token operator">=</span> nativeSearchQueryBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token comment" spellcheck="true">//略</span></code></pre>
 <p>测试如下:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566487549645.png" alt="搜索分页测试"></p>
-<h2 id="5-搜索排序"><a href="#5-搜索排序" class="headerlink" title="5 搜索排序"></a>5 搜索排序</h2><h3 id="5-1-排序分析"><a href="#5-1-排序分析" class="headerlink" title="5.1 排序分析"></a>5.1 排序分析</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1557903025748.png" alt="搜索排序"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566487549645.png" alt="搜索分页测试"></p>
+<h2 id="5-搜索排序"><a href="#5-搜索排序" class="headerlink" title="5 搜索排序"></a>5 搜索排序</h2><h3 id="5-1-排序分析"><a href="#5-1-排序分析" class="headerlink" title="5.1 排序分析"></a>5.1 排序分析</h3><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1557903025748.png" alt="搜索排序"></p>
 <p>排序这里总共有根据价格排序、根据评价排序、根据新品排序、根据销量排序，排序要想实现非常简单，只需要告知排序的域以及排序方式即可实现。</p>
 <p>价格排序：只需要根据价格高低排序即可，降序价格高-&gt;低，升序价格低-&gt;高</p>
 <p>评价排序：评价分为好评、中评、差评，可以在数据库中设计3个列，用来记录好评、中评、差评的量，每次排序的时候，好评的比例来排序，当然还要有条数限制，评价条数需要超过N条。</p>
 <p>新品排序：直接根据商品的发布时间或者更新时间排序。</p>
 <p>销量排序：销量排序除了销售数量外，还应该要有时间段限制。</p>
 <h3 id="5-2-排序实现"><a href="#5-2-排序实现" class="headerlink" title="5.2 排序实现"></a>5.2 排序实现</h3><p>这里我们不单独针对某个功能实现排序，我们只需要在后台接收2个参数，分别是排序域名字和排序方式，代码如下：</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566487677832.png" alt="构建排序查询"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566487677832.png" alt="构建排序查询"></p>
 <p>解释: 前端页面传递要排序的字段(field)和要排序的类型(ASC,DESC),后台接收.</p>
 <p>上图代码如下：</p>
 <pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//构建排序查询</span>
@@ -1009,7 +1009,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
 <p>测试</p>
 <p>根据价格降序：</p>
 <pre><code>{&quot;keywords&quot;:&quot;手机&quot;,&quot;pageNum&quot;:&quot;1&quot;,&quot;sortRule&quot;:&quot;DESC&quot;,&quot;sortField&quot;:&quot;price&quot;}</code></pre><p>根据价格升序：</p>
-<pre><code>{&quot;keywords&quot;:&quot;手机&quot;,&quot;pageNum&quot;:&quot;1&quot;,&quot;sortRule&quot;:&quot;ASC&quot;,&quot;sortField&quot;:&quot;price&quot;}</code></pre><h2 id="6-高亮显示"><a href="#6-高亮显示" class="headerlink" title="6 高亮显示"></a>6 高亮显示</h2><h3 id="6-1-高亮分析"><a href="#6-1-高亮分析" class="headerlink" title="6.1 高亮分析"></a>6.1 高亮分析</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BA.png" alt="高亮显示"></p>
+<pre><code>{&quot;keywords&quot;:&quot;手机&quot;,&quot;pageNum&quot;:&quot;1&quot;,&quot;sortRule&quot;:&quot;ASC&quot;,&quot;sortField&quot;:&quot;price&quot;}</code></pre><h2 id="6-高亮显示"><a href="#6-高亮显示" class="headerlink" title="6 高亮显示"></a>6 高亮显示</h2><h3 id="6-1-高亮分析"><a href="#6-1-高亮分析" class="headerlink" title="6.1 高亮分析"></a>6.1 高亮分析</h3><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BA.png" alt="高亮显示"></p>
 <p>高亮显示是指根据商品关键字搜索商品的时候，显示的页面对关键字给定了特殊样式，让它显示更加突出，如上图商品搜索中，关键字编程了红色，其实就是给定了红色样式。</p>
 <h3 id="6-2-高亮搜索实现步骤解析"><a href="#6-2-高亮搜索实现步骤解析" class="headerlink" title="6.2 高亮搜索实现步骤解析"></a>6.2 高亮搜索实现步骤解析</h3><p>将之前的搜索换掉，换成高亮搜索，我们需要做3个步骤：</p>
 <pre><code>1.指定高亮域，也就是设置哪个域需要高亮显示
@@ -1019,7 +1019,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
 <p>第2点，高亮搜索使用ElasticsearchTemplate实现。</p>
 <p>第3点，高亮搜索后，会搜出非高亮数据和高亮数据，高亮数据会加上第1点中的高亮样式，此时我们需要将非高亮数据换成高亮数据即可。例如非高亮:<code>华为笔记本性能超强悍</code>  高亮数据：<code>华为&lt;span style=&quot;color:red;&quot;笔记本&lt;/span&gt;性能超强悍</code>,将非高亮的换成高亮的，到页面就能显示样式了。</p>
 <h3 id="6-3-高亮代码实现"><a href="#6-3-高亮代码实现" class="headerlink" title="6.3 高亮代码实现"></a>6.3 高亮代码实现</h3><p>修改com.changgou.search.service.impl.SkuServiceImpl的search方法搜索代码，添加高亮显示的域:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E8%AE%BE%E7%BD%AE%E9%AB%98%E4%BA%AE%E6%9D%A1%E4%BB%B6.png" alt="设置高亮条件"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E8%AE%BE%E7%BD%AE%E9%AB%98%E4%BA%AE%E6%9D%A1%E4%BB%B6.png" alt="设置高亮条件"></p>
 <p>上图代码如下：</p>
 <pre class=" language-java"><code class="language-java"> <span class="token comment" spellcheck="true">//设置高亮条件</span>
         nativeSearchQueryBuilder<span class="token punctuation">.</span><span class="token function">withHighlightFields</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HighlightBuilder<span class="token punctuation">.</span>Field</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -1028,10 +1028,10 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
         <span class="token comment" spellcheck="true">//设置主关键字查询</span>
         nativeSearchQueryBuilder<span class="token punctuation">.</span><span class="token function">withQuery</span><span class="token punctuation">(</span>QueryBuilders<span class="token punctuation">.</span><span class="token function">multiMatchQuery</span><span class="token punctuation">(</span>keywords<span class="token punctuation">,</span><span class="token string">"name"</span><span class="token punctuation">,</span><span class="token string">"brandName"</span><span class="token punctuation">,</span><span class="token string">"categoryName"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>修改 查询的方法,自定义结果映射器,入下图:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566488029599.png" alt="自定义结果映射器"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566488029599.png" alt="自定义结果映射器"></p>
 <p>上图图片如下:</p>
 <pre><code>AggregatedPage&lt;SkuInfo&gt; skuPage = esTemplate.queryForPage(query, SkuInfo.class, new SearchResultMapperImpl());</code></pre><p>自定义一个映射结果类实现接口,作用就是:自定义映射结果集,获取高亮的数据展示,如下图:</p>
-<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/1566488220261.png" alt="自定义映射结果集的作用"></p>
+<p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/1566488220261.png" alt="自定义映射结果集的作用"></p>
 <p>代码如下:</p>
 <pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SearchResultMapperImpl</span> <span class="token keyword">implements</span> <span class="token class-name">SearchResultMapper</span> <span class="token punctuation">{</span>
     <span class="token annotation punctuation">@Override</span>
@@ -1063,7 +1063,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
         <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">AggregatedPageImpl</span><span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">(</span>content<span class="token punctuation">,</span> pageable<span class="token punctuation">,</span> response<span class="token punctuation">.</span><span class="token function">getHits</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getTotalHits</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> response<span class="token punctuation">.</span><span class="token function">getAggregations</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> response<span class="token punctuation">.</span><span class="token function">getScrollId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre>
-<h3 id="6-4-测试"><a href="#6-4-测试" class="headerlink" title="6.4 测试"></a>6.4 测试</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BA%E6%B5%8B%E8%AF%95.png" alt="高亮显示测试"></p>
+<h3 id="6-4-测试"><a href="#6-4-测试" class="headerlink" title="6.4 测试"></a>6.4 测试</h3><p><img src="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BA%E6%B5%8B%E8%AF%95.png" alt="高亮显示测试"></p>
 <p>效果如下：</p>
 <pre><code>&quot;name&quot;: &quot;HTC M8Sd (E8) 波尔多红 电信4G&lt;span style=\&quot;color:red\&quot;&gt;手机&lt;/span&gt; 双卡双待双通&quot;,</code></pre><p>整体代码如下:</p>
 <pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
@@ -1314,7 +1314,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/">https://fangpeng12.github.io/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/</a>
+                    <a href="https://fangpeng12.github.io/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/">https://fangpeng12.github.io/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1527,56 +1527,54 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/03/21/chang-gou-shang-cheng-shi-zhan-liu/">
+                <a href="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="畅购商城实战（六）">
+                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Java多线程与并发">
                         
-                        <span class="card-title">畅购商城实战（六）</span>
+                        <span class="card-title">Java多线程与并发</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            畅购商城-SpringCloud微服务项目实战
+                            Java多线程和并发入门和详解
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-14
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" class="post-category">
-                                    项目实战
+                            <a href="/categories/Java/" class="post-category">
+                                    Java
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
-                        <span class="chip bg-color">微服务</span>
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
-                    <a href="/tags/SpringCloud/">
-                        <span class="chip bg-color">SpringCloud</span>
+                    <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+                        <span class="chip bg-color">多线程</span>
                     </a>
                     
-                    <a href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">
-                        <span class="chip bg-color">项目实战</span>
+                    <a href="/tags/%E5%B9%B6%E5%8F%91/">
+                        <span class="chip bg-color">并发</span>
                     </a>
                     
                 </div>
@@ -1590,7 +1588,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/03/21/chang-gou-shang-cheng-shi-zhan-wu/">
+                <a href="/2020/03/13/chang-gou-shang-cheng-shi-zhan-wu/">
                     <div class="card-image">
                         
                         
@@ -1607,7 +1605,7 @@ String sortField <span class="token operator">=</span> searchMap<span class="tok
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-13
                             </span>
                         <span class="publish-author">
                             
@@ -1820,7 +1818,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">494.1k</span>&nbsp;字
+                class="white-color">501.3k</span>&nbsp;字
             
             
             
