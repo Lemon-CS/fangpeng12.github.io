@@ -5,7 +5,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="畅购商城实战（八）, 空白格的博客">
-    <meta name="description" content="畅购商城实战（八） | 空白格的博客">
+    <meta name="description" content="第8章 微服务网关和Jwt令牌学习目标
+掌握微服务网关的系统搭建
+
+了解什么是微服务网关以及它的作用
+
+掌握系统中心微服务的搭建
+
+掌握用户密码加密存储bcrypt
+
+了解JWT鉴权的介绍
+
+==掌握JWT的鉴权的使用==
+使用Jwt令牌来">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -464,14 +476,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    7.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    32 分
                 </div>
                 
 				
@@ -487,7 +499,869 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h1 id="第8章-微服务网关和Jwt令牌"><a href="#第8章-微服务网关和Jwt令牌" class="headerlink" title="第8章 微服务网关和Jwt令牌"></a>第8章 微服务网关和Jwt令牌</h1><h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ul>
+<li><p>掌握微服务网关的系统搭建</p>
+</li>
+<li><p>了解什么是微服务网关以及它的作用</p>
+</li>
+<li><p>掌握系统中心微服务的搭建</p>
+</li>
+<li><p>掌握用户密码加密存储bcrypt</p>
+</li>
+<li><p>了解JWT鉴权的介绍</p>
+</li>
+<li><p>==掌握JWT的鉴权的使用==</p>
+<p>使用Jwt令牌来存储用户登录信息，在微服务网关中识别登录信息(用户的身份)</p>
+</li>
+<li><p>==掌握网关使用JWT进行校验==</p>
+</li>
+<li><p>掌握==网关==限流</p>
+</li>
+</ul>
+<h2 id="1-微服务网关"><a href="#1-微服务网关" class="headerlink" title="1 微服务网关"></a>1 微服务网关</h2><h3 id="1-1-微服务网关的概述"><a href="#1-1-微服务网关的概述" class="headerlink" title="1.1 微服务网关的概述"></a>1.1 微服务网关的概述</h3><p>不同的微服务一般会有不同的网络地址，而外部客户端可能需要调用多个服务的接口才能完成一个业务需求，如果让客户端直接与各个微服务通信，会有以下的问题：</p>
+<ul>
+<li>客户端会多次请求不同的微服务，增加了客户端的复杂性</li>
+<li>存在跨域请求，在一定场景下处理相对复杂</li>
+<li>认证复杂，每个服务都需要独立认证</li>
+<li>难以重构，随着项目的迭代，可能需要重新划分微服务。例如，可能将多个服务合并成一个或者将一个服务拆分成多个。如果客户端直接与微服务通信，那么重构将会很难实施</li>
+<li>某些微服务可能使用了防火墙 / 浏览器不友好的协议，直接访问会有一定的困难</li>
+</ul>
+<p>以上这些问题可以借助网关解决。</p>
+<p>网关是介于客户端和服务器端之间的中间层，所有的外部请求都会先经过 网关这一层。也就是说，API 的实现方面更多的考虑业务逻辑，而安全、性能、监控可以交由 网关来做，这样既提高业务灵活性又不缺安全性，典型的架构图如图所示：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1557824391432.png" alt="微服务网关"></p>
+<p>优点如下：</p>
+<ul>
+<li>安全 ，只有网关系统对外进行暴露，微服务可以隐藏在内网，通过防火墙保护。</li>
+<li>易于监控。可以在网关收集监控数据并将其推送到外部系统进行分析。</li>
+<li>易于认证。可以在网关上进行认证，然后再将请求转发到后端的微服务，而无须在每个微服务中进行认证。</li>
+<li>减少了客户端与各个微服务之间的交互次数</li>
+<li>易于统一授权。</li>
+</ul>
+<p>总结：微服务网关就是一个系统，通过暴露该微服务网关系统，方便我们进行相关的鉴权，安全控制，日志统一处理，易于监控的相关功能。</p>
+<h3 id="1-2-微服务网关技术"><a href="#1-2-微服务网关技术" class="headerlink" title="1.2 微服务网关技术"></a>1.2 微服务网关技术</h3><p>实现微服务网关的技术有很多，</p>
+<ul>
+<li>nginx  Nginx (tengine x) 是一个高性能的<a href="https://baike.baidu.com/item/HTTP" target="_blank" rel="noopener">HTTP</a>和<a href="https://baike.baidu.com/item/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/7793488" target="_blank" rel="noopener">反向代理</a>web服务器，同时也提供了IMAP/POP3/SMTP服务</li>
+<li>zuul ,Zuul 是 Netflix 出品的一个基于 JVM 路由和服务端的负载均衡器。</li>
+<li>spring-cloud-gateway, 是spring 出品的 基于spring 的网关项目，集成断路器，路径重写，性能比Zuul好。</li>
+</ul>
+<p>我们使用gateway这个网关技术，无缝衔接到基于spring cloud的微服务开发中来。</p>
+<p>gateway官网：</p>
+<p><a href="https://spring.io/projects/spring-cloud-gateway" target="_blank" rel="noopener">https://spring.io/projects/spring-cloud-gateway</a></p>
+<h2 id="2-网关系统使用"><a href="#2-网关系统使用" class="headerlink" title="2 网关系统使用"></a>2 网关系统使用</h2><h3 id="2-1-需求分析"><a href="#2-1-需求分析" class="headerlink" title="2.1 需求分析"></a>2.1 需求分析</h3><p>​    由于我们开发的系统 有包括前台系统和后台系统，后台的系统 给管理员使用。那么也需要调用各种微服务，所以我们针对 系统管理搭建一个网关系统。分析如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1561959723219.png" alt="需求分析"></p>
+<h3 id="2-2-搭建后台网关系统"><a href="#2-2-搭建后台网关系统" class="headerlink" title="2.2 搭建后台网关系统"></a>2.2 搭建后台网关系统</h3><h4 id="2-2-1-搭建分析"><a href="#2-2-1-搭建分析" class="headerlink" title="2.2.1 搭建分析"></a>2.2.1 搭建分析</h4><p>由上可知道，由于 需要有多个网关，所以为了管理方便。我们新建一个项目，打包方式为pom,在里面建立各种网关系统模块即可。</p>
+<h4 id="2-2-2-工程搭建"><a href="#2-2-2-工程搭建" class="headerlink" title="2.2.2 工程搭建"></a>2.2.2 工程搭建</h4><p>(1)引入依赖</p>
+<p>修改changgou-gateway工程，打包方式为pom</p>
+<p>pom.xml如下：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>project</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-parent<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>modelVersion</span><span class="token punctuation">></span></span>4.0.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>modelVersion</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-gateway<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>packaging</span><span class="token punctuation">></span></span>pom<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>packaging</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>modules</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>module</span><span class="token punctuation">></span></span>changgou-gateway-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>module</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>modules</span><span class="token punctuation">></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--网关依赖--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependencies</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-gateway<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-hystrix<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.cloud<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-cloud-starter-netflix-eureka-client<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>project</span><span class="token punctuation">></span></span></code></pre>
+<p>在changgou-gateway工程中，创建 changgou-gateway-web工程，该网关主要用于对后台微服务进行一个调用操作，将多个微服务串联到一起。</p>
+<p>pom.xml:</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>project</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-gateway<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>modelVersion</span><span class="token punctuation">></span></span>4.0.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>modelVersion</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-gateway-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">></span></span>
+        普通web请求网关
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>project</span><span class="token punctuation">></span></span></code></pre>
+<p>(2)引导类</p>
+<p>在changgou-gateway-web中创建一个引导类com.changgou.GatewayWebApplication，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token annotation punctuation">@EnableEurekaClient</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">GatewayWebApplication</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>GatewayWebApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(3)application.yml配置</p>
+<p>在changgou-gateway-web的resources下创建application.yml,代码如下：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> gateway<span class="token punctuation">-</span>web
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8001</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7001/eureka
+  <span class="token key atrule">instance</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefer-ip-address</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<h3 id="2-3-跨域配置"><a href="#2-3-跨域配置" class="headerlink" title="2.3 跨域配置"></a>2.3 跨域配置</h3><p>有时候，我们需要对所有微服务跨域请求进行处理，则可以在gateway中进行跨域支持。修改application.yml,添加如下代码：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">globalcors</span><span class="token punctuation">:</span>
+        <span class="token key atrule">cors-configurations</span><span class="token punctuation">:</span>
+          '<span class="token punctuation">[</span>/**<span class="token punctuation">]</span>'<span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 匹配所有请求</span>
+              <span class="token key atrule">allowedOrigins</span><span class="token punctuation">:</span> <span class="token string">"*"</span> <span class="token comment" spellcheck="true">#跨域处理 允许所有的域</span>
+              <span class="token key atrule">allowedMethods</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 支持的方法</span>
+                <span class="token punctuation">-</span> GET
+                <span class="token punctuation">-</span> POST
+                <span class="token punctuation">-</span> PUT
+                <span class="token punctuation">-</span> DELETE</code></pre>
+<p>最终文件如下：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">globalcors</span><span class="token punctuation">:</span>
+        <span class="token key atrule">cors-configurations</span><span class="token punctuation">:</span>
+          '<span class="token punctuation">[</span>/**<span class="token punctuation">]</span>'<span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 匹配所有请求</span>
+              <span class="token key atrule">allowedOrigins</span><span class="token punctuation">:</span> <span class="token string">"*"</span> <span class="token comment" spellcheck="true">#跨域处理 允许所有的域</span>
+              <span class="token key atrule">allowedMethods</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 支持的方法</span>
+                <span class="token punctuation">-</span> GET
+                <span class="token punctuation">-</span> POST
+                <span class="token punctuation">-</span> PUT
+                <span class="token punctuation">-</span> DELETE
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> gateway<span class="token punctuation">-</span>web
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8001</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7001/eureka
+  <span class="token key atrule">instance</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefer-ip-address</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<h3 id="2-4-网关过滤配置"><a href="#2-4-网关过滤配置" class="headerlink" title="2.4 网关过滤配置"></a>2.4 网关过滤配置</h3><p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562033084310.png" alt="网关过滤配置"></p>
+<p>路由过滤器允许以某种方式修改传入的HTTP请求或传出的HTTP响应。 路径过滤器的范围限定为特定路径。 Spring Cloud Gateway包含许多内置的GatewayFilter工厂。如上图，根据请求路径路由到不同微服务去，这块可以使用Gateway的路由过滤功能实现。</p>
+<p>过滤器 有 20 多个 实现 类， 包括 头部 过滤器、 路径 类 过滤器、 Hystrix 过滤器 和 变更 请求 URL 的 过滤器， 还有 参数 和 状态 码 等 其他 类型 的 过滤器。</p>
+<p>内置的过滤器工厂有22个实现类，包括 头部过滤器、路径过滤器、Hystrix 过滤器 、请求URL 变更过滤器，还有参数和状态码等其他类型的过滤器。根据过滤器工厂的用途来划分，可以分为以下几种：Header、Parameter、Path、Body、Status、Session、Redirect、Retry、RateLimiter和Hystrix。</p>
+<h4 id="2-4-1-Host-路由"><a href="#2-4-1-Host-路由" class="headerlink" title="2.4.1 Host 路由"></a>2.4.1 Host 路由</h4><p>比如用户请求cloud.itheima.com的时候，可以将请求路由给<code>http://localhost:18081</code>服务处理，如下配置：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">http://localhost:18081</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Host=cloud.itheima.com**</span></code></pre>
+<p>测试请求<code>http://cloud.itheima.com:8001/brand</code>,效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562043847287.png" alt="测试请求"></p>
+<p>注意：此时要想让cloud.itheima.com访问本地计算机，要配置<code>C:\Windows\System32\drivers\etc\hosts</code>文件,映射配置如下：</p>
+<pre><code>127.0.0.1 cloud.itheima.com</code></pre><h4 id="2-4-2-路径匹配过滤配置"><a href="#2-4-2-路径匹配过滤配置" class="headerlink" title="2.4.2 路径匹配过滤配置"></a>2.4.2 路径匹配过滤配置</h4><p>我们还可以根据请求路径实现对应的路由过滤操作，例如请求中以<code>/brand/</code>路径开始的请求，都直接交给<code>http://localhost:180801</code>服务处理，配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">http://localhost:18081</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/brand**</span></code></pre>
+<p>测试请求<code>http://localhost:8001/brand</code>,效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562043787417.png" alt="测试请求2"></p>
+<h4 id="2-4-3-PrefixPath-过滤配置"><a href="#2-4-3-PrefixPath-过滤配置" class="headerlink" title="2.4.3 PrefixPath 过滤配置"></a>2.4.3 PrefixPath 过滤配置</h4><p>用户每次请求路径的时候，我们可以给真实请求加一个统一前缀，例如用户请求<code>http://localhost:8001</code>的时候我们让它请求真实地址<code>http://localhost:8001/brand</code>，配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">http://localhost:18081</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">              #- Host=cloud.itheima.com**</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/**</span>
+<span class="token attr-name">              filters</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">PrefixPath=/brand</span></code></pre>
+<p>测试请求<code>http://localhost:8001/</code>效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562044174592.png" alt="测试请求3"></p>
+<h4 id="2-4-4-StripPrefix-过滤配置"><a href="#2-4-4-StripPrefix-过滤配置" class="headerlink" title="2.4.4 StripPrefix 过滤配置"></a>2.4.4 StripPrefix 过滤配置</h4><p>很多时候也会有这么一种请求，用户请求路径是<code>/api/brand</code>,而真实路径是<code>/brand</code>，这时候我们需要去掉<code>/api</code>才是真实路径，此时可以使用SttripPrefix功能来实现路径的过滤操作，配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">http://localhost:18081</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">              #- Host=cloud.itheima.com**</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/**</span>
+<span class="token attr-name">              filters</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">              #- PrefixPath=/brand</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">StripPrefix=1</span></code></pre>
+<p>测试请求<code>http://localhost:8001/api/brand</code>,效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562045175964.png" alt="测试请求"></p>
+<h4 id="2-4-5-LoadBalancerClient-路由过滤器-客户端负载均衡"><a href="#2-4-5-LoadBalancerClient-路由过滤器-客户端负载均衡" class="headerlink" title="2.4.5 LoadBalancerClient 路由过滤器(客户端负载均衡)"></a>2.4.5 LoadBalancerClient 路由过滤器(客户端负载均衡)</h4><p>上面的路由配置每次都会将请求给指定的<code>URL</code>处理，但如果在以后生产环境，并发量较大的时候，我们需要根据服务的名称判断来做负载均衡操作，可以使用<code>LoadBalancerClientFilter</code>来实现负载均衡调用。<code>LoadBalancerClientFilter</code>会作用在url以lb开头的路由，然后利用<code>loadBalancer</code>来获取服务实例，构造目标<code>requestUrl</code>，设置到<code>GATEWAY_REQUEST_URL_ATTR</code>属性中，供<code>NettyRoutingFilter</code>使用。</p>
+<p>修改application.yml配置文件，配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token comment" spellcheck="true">              #uri: http://localhost:18081</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">lb://goods</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">              #- Host=cloud.itheima.com**</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/**</span>
+<span class="token attr-name">              filters</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">              #- PrefixPath=/brand</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">StripPrefix=1</span></code></pre>
+<p>测试请求路径<code>http://localhost:8001/api/brand</code></p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562045175965.png" alt="测试请求5"></p>
+<h3 id="2-5-网关限流"><a href="#2-5-网关限流" class="headerlink" title="2.5 网关限流"></a>2.5 网关限流</h3><p>网关可以做很多的事情，比如，限流，当我们的系统 被频繁的请求的时候，就有可能 将系统压垮，所以 为了解决这个问题，需要在每一个微服务中做限流操作，但是如果有了网关，那么就可以在网关系统做限流，因为所有的请求都需要先通过网关系统才能路由到微服务中。</p>
+<h4 id="2-5-1-思路分析"><a href="#2-5-1-思路分析" class="headerlink" title="2.5.1 思路分析"></a>2.5.1 思路分析</h4><p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1557909861570.png" alt="网关限流"></p>
+<h4 id="2-5-2-令牌桶算法"><a href="#2-5-2-令牌桶算法" class="headerlink" title="2.5.2 令牌桶算法"></a>2.5.2 令牌桶算法</h4><p>令牌桶算法是比较常见的限流算法之一，大概描述如下：<br>1）所有的请求在处理之前都需要拿到一个可用的令牌才会被处理；<br>2）根据限流大小，设置按照一定的速率往桶里添加令牌；<br>3）桶设置最大的放置令牌限制，当桶满时、新添加的令牌就被丢弃或者拒绝；<br>4）请求达到后首先要获取令牌桶中的令牌，拿着令牌才可以进行其他的业务逻辑，处理完业务逻辑之后，将令牌直接删除；<br>5）令牌桶有最低限额，当桶中的令牌达到最低限额的时候，请求处理完之后将不会删除令牌，以此保证足够的限流</p>
+<p>如下图：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1557910299016.png" alt="令牌桶算法"></p>
+<p>这个算法的实现，有很多技术，Guaua是其中之一，redis客户端也有其实现。</p>
+<h4 id="2-5-3-使用令牌桶进行请求次数限流"><a href="#2-5-3-使用令牌桶进行请求次数限流" class="headerlink" title="2.5.3 使用令牌桶进行请求次数限流"></a>2.5.3 使用令牌桶进行请求次数限流</h4><p>spring cloud gateway 默认使用redis的RateLimter限流算法来实现。所以我们要使用首先需要引入redis的依赖</p>
+<p>(1)引入redis依赖</p>
+<p>在changgou-gateway的pom.xml中引入redis的依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--redis--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-data-redis-reactive<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.1.3.RELEASE<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>(2)定义KeyResolver</p>
+<p>在Applicatioin引导类中添加如下代码，KeyResolver用于计算某一个类型的限流的KEY也就是说，可以通过KeyResolver来指定限流的Key。</p>
+<p>我们可以根据IP来限流，比如每个IP每秒钟只能请求一次，在GatewayWebApplication定义key的获取，获取客户端IP，将IP作为key，如下代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * IP限流
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Bean</span><span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"ipKeyResolver"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> KeyResolver <span class="token function">userKeyResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">KeyResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">resolve</span><span class="token punctuation">(</span>ServerWebExchange exchange<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//获取远程客户端IP</span>
+            String hostName <span class="token operator">=</span> exchange<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRemoteAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getHostAddress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"hostName:"</span><span class="token operator">+</span>hostName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> Mono<span class="token punctuation">.</span><span class="token function">just</span><span class="token punctuation">(</span>hostName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(3)修改application.yml中配置项，指定限制流量的配置以及REDIS的配置，配置代码如下：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">globalcors</span><span class="token punctuation">:</span>
+        <span class="token key atrule">corsConfigurations</span><span class="token punctuation">:</span>
+          '<span class="token punctuation">[</span>/**<span class="token punctuation">]</span>'<span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 匹配所有请求</span>
+              <span class="token key atrule">allowedOrigins</span><span class="token punctuation">:</span> <span class="token string">"*"</span> <span class="token comment" spellcheck="true">#跨域处理 允许所有的域</span>
+              <span class="token key atrule">allowedMethods</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 支持的方法</span>
+                <span class="token punctuation">-</span> GET
+                <span class="token punctuation">-</span> POST
+                <span class="token punctuation">-</span> PUT
+                <span class="token punctuation">-</span> DELETE
+      <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> changgou_goods_route
+              <span class="token key atrule">uri</span><span class="token punctuation">:</span> lb<span class="token punctuation">:</span>//goods
+              <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> Path=/api/brand**
+              <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> StripPrefix=1
+              <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> RequestRateLimiter <span class="token comment" spellcheck="true">#请求数限流 名字不能随便写 ，使用默认的facatory</span>
+                <span class="token key atrule">args</span><span class="token punctuation">:</span>
+                  <span class="token key atrule">key-resolver</span><span class="token punctuation">:</span> "<span class="token comment" spellcheck="true">#{@ipKeyResolver}"</span>
+                  <span class="token key atrule">redis-rate-limiter.replenishRate</span><span class="token punctuation">:</span> <span class="token number">1</span>
+                  <span class="token key atrule">redis-rate-limiter.burstCapacity</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> gateway<span class="token punctuation">-</span>web
+  <span class="token comment" spellcheck="true">#Redis配置</span>
+  <span class="token key atrule">redis</span><span class="token punctuation">:</span>
+    <span class="token key atrule">host</span><span class="token punctuation">:</span> 192.168.211.132
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8001</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7001/eureka
+  <span class="token key atrule">instance</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefer-ip-address</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<p>解释：</p>
+<p><code>redis-rate-limiter.replenishRate</code>是您希望允许用户每秒执行多少请求，而不会丢弃任何请求。这是令牌桶填充的速率</p>
+<p><code>redis-rate-limiter.burstCapacity</code>是指令牌桶的容量，允许在一秒钟内完成的最大请求数,将此值设置为零将阻止所有请求。</p>
+<p> key-resolver: “#{@ipKeyResolver}” 用于通过SPEL表达式来指定使用哪一个KeyResolver.</p>
+<p>如上配置：</p>
+<p>表示 一秒内，允许 一个请求通过，令牌桶的填充速率也是一秒钟添加一个令牌。</p>
+<p>最大突发状况 也只允许 一秒内有一次请求，可以根据业务来调整 。</p>
+<p>多次请求会发生如下情况</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562049920902.png" alt="多次请求"></p>
+<h2 id="3-用户登录"><a href="#3-用户登录" class="headerlink" title="3 用户登录"></a>3 用户登录</h2><p>项目中有2个重要角色，分别为管理员和用户，下面几章我们将实现购物下单和支付，用户如果没登录是没法下单和支付的，所以我们这里需要实现一个登录功能。</p>
+<h3 id="3-1-表结构介绍"><a href="#3-1-表结构介绍" class="headerlink" title="3.1 表结构介绍"></a>3.1 表结构介绍</h3><p>changgou_user表如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562050583653.png" alt="changgou_user表"></p>
+<p>用户信息表tb_user</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>tb_user<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'用户名'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>password<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'密码，加密存储'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>phone<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'注册手机号'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>email<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'注册邮箱'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>created<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'创建时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>updated<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'修改时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>source_type<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'会员来源：1:PC，2：H5，3：Android，4：IOS'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>nick_name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'昵称'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'真实姓名'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span><span class="token keyword">status</span><span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'使用状态（1正常 0非正常）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>head_pic<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">150</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'头像地址'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>qq<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'QQ号码'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_mobile_check<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'0'</span> <span class="token keyword">COMMENT</span> <span class="token string">'手机是否验证 （0否  1是）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_email_check<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'0'</span> <span class="token keyword">COMMENT</span> <span class="token string">'邮箱是否检测（0否  1是）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>sex<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'1'</span> <span class="token keyword">COMMENT</span> <span class="token string">'性别，1男，0女'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>user_level<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'会员等级'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>points<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'积分'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>experience_value<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'经验值'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>birthday<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'出生年月日'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>last_login_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'最后登录时间'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>username<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">UNIQUE</span> <span class="token keyword">KEY</span> <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>username<span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">USING</span> <span class="token keyword">BTREE</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8 <span class="token keyword">COMMENT</span><span class="token operator">=</span><span class="token string">'用户表'</span><span class="token punctuation">;</span></code></pre>
+<h3 id="3-2-用户微服务创建"><a href="#3-2-用户微服务创建" class="headerlink" title="3.2 用户微服务创建"></a>3.2 用户微服务创建</h3><p>创建工程之前，先使用代码生成器生成对应的业务代码。</p>
+<p>(1)公共API创建</p>
+<p>在changgou-service-api中创建changgou-service-user-api，并将pojo拷贝到工程中，如下图：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562051835630.png" alt="changgou-service-user-api"></p>
+<p>在changgou-service中创建changgou-service-user微服务,并引入生成的业务逻辑代码，如下图：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562051932945.png" alt="changgou-service-user"></p>
+<p>(2)依赖</p>
+<p>在changgou-service-user的pom.xml引入如下依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>project</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+         <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-service<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>modelVersion</span><span class="token punctuation">></span></span>4.0.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>modelVersion</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-service-user<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+
+    <span class="token comment" spellcheck="true">&lt;!--依赖--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependencies</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-service-user-api<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>project</span><span class="token punctuation">></span></span></code></pre>
+<p>(3)启动类创建</p>
+<p>在changgou-service-user微服务中创建启动类com.changgou.UserApplication，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token annotation punctuation">@EnableEurekaClient</span>
+<span class="token annotation punctuation">@MapperScan</span><span class="token punctuation">(</span><span class="token string">"com.changgou.user.dao"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserApplication</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>UserApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(4)application.yml配置</p>
+<p>在changgou-service-user的resources中创建application.yml配置，代码如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">server</span><span class="token punctuation">:</span>
+<span class="token attr-name">  port</span><span class="token punctuation">:</span> <span class="token attr-value">18089</span>
+<span class="token attr-name">spring</span><span class="token punctuation">:</span>
+<span class="token attr-name">  application</span><span class="token punctuation">:</span>
+<span class="token attr-name">    name</span><span class="token punctuation">:</span> <span class="token attr-value">user</span>
+<span class="token attr-name">  datasource</span><span class="token punctuation">:</span>
+<span class="token attr-name">    driver-class-name</span><span class="token punctuation">:</span> <span class="token attr-value">com.mysql.cj.jdbc.Driver</span>
+<span class="token attr-name">    url</span><span class="token punctuation">:</span> <span class="token attr-value">jdbc:mysql://192.168.211.132:3306/changgou_user?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC</span>
+<span class="token attr-name">    username</span><span class="token punctuation">:</span> <span class="token attr-value">root</span>
+<span class="token attr-name">    password</span><span class="token punctuation">:</span> <span class="token attr-value">123456</span>
+<span class="token attr-name">eureka</span><span class="token punctuation">:</span>
+<span class="token attr-name">  client</span><span class="token punctuation">:</span>
+<span class="token attr-name">    service-url</span><span class="token punctuation">:</span>
+<span class="token attr-name">      defaultZone</span><span class="token punctuation">:</span> <span class="token attr-value">http://127.0.0.1:7001/eureka</span>
+<span class="token attr-name">  instance</span><span class="token punctuation">:</span>
+<span class="token attr-name">    prefer-ip-address</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">feign</span><span class="token punctuation">:</span>
+<span class="token attr-name">  hystrix</span><span class="token punctuation">:</span>
+<span class="token attr-name">    enabled</span><span class="token punctuation">:</span> <span class="token attr-value">true</span></code></pre>
+<h3 id="3-3-登录"><a href="#3-3-登录" class="headerlink" title="3.3 登录"></a>3.3 登录</h3><p>登录的时候，需要进行密码校验，这里采用了BCryptPasswordEncoder进行加密，需要将资料中的BCrypt导入到common工程中，其中BCrypt.checkpw(“明文”,”密文”)用于对比密码是否一致。</p>
+<p>修改changgou-service-user的com.changgou.user.controller.UserController添加登录方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 用户登录
+ */</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/login"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">login</span><span class="token punctuation">(</span>String username<span class="token punctuation">,</span>String password<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//查询用户信息</span>
+    User user <span class="token operator">=</span> userService<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span><span class="token punctuation">(</span>user<span class="token operator">!=</span>null <span class="token operator">&amp;&amp;</span> BCrypt<span class="token punctuation">.</span><span class="token function">checkpw</span><span class="token punctuation">(</span>password<span class="token punctuation">,</span>user<span class="token punctuation">.</span><span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"登录成功！"</span><span class="token punctuation">,</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span>  <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>LOGINERROR<span class="token punctuation">,</span><span class="token string">"账号或者密码错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>注意：这里密码进行了加密。</p>
+<p>使用Postman测试如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562054405004.png" alt="测试登录"></p>
+<h3 id="3-4-网关关联"><a href="#3-4-网关关联" class="headerlink" title="3.4 网关关联"></a>3.4 网关关联</h3><p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562055045607.png" alt="网关关联服务"></p>
+<p>在我们平时工作中，并不会直接将微服务暴露出去，一般都会使用网关对接，实现对微服务的一个保护作用，如上图，当用户访问<code>/api/user/</code>的时候我们再根据用户请求调用用户微服务的指定方法。当然，除了<code>/api/user/</code>还有<code>/api/address/</code>、<code>/api/areas/</code>、<code>/api/cities/</code>、<code>/api/provinces/</code>都需要由user微服务处理，修改网关工程<code>changgou-gateway-web</code>的application.yml配置文件，代码如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">spring</span><span class="token punctuation">:</span>
+<span class="token attr-name">  cloud</span><span class="token punctuation">:</span>
+<span class="token attr-name">    gateway</span><span class="token punctuation">:</span>
+<span class="token attr-name">      globalcors</span><span class="token punctuation">:</span>
+<span class="token attr-name">        corsConfigurations</span><span class="token punctuation">:</span>
+<span class="token attr-name">          '[/**]'</span><span class="token punctuation">:</span> <span class="token attr-value"># 匹配所有请求</span>
+<span class="token attr-name">              allowedOrigins</span><span class="token punctuation">:</span> <span class="token attr-value">"*" #跨域处理 允许所有的域</span>
+<span class="token attr-name">              allowedMethods</span><span class="token punctuation">:</span> <span class="token attr-value"># 支持的方法</span>
+<span class="token attr-name">                -</span> <span class="token attr-value">GET</span>
+<span class="token attr-name">                -</span> <span class="token attr-value">POST</span>
+<span class="token attr-name">                -</span> <span class="token attr-value">PUT</span>
+<span class="token attr-name">                -</span> <span class="token attr-value">DELETE</span>
+<span class="token attr-name">      routes</span><span class="token punctuation">:</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_goods_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">lb://goods</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/api/goods/**</span>
+<span class="token attr-name">              filters</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">StripPrefix=1</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">name: RequestRateLimiter #请求数限流 名字不能随便写 ，使用默认的facatory</span>
+<span class="token attr-name">                args</span><span class="token punctuation">:</span>
+<span class="token attr-name">                  key-resolver</span><span class="token punctuation">:</span> <span class="token attr-value">"#{@ipKeyResolver}"</span>
+<span class="token attr-name">                  redis-rate-limiter.replenishRate</span><span class="token punctuation">:</span> <span class="token attr-value">1</span>
+<span class="token attr-name">                  redis-rate-limiter.burstCapacity</span><span class="token punctuation">:</span> <span class="token attr-value">1</span>
+<span class="token comment" spellcheck="true">            #用户微服务</span>
+<span class="token attr-name">            -</span> <span class="token attr-value">id: changgou_user_route</span>
+<span class="token attr-name">              uri</span><span class="token punctuation">:</span> <span class="token attr-value">lb://user</span>
+<span class="token attr-name">              predicates</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">Path=/api/user/**,/api/address/**,/api/areas/**,/api/cities/**,/api/provinces/**</span>
+<span class="token attr-name">              filters</span><span class="token punctuation">:</span>
+<span class="token attr-name">              -</span> <span class="token attr-value">StripPrefix=1</span>
+
+<span class="token attr-name">  application</span><span class="token punctuation">:</span>
+<span class="token attr-name">    name</span><span class="token punctuation">:</span> <span class="token attr-value">gateway-web</span>
+<span class="token comment" spellcheck="true">  #Redis配置</span>
+<span class="token attr-name">  redis</span><span class="token punctuation">:</span>
+<span class="token attr-name">    host</span><span class="token punctuation">:</span> <span class="token attr-value">192.168.211.132</span>
+<span class="token attr-name">    port</span><span class="token punctuation">:</span> <span class="token attr-value">6379</span>
+
+<span class="token attr-name">server</span><span class="token punctuation">:</span>
+<span class="token attr-name">  port</span><span class="token punctuation">:</span> <span class="token attr-value">8001</span>
+<span class="token attr-name">eureka</span><span class="token punctuation">:</span>
+<span class="token attr-name">  client</span><span class="token punctuation">:</span>
+<span class="token attr-name">    service-url</span><span class="token punctuation">:</span>
+<span class="token attr-name">      defaultZone</span><span class="token punctuation">:</span> <span class="token attr-value">http://127.0.0.1:7001/eureka</span>
+<span class="token attr-name">  instance</span><span class="token punctuation">:</span>
+<span class="token attr-name">    prefer-ip-address</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">management</span><span class="token punctuation">:</span>
+<span class="token attr-name">  endpoint</span><span class="token punctuation">:</span>
+<span class="token attr-name">    gateway</span><span class="token punctuation">:</span>
+<span class="token attr-name">      enabled</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">    web</span><span class="token punctuation">:</span>
+<span class="token attr-name">      exposure</span><span class="token punctuation">:</span>
+<span class="token attr-name">        include</span><span class="token punctuation">:</span> <span class="token attr-value">true</span></code></pre>
+<p>使用Postman访问<code>http://localhost:8001/api/user/login?username=changgou&amp;password=changgou</code>，效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562055882671.png" alt="登录测试2"></p>
+<h2 id="4-JWT讲解"><a href="#4-JWT讲解" class="headerlink" title="4 JWT讲解"></a>4 JWT讲解</h2><h3 id="4-1-需求分析"><a href="#4-1-需求分析" class="headerlink" title="4.1 需求分析"></a>4.1 需求分析</h3><p>我们之前已经搭建过了网关，使用网关在网关系统中比较适合进行权限校验。</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562059385713.png" alt="JWT鉴权"></p>
+<p>那么我们可以采用JWT的方式来实现鉴权校验。</p>
+<h3 id="4-2-什么是JWT"><a href="#4-2-什么是JWT" class="headerlink" title="4.2 什么是JWT"></a>4.2 什么是JWT</h3><p>JSON Web Token（JWT）是一个非常轻巧的规范。这个规范允许我们使用JWT在用户和服务器之间传递安全可靠的信息。</p>
+<h3 id="4-3-JWT的构成"><a href="#4-3-JWT的构成" class="headerlink" title="4.3 JWT的构成"></a>4.3 JWT的构成</h3><p>一个JWT实际上就是一个字符串，它由三部分组成，头部、载荷与签名。</p>
+<p><strong>头部（Header）</strong></p>
+<p>头部用于描述关于该JWT的最基本的信息，例如其类型以及签名所用的算法等。这也可以被表示成一个JSON对象。</p>
+<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span><span class="token property">"typ"</span><span class="token operator">:</span><span class="token string">"JWT"</span><span class="token punctuation">,</span><span class="token property">"alg"</span><span class="token operator">:</span><span class="token string">"HS256"</span><span class="token punctuation">}</span></code></pre>
+<p>在头部指明了签名算法是HS256算法。 我们进行BASE64编码<a href="http://base64.xpcha.com/，编码后的字符串如下：" target="_blank" rel="noopener">http://base64.xpcha.com/，编码后的字符串如下：</a></p>
+<pre><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9</code></pre><blockquote>
+<p>小知识：Base64是一种基于64个可打印字符来表示二进制数据的表示方法。由于2的6次方等于64，所以每6个比特为一个单元，对应某个可打印字符。三个字节有24个比特，对应于4个Base64单元，即3个字节需要用4个可打印字符来表示。JDK 中提供了非常方便的 <strong>BASE64Encoder</strong> 和 <strong>BASE64Decoder</strong>，用它们可以非常方便的完成基于 BASE64 的编码和解码</p>
+</blockquote>
+<p><strong>载荷（playload）</strong></p>
+<p>载荷就是存放有效信息的地方。这个名字像是特指飞机上承载的货品，这些有效信息包含三个部分</p>
+<p>（1）标准中注册的声明（建议但不强制使用）</p>
+<pre><code>iss: jwt签发者
+sub: jwt所面向的用户
+aud: 接收jwt的一方
+exp: jwt的过期时间，这个过期时间必须要大于签发时间
+nbf: 定义在什么时间之前，该jwt都是不可用的.
+iat: jwt的签发时间
+jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。</code></pre><p>（2）公共的声明</p>
+<p>公共的声明可以添加任何的信息，一般添加用户的相关信息或其他业务需要的必要信息.但不建议添加敏感信息，因为该部分在客户端可解密.   </p>
+<p>（3）私有的声明</p>
+<p>私有声明是提供者和消费者所共同定义的声明，一般不建议存放敏感信息，因为base64是对称解密的，意味着该部分信息可以归类为明文信息。</p>
+<p>这个指的就是自定义的claim。比如下面面结构举例中的admin和name都属于自定的claim。这些claim跟JWT标准规定的claim区别在于：JWT规定的claim，JWT的接收方在拿到JWT之后，都知道怎么对这些标准的claim进行验证(还不知道是否能够验证)；而private claims不会验证，除非明确告诉接收方要对这些claim进行验证以及规则才行。</p>
+<p>定义一个payload:</p>
+<pre><code>{&quot;sub&quot;:&quot;1234567890&quot;,&quot;name&quot;:&quot;John Doe&quot;,&quot;admin&quot;:true}</code></pre><p>然后将其进行base64加密，得到Jwt的第二部分。</p>
+<pre><code>eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9</code></pre><p><strong>签证（signature）</strong></p>
+<p>jwt的第三部分是一个签证信息，这个签证信息由三部分组成：</p>
+<blockquote>
+<p>header (base64后的)</p>
+<p>payload (base64后的)</p>
+<p>secret</p>
+</blockquote>
+<p>这个部分需要base64加密后的header和base64加密后的payload使用.连接组成的字符串，然后通过header中声明的加密方式进行加盐secret组合加密，然后就构成了jwt的第三部分。</p>
+<pre><code>TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</code></pre><p>将这三部分用.连接成一个完整的字符串,构成了最终的jwt:</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</code></pre><p><strong>注意</strong>：secret是保存在服务器端的，jwt的签发生成也是在服务器端的，secret就是用来进行jwt的签发和jwt的验证，所以，它就是你服务端的私钥，在任何场景都不应该流露出去。一旦客户端得知这个secret, 那就意味着客户端是可以自我签发jwt了。</p>
+<h3 id="4-4-JJWT的介绍和使用"><a href="#4-4-JJWT的介绍和使用" class="headerlink" title="4.4 JJWT的介绍和使用"></a>4.4 JJWT的介绍和使用</h3><p>JJWT是一个提供端到端的JWT创建和验证的Java库。永远免费和开源(Apache License，版本2.0)，JJWT很容易使用和理解。它被设计成一个以建筑为中心的流畅界面，隐藏了它的大部分复杂性。</p>
+<p>官方文档：</p>
+<p><a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></p>
+<h4 id="4-4-1-创建TOKEN"><a href="#4-4-1-创建TOKEN" class="headerlink" title="4.4.1 创建TOKEN"></a>4.4.1 创建TOKEN</h4><p>(1)依赖引入</p>
+<p>在changgou-parent项目中的pom.xml中添加依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--鉴权--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>io.jsonwebtoken<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>jjwt<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>0.9.0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>(2)创建测试</p>
+<p>在changgou-common的/test/java下创建测试类，并设置测试方法</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JwtTest</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">/****
+     * 创建Jwt令牌
+     */</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testCreateJwt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        JwtBuilder builder<span class="token operator">=</span> Jwts<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token string">"888"</span><span class="token punctuation">)</span>             <span class="token comment" spellcheck="true">//设置唯一编号</span>
+                <span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"小白"</span><span class="token punctuation">)</span>       <span class="token comment" spellcheck="true">//设置主题  可以是JSON数据</span>
+                <span class="token punctuation">.</span><span class="token function">setIssuedAt</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//设置签发日期</span>
+                <span class="token punctuation">.</span><span class="token function">signWith</span><span class="token punctuation">(</span>SignatureAlgorithm<span class="token punctuation">.</span>HS256<span class="token punctuation">,</span><span class="token string">"itcast"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//设置签名 使用HS256算法，并设置SecretKey(字符串)</span>
+        <span class="token comment" spellcheck="true">//构建 并返回一个字符串</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span> builder<span class="token punctuation">.</span><span class="token function">compact</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>运行打印结果：</p>
+<pre class=" language-properties"><code class="language-properties">eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjIyODd9.RBLpZ79USMplQyfJCZFD2muHV_KLks7M1ZsjTu6Aez4</code></pre>
+<p>再次运行，会发现每次运行的结果是不一样的，因为我们的载荷中包含了时间。</p>
+<h4 id="4-4-2-TOKEN解析"><a href="#4-4-2-TOKEN解析" class="headerlink" title="4.4.2 TOKEN解析"></a>4.4.2 TOKEN解析</h4><p>我们刚才已经创建了token ，在web应用中这个操作是由服务端进行然后发给客户端，客户端在下次向服务端发送请求时需要携带这个token（这就好像是拿着一张门票一样），那服务端接到这个token 应该解析出token中的信息（例如用户id）,根据这些信息查询数据库返回相应的结果。</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 解析Jwt令牌数据
+ */</span>
+<span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testParseJwt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    String compactJwt<span class="token operator">=</span><span class="token string">"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjIyODd9.RBLpZ79USMplQyfJCZFD2muHV_KLks7M1ZsjTu6Aez4"</span><span class="token punctuation">;</span>
+    Claims claims <span class="token operator">=</span> Jwts<span class="token punctuation">.</span><span class="token function">parser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">setSigningKey</span><span class="token punctuation">(</span><span class="token string">"itcast"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">parseClaimsJws</span><span class="token punctuation">(</span>compactJwt<span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">getBody</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>claims<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>运行打印效果：</p>
+<pre><code>{jti=888, sub=小白, iat=1562062287}</code></pre><p>试着将token或签名秘钥篡改一下，会发现运行时就会报错，所以解析token也就是验证token.</p>
+<h4 id="4-4-3-设置过期时间"><a href="#4-4-3-设置过期时间" class="headerlink" title="4.4.3 设置过期时间"></a>4.4.3 设置过期时间</h4><p>有很多时候，我们并不希望签发的token是永久生效的，所以我们可以为token添加一个过期时间。</p>
+<h5 id="4-4-3-1-token过期设置"><a href="#4-4-3-1-token过期设置" class="headerlink" title="4.4.3.1 token过期设置"></a>4.4.3.1 token过期设置</h5><p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562062896413.png" alt="token过期设置"></p>
+<p>解释：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">.setExpiration(date)//用于设置过期时间</span> <span class="token attr-value">，参数为Date类型数据</span></code></pre>
+<p>运行，打印效果如下：</p>
+<pre class=" language-properties"><code class="language-properties">eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjI5MjUsImV4cCI6MTU2MjA2MjkyNX0._vs4METaPkCza52LuN0-2NGGWIIO7v51xt40DHY1U1Q</code></pre>
+<h5 id="4-4-3-2-解析TOKEN"><a href="#4-4-3-2-解析TOKEN" class="headerlink" title="4.4.3.2 解析TOKEN"></a>4.4.3.2 解析TOKEN</h5><pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 解析Jwt令牌数据
+ */</span>
+<span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testParseJwt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    String compactJwt<span class="token operator">=</span><span class="token string">"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjI5MjUsImV4cCI6MTU2MjA2MjkyNX0._vs4METaPkCza52LuN0-2NGGWIIO7v51xt40DHY1U1Q"</span><span class="token punctuation">;</span>
+    Claims claims <span class="token operator">=</span> Jwts<span class="token punctuation">.</span><span class="token function">parser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">setSigningKey</span><span class="token punctuation">(</span><span class="token string">"itcast"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">parseClaimsJws</span><span class="token punctuation">(</span>compactJwt<span class="token punctuation">)</span><span class="token punctuation">.</span>
+            <span class="token function">getBody</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>claims<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>打印效果：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562063075099.png" alt="解析TOKEN"></p>
+<p>当前时间超过过期时间，则会报错。</p>
+<h4 id="4-4-4-自定义claims"><a href="#4-4-4-自定义claims" class="headerlink" title="4.4.4 自定义claims"></a>4.4.4 自定义claims</h4><p>我们刚才的例子只是存储了id和subject两个信息，如果你想存储更多的信息（例如角色）可以定义自定义claims。</p>
+<p>创建测试类，并设置测试方法：</p>
+<p>创建token:</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562063346685.png" alt="自定义claims"></p>
+<p>运行打印效果：</p>
+<pre class=" language-properties"><code class="language-properties">eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjMyOTIsImFkZHJlc3MiOiLmt7HlnLPpu5Hpqazorq3nu4PokKXnqIvluo_lkZjkuK3lv4MiLCJuYW1lIjoi546L5LqUIiwiYWdlIjoyN30.ZSbHt5qrxz0F1Ma9rVHHAIy4jMCBGIHoNaaPQXxV_dk</code></pre>
+<p>解析TOKEN:</p>
+<pre class=" language-JAVA"><code class="language-JAVA">/***
+ * 解析Jwt令牌数据
+ */
+@Test
+public void testParseJwt(){
+    String compactJwt="eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4ODgiLCJzdWIiOiLlsI_nmb0iLCJpYXQiOjE1NjIwNjMyOTIsImFkZHJlc3MiOiLmt7HlnLPpu5Hpqazorq3nu4PokKXnqIvluo_lkZjkuK3lv4MiLCJuYW1lIjoi546L5LqUIiwiYWdlIjoyN30.ZSbHt5qrxz0F1Ma9rVHHAIy4jMCBGIHoNaaPQXxV_dk";
+    Claims claims = Jwts.parser().
+            setSigningKey("itcast").
+            parseClaimsJws(compactJwt).
+            getBody();
+    System.out.println(claims);
+}</code></pre>
+<p>运行效果：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562063412350.png" alt="自定义claims效果"></p>
+<h3 id="4-5-鉴权处理"><a href="#4-5-鉴权处理" class="headerlink" title="4.5 鉴权处理"></a>4.5 鉴权处理</h3><h4 id="4-5-1-思路分析"><a href="#4-5-1-思路分析" class="headerlink" title="4.5.1 思路分析"></a>4.5.1 思路分析</h4><p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562069596308.png" alt="鉴权处理"></p>
+<pre class=" language-properties"><code class="language-properties">1.用户通过访问微服务网关调用微服务，同时携带头文件信息
+2.在微服务网关这里进行拦截，拦截后获取用户要访问的路径
+3.识别用户访问的路径是否需要登录，如果需要，识别用户的身份是否能访问该路径[这里可以基于数据库设计一套权限]
+4.如果需要权限访问，用户已经登录，则放行
+5.如果需要权限访问，且用户未登录，则提示用户需要登录
+6.用户通过网关访问用户微服务，进行登录验证
+7.验证通过后，用户微服务会颁发一个令牌给网关，网关会将用户信息封装到头文件中，并响应用户
+8.用户下次访问，携带头文件中的令牌信息即可识别是否登录</code></pre>
+<h4 id="4-5-2用户登录签发TOKEN"><a href="#4-5-2用户登录签发TOKEN" class="headerlink" title="4.5.2用户登录签发TOKEN"></a>4.5.2用户登录签发TOKEN</h4><p>(1)生成令牌工具类</p>
+<p>在changgou-common中创建类entity.JwtUtil，主要辅助生成Jwt令牌信息，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JwtUtil</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//有效期为</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> Long JWT_TTL <span class="token operator">=</span> 3600000L<span class="token punctuation">;</span><span class="token comment" spellcheck="true">// 60 * 60 *1000  一个小时</span>
+
+    <span class="token comment" spellcheck="true">//Jwt令牌信息</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String JWT_KEY <span class="token operator">=</span> <span class="token string">"itcast"</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> String <span class="token function">createJWT</span><span class="token punctuation">(</span>String id<span class="token punctuation">,</span> String subject<span class="token punctuation">,</span> Long ttlMillis<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//指定算法</span>
+        SignatureAlgorithm signatureAlgorithm <span class="token operator">=</span> SignatureAlgorithm<span class="token punctuation">.</span>HS256<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//当前系统时间</span>
+        <span class="token keyword">long</span> nowMillis <span class="token operator">=</span> System<span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//令牌签发时间</span>
+        Date now <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span>nowMillis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//如果令牌有效期为null，则默认设置有效期1小时</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>ttlMillis<span class="token operator">==</span>null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            ttlMillis<span class="token operator">=</span>JwtUtil<span class="token punctuation">.</span>JWT_TTL<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//令牌过期时间设置</span>
+        <span class="token keyword">long</span> expMillis <span class="token operator">=</span> nowMillis <span class="token operator">+</span> ttlMillis<span class="token punctuation">;</span>
+        Date expDate <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span>expMillis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//生成秘钥</span>
+        SecretKey secretKey <span class="token operator">=</span> <span class="token function">generalKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//封装Jwt令牌信息</span>
+        JwtBuilder builder <span class="token operator">=</span> Jwts<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>                    <span class="token comment" spellcheck="true">//唯一的ID</span>
+                <span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span>subject<span class="token punctuation">)</span>          <span class="token comment" spellcheck="true">// 主题  可以是JSON数据</span>
+                <span class="token punctuation">.</span><span class="token function">setIssuer</span><span class="token punctuation">(</span><span class="token string">"admin"</span><span class="token punctuation">)</span>          <span class="token comment" spellcheck="true">// 签发者</span>
+                <span class="token punctuation">.</span><span class="token function">setIssuedAt</span><span class="token punctuation">(</span>now<span class="token punctuation">)</span>             <span class="token comment" spellcheck="true">// 签发时间</span>
+                <span class="token punctuation">.</span><span class="token function">signWith</span><span class="token punctuation">(</span>signatureAlgorithm<span class="token punctuation">,</span> secretKey<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 签名算法以及密匙</span>
+                <span class="token punctuation">.</span><span class="token function">setExpiration</span><span class="token punctuation">(</span>expDate<span class="token punctuation">)</span><span class="token punctuation">;</span>      <span class="token comment" spellcheck="true">// 设置过期时间</span>
+        <span class="token keyword">return</span> builder<span class="token punctuation">.</span><span class="token function">compact</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 生成加密 secretKey
+     * @return
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> SecretKey <span class="token function">generalKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> encodedKey <span class="token operator">=</span> Base64<span class="token punctuation">.</span><span class="token function">getEncoder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">encode</span><span class="token punctuation">(</span>JwtUtil<span class="token punctuation">.</span>JWT_KEY<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        SecretKey key <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SecretKeySpec</span><span class="token punctuation">(</span>encodedKey<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> encodedKey<span class="token punctuation">.</span>length<span class="token punctuation">,</span> <span class="token string">"AES"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> key<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token comment" spellcheck="true">/**
+     * 解析令牌数据
+     * @param jwt
+     * @return
+     * @throws Exception
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> Claims <span class="token function">parseJWT</span><span class="token punctuation">(</span>String jwt<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        SecretKey secretKey <span class="token operator">=</span> <span class="token function">generalKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Jwts<span class="token punctuation">.</span><span class="token function">parser</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setSigningKey</span><span class="token punctuation">(</span>secretKey<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">parseClaimsJws</span><span class="token punctuation">(</span>jwt<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">getBody</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(2) 用户登录成功 则 签发TOKEN，修改登录的方法：</p>
+<p>代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 用户登录
+ */</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/login"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">login</span><span class="token punctuation">(</span>String username<span class="token punctuation">,</span>String password<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//查询用户信息</span>
+    User user <span class="token operator">=</span> userService<span class="token punctuation">.</span><span class="token function">findById</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span><span class="token punctuation">(</span>user<span class="token operator">!=</span>null <span class="token operator">&amp;&amp;</span> BCrypt<span class="token punctuation">.</span><span class="token function">checkpw</span><span class="token punctuation">(</span>password<span class="token punctuation">,</span>user<span class="token punctuation">.</span><span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//设置令牌信息</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Object<span class="token operator">></span> info <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Object<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        info<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"role"</span><span class="token punctuation">,</span><span class="token string">"USER"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        info<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">,</span><span class="token string">"SUCCESS"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        info<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">,</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//生成令牌</span>
+        String jwt <span class="token operator">=</span> JwtUtil<span class="token punctuation">.</span><span class="token function">createJWT</span><span class="token punctuation">(</span>UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>info<span class="token punctuation">)</span><span class="token punctuation">,</span>null<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"登录成功！"</span><span class="token punctuation">,</span>jwt<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span>  <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>LOGINERROR<span class="token punctuation">,</span><span class="token string">"账号或者密码错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="4-5-3-网关过滤器拦截请求处理"><a href="#4-5-3-网关过滤器拦截请求处理" class="headerlink" title="4.5.3 网关过滤器拦截请求处理"></a>4.5.3 网关过滤器拦截请求处理</h4><p>拷贝JwtUtil到changgou-gateway-web中</p>
+<h4 id="4-5-4-自定义全局过滤器"><a href="#4-5-4-自定义全局过滤器" class="headerlink" title="4.5.4 自定义全局过滤器"></a>4.5.4 自定义全局过滤器</h4><p>创建 过滤器类，AuthorizeFilter代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AuthorizeFilter</span> <span class="token keyword">implements</span> <span class="token class-name">GlobalFilter</span><span class="token punctuation">,</span> Ordered <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//令牌头名字</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String AUTHORIZE_TOKEN <span class="token operator">=</span> <span class="token string">"Authorization"</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/***
+     * 全局过滤器
+     * @param exchange
+     * @param chain
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Mono<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">filter</span><span class="token punctuation">(</span>ServerWebExchange exchange<span class="token punctuation">,</span> GatewayFilterChain chain<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//获取Request、Response对象</span>
+        ServerHttpRequest request <span class="token operator">=</span> exchange<span class="token punctuation">.</span><span class="token function">getRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ServerHttpResponse response <span class="token operator">=</span> exchange<span class="token punctuation">.</span><span class="token function">getResponse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//获取请求的URI</span>
+        String path <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//如果是登录、goods等开放的微服务[这里的goods部分开放],则直接放行,这里不做完整演示，完整演示需要设计一套权限系统</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">"/api/user/login"</span><span class="token punctuation">)</span> <span class="token operator">||</span> path<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">"/api/brand/search/"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//放行</span>
+            Mono<span class="token operator">&lt;</span>Void<span class="token operator">></span> filter <span class="token operator">=</span> chain<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>exchange<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> filter<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//获取头文件中的令牌信息</span>
+        String tokent <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getFirst</span><span class="token punctuation">(</span>AUTHORIZE_TOKEN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//如果头文件中没有，则从请求参数中获取</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>tokent<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            tokent <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getQueryParams</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getFirst</span><span class="token punctuation">(</span>AUTHORIZE_TOKEN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//如果为空，则输出错误代码</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StringUtils<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span>tokent<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//设置方法不允许被访问，405错误代码</span>
+           response<span class="token punctuation">.</span><span class="token function">setStatusCode</span><span class="token punctuation">(</span>HttpStatus<span class="token punctuation">.</span>METHOD_NOT_ALLOWED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+           <span class="token keyword">return</span> response<span class="token punctuation">.</span><span class="token function">setComplete</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//解析令牌数据</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            Claims claims <span class="token operator">=</span> JwtUtil<span class="token punctuation">.</span><span class="token function">parseJWT</span><span class="token punctuation">(</span>tokent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//解析失败，响应401错误</span>
+            response<span class="token punctuation">.</span><span class="token function">setStatusCode</span><span class="token punctuation">(</span>HttpStatus<span class="token punctuation">.</span>UNAUTHORIZED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> response<span class="token punctuation">.</span><span class="token function">setComplete</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//放行</span>
+        <span class="token keyword">return</span> chain<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>exchange<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token comment" spellcheck="true">/***
+     * 过滤器执行顺序
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="4-5-5-配置过滤规则"><a href="#4-5-5-配置过滤规则" class="headerlink" title="4.5.5 配置过滤规则"></a>4.5.5 配置过滤规则</h4><p>修改网关系统的yml文件：</p>
+<p>代码如下：</p>
+<pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">cloud</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">globalcors</span><span class="token punctuation">:</span>
+        <span class="token key atrule">corsConfigurations</span><span class="token punctuation">:</span>
+          '<span class="token punctuation">[</span>/**<span class="token punctuation">]</span>'<span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 匹配所有请求</span>
+              <span class="token key atrule">allowedOrigins</span><span class="token punctuation">:</span> <span class="token string">"*"</span> <span class="token comment" spellcheck="true">#跨域处理 允许所有的域</span>
+              <span class="token key atrule">allowedMethods</span><span class="token punctuation">:</span> <span class="token comment" spellcheck="true"># 支持的方法</span>
+                <span class="token punctuation">-</span> GET
+                <span class="token punctuation">-</span> POST
+                <span class="token punctuation">-</span> PUT
+                <span class="token punctuation">-</span> DELETE
+      <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> changgou_goods_route
+              <span class="token key atrule">uri</span><span class="token punctuation">:</span> lb<span class="token punctuation">:</span>//goods
+              <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> Path=/api/album/**<span class="token punctuation">,</span>/api/brand/**<span class="token punctuation">,</span>/api/cache/**<span class="token punctuation">,</span>/api/categoryBrand/**<span class="token punctuation">,</span>/api/category/**<span class="token punctuation">,</span>/api/para/**<span class="token punctuation">,</span>/api/pref/**<span class="token punctuation">,</span>/api/sku/**<span class="token punctuation">,</span>/api/spec/**<span class="token punctuation">,</span>/api/spu/**<span class="token punctuation">,</span>/api/stockBack/**<span class="token punctuation">,</span>/api/template/**
+              <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> StripPrefix=1
+              <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> RequestRateLimiter <span class="token comment" spellcheck="true">#请求数限流 名字不能随便写 ，使用默认的facatory</span>
+                <span class="token key atrule">args</span><span class="token punctuation">:</span>
+                  <span class="token key atrule">key-resolver</span><span class="token punctuation">:</span> "<span class="token comment" spellcheck="true">#{@ipKeyResolver}"</span>
+                  <span class="token key atrule">redis-rate-limiter.replenishRate</span><span class="token punctuation">:</span> <span class="token number">1</span>
+                  <span class="token key atrule">redis-rate-limiter.burstCapacity</span><span class="token punctuation">:</span> <span class="token number">1</span>
+            <span class="token comment" spellcheck="true">#用户微服务</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> changgou_user_route
+              <span class="token key atrule">uri</span><span class="token punctuation">:</span> lb<span class="token punctuation">:</span>//user
+              <span class="token key atrule">predicates</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> Path=/api/user/**<span class="token punctuation">,</span>/api/address/**<span class="token punctuation">,</span>/api/areas/**<span class="token punctuation">,</span>/api/cities/**<span class="token punctuation">,</span>/api/provinces/**
+              <span class="token key atrule">filters</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> StripPrefix=1
+
+  <span class="token key atrule">application</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> gateway<span class="token punctuation">-</span>web
+  <span class="token comment" spellcheck="true">#Redis配置</span>
+  <span class="token key atrule">redis</span><span class="token punctuation">:</span>
+    <span class="token key atrule">host</span><span class="token punctuation">:</span> 192.168.211.132
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+
+<span class="token key atrule">server</span><span class="token punctuation">:</span>
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8001</span>
+<span class="token key atrule">eureka</span><span class="token punctuation">:</span>
+  <span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service-url</span><span class="token punctuation">:</span>
+      <span class="token key atrule">defaultZone</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//127.0.0.1<span class="token punctuation">:</span>7001/eureka
+  <span class="token key atrule">instance</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefer-ip-address</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">management</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span>
+    <span class="token key atrule">gateway</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">web</span><span class="token punctuation">:</span>
+      <span class="token key atrule">exposure</span><span class="token punctuation">:</span>
+        <span class="token key atrule">include</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<p>测试访问<code>http://localhost:8001/api/user/login?username=changgou&amp;password=changgou</code>，效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562117166529.png" alt="测试访问1"></p>
+<p>测试访问<code>http://localhost:8001/api/user</code>，效果如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562117230885.png" alt="测试访问2"></p>
+<p>参考官方手册：</p>
+<p><a href="https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html#_stripprefix_gatewayfilter_factory" target="_blank" rel="noopener">https://cloud.spring.io/spring-cloud-gateway/spring-cloud-gateway.html#_stripprefix_gatewayfilter_factory</a></p>
+<h3 id="4-6-会话保持"><a href="#4-6-会话保持" class="headerlink" title="4.6 会话保持"></a>4.6 会话保持</h3><p>用户每次请求的时候，我们都需要获取令牌数据，方法有多重，可以在每次提交的时候，将数据提交到头文件中，也可以将数据存储到Cookie中，每次从Cookie中校验数据，还可以每次将令牌数据以参数的方式提交到网关，这里面采用Cookie的方式比较容易实现。</p>
+<h4 id="4-6-1-登录封装Cookie"><a href="#4-6-1-登录封装Cookie" class="headerlink" title="4.6.1 登录封装Cookie"></a>4.6.1 登录封装Cookie</h4><p>修改user微服务，每次登录的时候，添加令牌信息到Cookie中，修改changgou-service-user的<code>com.changgou.user.controller.UserController</code>的<code>login</code>方法，代码如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562120506682.png" alt="登录封装Cookie"></p>
+<h4 id="4-6-2-过滤器获取令牌数据"><a href="#4-6-2-过滤器获取令牌数据" class="headerlink" title="4.6.2 过滤器获取令牌数据"></a>4.6.2 过滤器获取令牌数据</h4><p>每次在网关中通过过滤器获取Cookie中的令牌，然后对令牌数据进行解析，修改微服务网关changgou-gateway-web中的AuthorizeFilter，代码如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562120763383.png" alt="获取令牌数据"></p>
+<p>登录后测试，可以识别用户身份，不登录无法识别。如下访问<code>http://localhost:8001/api/user</code>会携带令牌数据：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562121093670.png" alt="登录后测试"></p>
+<h4 id="4-6-3-添加Header信息"><a href="#4-6-3-添加Header信息" class="headerlink" title="4.6.3 添加Header信息"></a>4.6.3 添加Header信息</h4><p>我们还可以在Gateway的全局过滤器中添加请求头信息，例如可以讲令牌信息添加到请求头中，在微服务中获取头信息，如下代码：</p>
+<p>修改微服务网关中的AuthorizeFilter过滤器，在令牌信息校验那块将令牌加入到请求头中，如下代码：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562243515236.png" alt="添加Header信息1"></p>
+<p>在changgou-service-user微服务的UserController的findAll方法中获取请求头测试，代码如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562243608017.png" alt="添加Header信息2"></p>
+<p>后台输出令牌数据如下：</p>
+<p><img src="/2020/03/16/chang-gou-shang-cheng-shi-zhan-ba/1562243685686.png" alt="输出令牌数据"></p>
+
             </div>
             <hr/>
 
@@ -1016,7 +1890,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">501.3k</span>&nbsp;字
+                class="white-color">509k</span>&nbsp;字
             
             
             
