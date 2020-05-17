@@ -456,7 +456,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-03-14
+                    2020-03-29
                 </div>
                 
 
@@ -465,14 +465,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    26.5k
+                    31.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    97 分
+                    117 分
                 </div>
                 
 				
@@ -888,21 +888,21 @@ future<span class="token punctuation">.</span><span class="token function">cance
 </ul>
 <p>如果想要确定线程当前的状态，可以通过 getState() 方法，并且线程在任何时刻只可能处于 1 种状态。</p>
 <h4 id="1-5-2-New-新创建"><a href="#1-5-2-New-新创建" class="headerlink" title="1.5.2-New 新创建"></a>1.5.2-New 新创建</h4><p>下面我们逐个介绍线程的 6 种状态，如图所示，首先来看下左上角的 New 状态。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81.png" alt="线程的状态"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81.png" alt="线程的状态"></p>
 <p>New 表示线程被创建但尚未启动的状态：当我们用 new Thread() 新建一个线程时，如果线程没有开始运行 start() 方法，所以也没有开始执行 run() 方法里面的代码，那么此时它的状态就是 New。而一旦线程调用了 start()，它的状态就会从 New 变成 Runnable，也就是状态转换图中中间的这个大方框里的内容。</p>
-<h4 id="1-5-3-Runnable-可运行"><a href="#1-5-3-Runnable-可运行" class="headerlink" title="1.5.3-Runnable 可运行"></a>1.5.3-Runnable 可运行</h4><p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8F%AF%E8%BF%90%E8%A1%8C.png" alt="线程的可运行"></p>
+<h4 id="1-5-3-Runnable-可运行"><a href="#1-5-3-Runnable-可运行" class="headerlink" title="1.5.3-Runnable 可运行"></a>1.5.3-Runnable 可运行</h4><p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8F%AF%E8%BF%90%E8%A1%8C.png" alt="线程的可运行"></p>
 <p>Java 中的 Runable 状态对应操作系统线程状态中的两种状态，分别是 Running 和 Ready，也就是说，Java 中处于 Runnable 状态的线程有可能正在执行，也有可能没有正在执行，正在等待被分配 CPU 资源。</p>
 <p>所以，如果一个正在运行的线程是 Runnable 状态，当它运行到任务的一半时，执行该线程的 CPU 被调度去做其他事情，导致该线程暂时不运行，它的状态依然不变，还是 Runnable，因为它有可能随时被调度回来继续执行任务。</p>
-<h4 id="1-5-4-阻塞状态"><a href="#1-5-4-阻塞状态" class="headerlink" title="1.5.4-阻塞状态"></a>1.5.4-阻塞状态</h4><p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%98%BB%E5%A1%9E%E7%8A%B6%E6%80%81.png" alt="阻塞状态"></p>
+<h4 id="1-5-4-阻塞状态"><a href="#1-5-4-阻塞状态" class="headerlink" title="1.5.4-阻塞状态"></a>1.5.4-阻塞状态</h4><p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%98%BB%E5%A1%9E%E7%8A%B6%E6%80%81.png" alt="阻塞状态"></p>
 <p>接下来，我们来看下 Runnable 下面的三个方框，它们统称为阻塞状态，在 Java 中阻塞状态通常不仅仅是 Blocked，实际上它包括三种状态，分别是 Blocked(被阻塞）、Waiting(等待）、Timed Waiting(计时等待），这三 种状态统称为阻塞状态，下面我们来看看这三种状态具体是什么含义。 </p>
 <ul>
 <li><p><strong>Blocked 被阻塞</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/Blocked%E8%A2%AB%E9%98%BB%E5%A1%9E.png" alt="Blocked被阻塞"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/Blocked%E8%A2%AB%E9%98%BB%E5%A1%9E.png" alt="Blocked被阻塞"></p>
 <p>首先来看最简单的 Blocked，从箭头的流转方向可以看出，从 Runnable 状态进入 Blocked 状态只有一种可能，就是进入 synchronized 保护的代码时没有抢到 monitor 锁，无论是进入 synchronized 代码块，还是 synchronized 方法，都是一样。</p>
 <p>我们再往右看，当处于 Blocked 的线程抢到 monitor 锁，就会从 Blocked 状态回到Runnable 状态。</p>
 </li>
 <li><p><strong>Waiting 等待</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/Waiting%E7%8A%B6%E6%80%81.png" alt="Waiting状态"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/Waiting%E7%8A%B6%E6%80%81.png" alt="Waiting状态"></p>
 <p>我们再看看 Waiting 状态，线程进入 Waiting 状态有三种可能性。</p>
 <p>没有设置 Timeout 参数的 Object.wait() 方法。</p>
 <p>没有设置 Timeout 参数的 Thread.join() 方法。</p>
@@ -913,7 +913,7 @@ future<span class="token punctuation">.</span><span class="token function">cance
 <p>  Blocked 与 Waiting 的区别是 Blocked 在等待其他线程释放 monitor 锁，而 Waiting 则是在等待某个条件，比如 join 的线程执行完毕，或者是 notify()/notifyAll() 。</p>
 <ul>
 <li><p><strong>Timed Waiting 限期等待</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85.png" alt="限期等待"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85.png" alt="限期等待"></p>
 <p>在 Waiting 上面是 Timed Waiting 状态，这两个状态是非常相似的，区别仅在于有没有时间限制，Timed Waiting 会等待超时，由系统自动唤醒，或者在超时前被唤醒信号唤醒。</p>
 </li>
 </ul>
@@ -927,23 +927,23 @@ future<span class="token punctuation">.</span><span class="token function">cance
 <h4 id="1-5-5-阻塞状态到可运行状态"><a href="#1-5-5-阻塞状态到可运行状态" class="headerlink" title="1.5.5-阻塞状态到可运行状态"></a>1.5.5-阻塞状态到可运行状态</h4><p>讲完如何进入这三种状态，我们再来看下如何从这三种状态流转到下一个状态。</p>
 <ul>
 <li><p><strong>被阻塞状态到可运行状态</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E8%A2%AB%E9%98%BB%E5%A1%9E%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C.png" alt="被阻塞到可运行"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E8%A2%AB%E9%98%BB%E5%A1%9E%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C.png" alt="被阻塞到可运行"></p>
 <p>想要从 Blocked 状态进入 Runnable 状态，要求线程获取 monitor 锁，而从 Waiting 状态流转到其他状态则比较特殊，因为首先 Waiting 是不限时的，也就是说无论过了多长时间它都不会主动恢复。</p>
 </li>
 <li><p><strong>无限期等待到可运行状态</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%97%A0%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%811.png" alt="无限期等待到可运行状态1"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%97%A0%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%811.png" alt="无限期等待到可运行状态1"></p>
 <p>只有当执行了 LockSupport.unpark()，或者 join 的线程运行结束，或者被中断时才可以进入 Runnable 状态。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%97%A0%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%812.png" alt="无限期等待到可运行状态2"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%97%A0%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%812.png" alt="无限期等待到可运行状态2"></p>
 <p>如果其他线程调用 notify() 或 notifyAll()来唤醒它，它会直接进入 Blocked 状态，这是为什么呢？因为唤醒 Waiting 线程的线程如果调用 notify() 或 notifyAll()，要求必须首先持有该 monitor 锁，所以处于 Waiting 状态的线程被唤醒时拿不到该锁，就会进入 Blocked 状态，直到执行了 notify()/notifyAll() 的唤醒它的线程执行完毕并释放 monitor 锁，才可能轮到它去抢夺这把锁，如果它能抢到，就会从 Blocked 状态回到 Runnable 状态。</p>
 </li>
 <li><p><strong>限期等待到可运行状态</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%811.png" alt="限期等待到可运行状态1"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%811.png" alt="限期等待到可运行状态1"></p>
 <p>同样在 Timed Waiting 中执行 notify() 和 notifyAll() 也是一样的道理，它们会先进入 Blocked 状态，然后抢夺锁成功后，再回到 Runnable 状态。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%812.png" alt="限期等待到可运行状态2"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%99%90%E6%9C%9F%E7%AD%89%E5%BE%85%E5%88%B0%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%812.png" alt="限期等待到可运行状态2"></p>
 <p>当然对于 Timed Waiting 而言，如果它的超时时间到了且能直接获取到锁/join的线程运行结束/被中断/调用了LockSupport.unpark()，会直接恢复到 Runnable 状态，而无需经历 Blocked 状态。</p>
 </li>
 </ul>
-<h4 id="1-5-6-Terminated-终止"><a href="#1-5-6-Terminated-终止" class="headerlink" title="1.5.6-Terminated 终止"></a>1.5.6-Terminated 终止</h4><p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E7%BB%88%E6%AD%A2%E7%8A%B6%E6%80%81.png" alt="终止状态"></p>
+<h4 id="1-5-6-Terminated-终止"><a href="#1-5-6-Terminated-终止" class="headerlink" title="1.5.6-Terminated 终止"></a>1.5.6-Terminated 终止</h4><p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BB%88%E6%AD%A2%E7%8A%B6%E6%80%81.png" alt="终止状态"></p>
 <p>再来看看最后一种状态，Terminated 终止状态，要想进入这个状态有两种可能。</p>
 <p>run() 方法执行完毕，线程正常退出。</p>
 <p>出现一个没有捕获的异常，终止了 run() 方法，最终导致意外终止。</p>
@@ -1125,7 +1125,7 @@ B</code></pre><h4 id="1-6-2-wait-notify-notifyAll"><a href="#1-6-2-wait-notify-n
 <span class="token punctuation">}</span></code></pre>
 <pre><code>before
 after</code></pre><h3 id="1-7-生产者消费者模式"><a href="#1-7-生产者消费者模式" class="headerlink" title="1.7-生产者消费者模式"></a>1.7-生产者消费者模式</h3><h4 id="1-7-1-什么是生产者消费者模式？"><a href="#1-7-1-什么是生产者消费者模式？" class="headerlink" title="1.7.1-什么是生产者消费者模式？"></a>1.7.1-什么是生产者消费者模式？</h4><p>我们先来看看什么是生产者消费者模式，生产者消费者模式是程序设计中非常常见的一种设计模式，被广泛运用在解耦、消息队列等场景。在现实世界中，我们把生产商品的一方称为生产者，把消费商品的一方称为消费者，有时生产者的生产速度特别快，但消费者的消费速度跟不上，俗称“产能过剩”，又或是多个生产者对应多个消费者时，大家可能会手忙脚乱。如何才能让大家更好地配合呢？这时在生产者和消费者之间就需要一个中介来进行调度，于是便诞生了生产者消费者模式。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F.png" alt="生产者消费者模式"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F.png" alt="生产者消费者模式"></p>
 <p>使用生产者消费者模式通常需要在两者之间增加一个阻塞队列作为媒介，有了媒介之后就相当于有了一个缓冲，平衡了两者的能力，整体的设计如图所示，最上面是阻塞队列，右侧的 1 是生产者线程，生产者在生产数据后将数据存放在阻塞队列中，左侧的 2 是消费者线程，消费者获取阻塞队列中的数据。而中间的 3 和 4 分别代表生产者消费者之间互相通信的过程，因为无论阻塞队列是满还是空都可能会产生阻塞，阻塞之后就需要在合适的时机去唤醒被阻塞的线程。</p>
 <p>那么什么时候阻塞线程需要被唤醒呢？有两种情况。</p>
 <ul>
@@ -1323,7 +1323,7 @@ Runnable consumer <span class="token operator">=</span> <span class="token punct
 <li>第三个步骤是保存。</li>
 </ul>
 <p>那么我们接下来看如何发生的线程不安全问题。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%E9%94%99%E8%AF%AF.png" alt="运行结果错误"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%E9%94%99%E8%AF%AF.png" alt="运行结果错误"></p>
 <p>我们根据箭头指向依次看，线程 1 首先拿到 i=1 的结果，然后进行 i+1 操作，但此时 i+1 的结果并没有保存下来，线程 1 就被切换走了，于是 CPU 开始执行线程 2，它所做的事情和线程 1 是一样的 i++ 操作，但此时我们想一下，它拿到的 i 是多少？实际上和线程 1 拿到的 i 的结果一样都是 1，为什么呢？因为线程 1 虽然对 i 进行了 +1 操作，但结果没有保存，所以线程 2 看不到修改后的结果。</p>
 <p>然后假设等线程 2 对 i 进行 +1 操作后，又切换到线程 1，让线程 1 完成未完成的操作，即将 i+1 的结果 2 保存下来，然后又切换到线程 2 完成 i=2 的保存操作，虽然两个线程都执行了对 i 进行 +1 的操作，但结果却最终保存了 i=2 的结果，而不是我们期望的 i=3，这样就发生了线程安全问题，导致了数据结果错误，这也是最典型的线程安全问题。</p>
 <h4 id="2-2-2-发布和初始化导致线程安全问题"><a href="#2-2-2-发布和初始化导致线程安全问题" class="headerlink" title="2.2.2-发布和初始化导致线程安全问题"></a>2.2.2-发布和初始化导致线程安全问题</h4><p>第二种是对象发布和初始化时导致的线程安全问题，我们创建对象并进行发布和初始化供其他类或对象使用是常见的操作，但如果我们操作的时间或地点不对，就可能导致线程安全问题。如代码所示。</p>
@@ -1474,17 +1474,17 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <h2 id="3-Java-内存模型"><a href="#3-Java-内存模型" class="headerlink" title="3-Java 内存模型"></a>3-Java 内存模型</h2><h3 id="3-1-为什么要有内存模型？"><a href="#3-1-为什么要有内存模型？" class="headerlink" title="3.1-为什么要有内存模型？"></a>3.1-为什么要有内存模型？</h3><p>在介绍Java内存模型之前，先来看一下到底什么是计算机内存模型，然后再来看Java内存模型在计算机内存模型的基础上做了哪些事情。要说计算机的内存模型，就要说一下一段古老的历史，看一下为什么要有内存模型。</p>
 <p><strong>内存模型，英文名Memory Model，他是一个很老的老古董了。他是与计算机硬件有关的一个概念</strong></p>
 <h3 id="3-2-计算机内存"><a href="#3-2-计算机内存" class="headerlink" title="3.2-计算机内存"></a>3.2-计算机内存</h3><p>计算机是由CPU、主存、磁盘等组成的(简单引出问题熬)我们都知道计算机执行程序的指令都是由CPU来执行的，执行的时候是要处理数据的，这些数据通常存储在主存中。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%86%85%E5%AD%98.png" alt="计算机内存"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%86%85%E5%AD%98.png" alt="计算机内存"></p>
 <p>如图所示，这时候问题来了，CPU的执行速度越来越快，然后内存倒是没什么进展，这样的话CPU的读写操作就会非常耗时，效率不就很低了？</p>
 <p>所以这个时候就出现了高速缓存(Cache)来解决这个问题，那么缓存是什么呢？缓存其实就是保存的数据备存，特点是快。所以这个时候程序的执行过程就变成了这个样子：首先在运行的时候会把数据从主存中赋值一份放在缓存中，然后CPU在运算的时候就直接去缓存中读写数据，等执行结束后在把数据刷新到主存中。这样一来就大大的提高了执行的速度。我们来看一下流程图:</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/CPU%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE.gif" alt="CPU读取数据"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/CPU%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE.gif" alt="CPU读取数据"></p>
 <p>可以看出，运行的时候L1缓存先把数据从主存中读取出来，然后CPU操作的数据是从缓存中读取，当数据执行完毕，在从缓存中刷新到主存中。随着CPU的执行能力越来越强，一层缓存已经满足不了需求了，这时候就出现了2级缓存(L2Cache)3级缓存(L3Cache),每级缓存都存储的是下一级缓存的一部分数据。</p>
 <p>那么当CPU需要数据的时候就会这样执行：首先去一级缓存(L1Cache)查找,如果一级缓存没有就去二级缓存(L2Cache)查找,二级缓存没有就去三级缓存(L3Cache)查找,如果缓存中没有，就去主存中查找。 那么问题来了。</p>
 <h3 id="3-3-缓存一致性"><a href="#3-3-缓存一致性" class="headerlink" title="3.3-缓存一致性"></a>3.3-缓存一致性</h3><p>现代计算机已经不是单个CPU，有多个CPU每个CPU还可能会有多核,单核CPU只有一套缓存分别就是上面所说的L1、L2、L3如图所示：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BC%93%E5%AD%98.png" alt="计算机缓存"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BC%93%E5%AD%98.png" alt="计算机缓存"></p>
 <p>如果CPU有多个核心的话，就是每个核心都有L1缓存或者有L2缓存，而共享L3缓存或者L2缓存。</p>
 <p>我们来看一下结构图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE.png" alt="缓存结构图"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%84%E5%9B%BE.png" alt="缓存结构图"></p>
 <p>这个时候每个核心都有自己的高速缓存，它们又共享同一主存，就会造成缓存一致性的问题，在多线程同时访问同一共享数据的情况下，每个线程都是操作自己缓存的数据副本，这个时候就会出现每个缓存中的共享数据存在不一致的情况。多个处理器运算任务都涉及同一块主存，需要一种协议可以保障数据的一致性，这类协议有MSI、MESI、MOSI及Dragon Protocol等。</p>
 <p><strong>当CPU要读取一个数据时，首先从一级缓存中查找，如果没有找到再从二级缓存中查找，如果还是没有就从三级缓存或内存中查找。</strong></p>
 <p>单核CPU只含有一套L1，L2，L3缓存；如果CPU含有多个核心，即多核CPU，则每个核心都含有一套L1（甚至和L2）缓存，而共享L3（或者和L2）缓存。</p>
@@ -1514,7 +1514,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <h4 id="3-5-2-Java内存模型"><a href="#3-5-2-Java内存模型" class="headerlink" title="3.5.2-Java内存模型"></a>3.5.2-Java内存模型</h4><p>在 Java 中，所有实例域、静态域 和 数组元素存储在堆内存中，堆内存在线程之间共享。局部变量、方法定义参数 和 异常处理器参数 不会在线程之间共享，它们不会有内存可见性问题，也不受内存模型的影响。</p>
 <p>Java 线程之间的通信由 Java 内存模型（JMM）控制。JMM 决定了一个线程对共享变量的写入何时对另一个线程可见。从抽象的角度来看，JMM 定义了线程与主内存之间的抽象关系：线程之间的共享变量存储在主内存中，每一个线程都有一个自己私有的本地内存，本地内存中存储了该变量以读／写共享变量的副本。本地内存是 JMM 的一个抽象概念，并不真实存在。</p>
 <p>JMM 抽象示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/JMM%E6%8A%BD%E8%B1%A1%E7%A4%BA%E6%84%8F%E5%9B%BE.png" alt="JMM抽象示意图"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/JMM%E6%8A%BD%E8%B1%A1%E7%A4%BA%E6%84%8F%E5%9B%BE.png" alt="JMM抽象示意图"></p>
 <p>从上图来看，如果线程 A 和线程 B 要通信的话，要如下两个步骤：</p>
 <ol>
 <li><p>线程 A 需要将本地内存 A 中的共享变量副本刷新到主内存去</p>
@@ -1523,7 +1523,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 </li>
 </ol>
 <p>步骤示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/JMM%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1.png" alt="JMM线程通信"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/JMM%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1.png" alt="JMM线程通信"></p>
 <p>举个例子：</p>
 <p>本地内存 A 和 B 有主内存共享变量 X 的副本。假设一开始时，这三个内存中 X 的值都是 0。线程 A 正执行时，把更新后的 X 值（假设为 1）临时存放在自己的本地内存 A 中。当线程 A 和 B 需要通信时，线程 A 首先会把自己本地内存 A 中修改后的 X 值刷新到主内存去，此时主内存中的 X 值变为了 1。随后，线程 B 到主内存中读取线程 A 更新后的共享变量 X 的值，此时线程 B 的本地内存的 X 值也变成了 1。</p>
 <p>整体来看，这两个步骤实质上是线程 A 再向线程 B 发送消息，而这个通信过程必须经过主内存。JMM 通过控制主内存与每个线程的本地内存之间的交互，来为 Java 程序员提供内存可见性保证。</p>
@@ -1546,19 +1546,19 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 </li>
 </ol>
 <p>从 Java 源代码到最终实际执行的指令序列，会分别经历下面三种重排序：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F.png" alt="重排序"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F.png" alt="重排序"></p>
 <p>上面的这些重排序都可能导致多线程程序出现内存可见性问题。对于编译器，JMM 的编译器重排序规则会禁止特定类型的编译器重排序（不是所有的编译器重排序都要禁止）。对于处理器重排序，JMM 的处理器重排序规则会要求 Java 编译器在生成指令序列时，插入特定类型的内存屏障指令，通过内存屏障指令来禁止特定类型的处理器重排序（不是所有的处理器重排序都要禁止）。</p>
 <p>JMM 属于语言级的内存模型，它确保在不同的编译器和不同的处理器平台之上，通过禁止特定类型的编译器重排序和处理器重排序，为程序员提供一致的内存可见性保证。</p>
 <h5 id="1-处理器重排序"><a href="#1-处理器重排序" class="headerlink" title="1. 处理器重排序"></a>1. 处理器重排序</h5><p>现代的处理器使用<strong>写缓冲区</strong>来临时保存向内存写入的数据。写缓冲区可以保证指令流水线持续运行，它可以避免由于处理器停顿下来等待向内存写入数据而产生的延迟。同时，通过以批处理的方式刷新写缓冲区，以及合并写缓冲区中对同一内存地址的多次写，可以减少对内存总线的占用。虽然写缓冲区有这么多好处，但每个处理器上的写缓冲区，仅仅对它所在的处理器可见。这个特性会对内存操作的执行顺序产生重要的影响：处理器对内存的读/写操作的执行顺序，不一定与内存实际发生的读/写操作顺序一致！</p>
 <p>举个例子：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E5%A4%84%E7%90%86%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F%E5%AE%9E%E4%BE%8B.png" alt="处理器重排序实例"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E5%A4%84%E7%90%86%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F%E5%AE%9E%E4%BE%8B.png" alt="处理器重排序实例"></p>
 <p>假设处理器A和处理器B按程序的顺序并行执行内存访问，最终却可能得到 x = y = 0。具体的原因如下图所示：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E5%A4%84%E7%90%86%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F.png" alt="处理器重排序"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E5%A4%84%E7%90%86%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F.png" alt="处理器重排序"></p>
 <p>处理器 A 和 B 同时把共享变量写入在写缓冲区中（A1、B1），然后再从内存中读取另一个共享变量（A2、B2），最后才把自己写缓冲区中保存的脏数据刷新到内存中（A3、B3）。当以这种时序执行时，程序就可以得到 x = y = 0 的结果。</p>
 <p>从内存操作实际发生的顺序来看，直到处理器 A 执行 A3 来刷新自己的写缓存区，写操作 A1 才算真正执行了。虽然处理器 A 执行内存操作的顺序为：A1 -&gt; A2，但内存操作实际发生的顺序却是：A2 -&gt; A1。此时，处理器 A 的内存操作顺序被重排序了。</p>
 <p>这里的关键是，由于<strong>写缓冲区仅对自己的处理器可见，它会导致处理器执行内存操作的顺序可能会与内存实际的操作执行顺序不一致</strong>。由于现代的处理器都会使用写缓冲区，因此现代的处理器都会允许对写-读操作重排序。</p>
 <h5 id="2-内存屏障指令"><a href="#2-内存屏障指令" class="headerlink" title="2. 内存屏障指令"></a>2. 内存屏障指令</h5><p>为了保证内存可见性，Java 编译器在生成指令序列的适当位置会插入<strong>内存屏障指令</strong>来禁止特定类型的处理器重排序。JMM 把内存屏障指令分为下列四类：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E5%9B%9B%E7%A7%8D%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C.png" alt="四种内存屏障"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E5%9B%9B%E7%A7%8D%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C.png" alt="四种内存屏障"></p>
 <h5 id="3-happens-before原则"><a href="#3-happens-before原则" class="headerlink" title="3. happens-before原则"></a>3. happens-before原则</h5><p>JSR-133 内存模型使用 happens-before 的概念来阐述操作之间的内存可见性。在 JMM 中，如果<strong>一个操作执行的结果需要对另一个操作可见</strong>，那么这两个操作之间必须要存在 happens-before 关系。这里提到的两个操作既可以是在一个线程之内，也可以是在不同线程之间。</p>
 <p>与程序员密切相关的 happens-before 规则如下：</p>
 <ul>
@@ -1569,7 +1569,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 </ul>
 <p>注意，两个操作之间具有 happens-before 关系，并不意味着前一个操作必须要在后一个操作之前执行！happens-before 仅仅要求前一个操作（执行的结果）对后一个操作可见，且前一个操作按顺序排在第二个操作之前（the first is visible to and ordered before the second）。</p>
 <p>happens-before 与 JMM 的关系如下图所示：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/happens-before.png" alt="happens-before"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/happens-before.png" alt="happens-before"></p>
 <p>如上图所示，一个 happens-before 规则对应于一个或多个编译器和处理器重排序规则。</p>
 <h5 id="4-数据依赖性"><a href="#4-数据依赖性" class="headerlink" title="4. 数据依赖性"></a>4. 数据依赖性</h5><p>如果两个操作访问同一个变量，且这两个操作中有一个为写操作，此时这两个操作之间就存在数据依赖性。数据依赖分下列三种类型：</p>
 <table>
@@ -1606,9 +1606,9 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 2double r  <span class="token operator">=</span> <span class="token number">1.0</span><span class="token punctuation">;</span>       <span class="token comment" spellcheck="true">//B</span>
 3double area <span class="token operator">=</span> pi <span class="token operator">*</span> r <span class="token operator">*</span> r<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//C</span></code></pre>
 <p>上面三个操作的数据依赖关系如下图所示：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%95%B0%E6%8D%AE%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png" alt="数据依赖关系"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%95%B0%E6%8D%AE%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB.png" alt="数据依赖关系"></p>
 <p>如上图所示，A 和 C 之间存在数据依赖关系，同时 B 和 C 之间也存在数据依赖关系。因此在最终执行的指令序列中，C 不能被重排序到 A 和 B 的前面（C 排到 A 和 B 的前面，程序的结果将会被改变）。但 A 和 B 之间没有数据依赖关系，编译器和处理器可以重排序 A 和 B 之间的执行顺序。下图是该程序的两种执行顺序：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%95%B0%E6%8D%AE%E4%BE%9D%E8%B5%96%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png" alt="数据依赖执行顺序"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%95%B0%E6%8D%AE%E4%BE%9D%E8%B5%96%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png" alt="数据依赖执行顺序"></p>
 <p>在计算机中，软件技术和硬件技术有一个共同的目标：在不改变程序执行结果的前提下，尽可能的开发并行度。编译器和处理器遵从这一目标，从 happens-before 的定义我们可以看出，JMM 同样遵从这一目标。</p>
 <h5 id="6-重排序对多线程的影响"><a href="#6-重排序对多线程的影响" class="headerlink" title="6. 重排序对多线程的影响"></a>6. 重排序对多线程的影响</h5><p>举例：</p>
 <pre><code> 1class Demo {
@@ -1628,11 +1628,11 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 15}</code></pre><p>由于操作 1 和 2 没有数据依赖关系，编译器和处理器可以对这两个操作重排序；操作 3 和操作 4 没有数据依赖关系，编译器和处理器也可以对这两个操作重排序。</p>
 <ol>
 <li><p><strong>当操作 1 和操作 2 重排序时，可能会产生什么效果？</strong></p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F%E7%9A%84%E5%BD%B1%E5%93%8D.png%5D" alt="重排序的影响1"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F%E7%9A%84%E5%BD%B1%E5%93%8D.png%5D" alt="重排序的影响1"></p>
 <p>如上图所示，操作 1 和操作 2 做了重排序。程序执行时，线程 A 首先写标记变量 flag，随后线程 B 读这个变量。由于条件判断为真，线程 B 将读取变量 a。此时，变量 a 还根本没有被线程 A 写入，在这里多线程程序的语义被重排序破坏了！</p>
 </li>
 <li><p>当操作 3 和操作 4 重排序时会产生什么效果（借助这个重排序，可以顺便说明控制依赖性）。</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F%E7%9A%84%E5%BD%B1%E5%93%8D2.png" alt="重排序的影响2"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%87%8D%E6%8E%92%E5%BA%8F%E7%9A%84%E5%BD%B1%E5%93%8D2.png" alt="重排序的影响2"></p>
 <p>在程序中，操作 3 和操作 4 存在<strong>控制依赖关系</strong>。当代码中存在控制依赖性时，<strong>会影响指令序列执行的并行度</strong>。为此，编译器和处理器会采用<strong>猜测</strong>（Speculation）执行来克服控制相关性对并行度的影响。以处理器的猜测执行为例，执行线程 B 的处理器可以提前读取并计算 a * a，然后把计算结果临时保存到一个名为重排序缓冲（reorder buffer ROB）的硬件缓存中。当接下来操作 3 的条件判断为真时，就把该计算结果写入变量 i 中。</p>
 <p>从图中我们可以看出，猜测执行实质上对操作3和4做了重排序。重排序在这里破坏了多线程程序的语义！</p>
 <p>在单线程程序中，对存在控制依赖的操作重排序，不会改变执行结果（这也是 as-if-serial 语义允许对存在控制依赖的操作做重排序的原因）；但在多线程程序中，对存在控制依赖的操作重排序，可能会改变程序的执行结果。</p>
@@ -1644,14 +1644,14 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <li>（不管程序是否同步）所有线程都只能看到一个单一的操作执行顺序。在顺序一致性内存模型中，每个操作都必须原子执行且立刻对所有线程可见。</li>
 </ul>
 <p>顺序一致性内存模型为程序员提供的视图如下：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="顺序一致性"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="顺序一致性"></p>
 <p>在概念上，顺序一致性模型有一个单一的全局内存，这个内存通过一个左右摆动的开关可以连接到任意一个线程，同时每一个线程必须按照程序的顺序来执行内存读/写操作。从上面的示意图我们可以看出，在任意时间点最多只能有一个线程可以连接到内存。当多个线程并发执行时，图中的开关装置能把所有线程的所有内存读/写操作串行化。</p>
 <p>举个例子：</p>
 <p>假设有两个线程 A 和 B 并发执行。其中 A 线程有三个操作，它们在程序中的顺序是：A1 -&gt; A2 -&gt; A3。B 线程也有三个操作，它们在程序中的顺序是：B1 -&gt; B2 -&gt; B3。</p>
 <p>假设这两个线程使用监视器锁来正确同步：A 线程的三个操作执行后释放监视器锁，随后 B 线程获取同一个监视器锁。那么程序在顺序一致性模型中的执行效果将如下图所示：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C1.png" alt="执行效果1"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C1.png" alt="执行效果1"></p>
 <p>现在我们再假设这两个线程没有做同步，下面是这个未同步程序在顺序一致性模型中的执行示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C2.png" alt="执行效果2"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C2.png" alt="执行效果2"></p>
 <p>未同步程序在顺序一致性模型中虽然整体执行顺序是无序的，但所有线程都只能看到一个一致的整体执行顺序。以上图为例，线程 A 和 B 看到的执行顺序都是：B1 -&gt; A1 -&gt; A2 -&gt; B2 -&gt; A3 -&gt; B3。之所以能得到这个保证是因为顺序一致性内存模型中的每个操作必须立即对任意线程可见。</p>
 <p>但是，在 JMM 中就没有这个保证。未同步程序在 JMM 中不但整体的执行顺序是无序的，而且所有线程看到的操作执行顺序也可能不一致。比如，在当前线程把写过的数据缓存在本地内存中，在还没有刷新到主内存之前，这个写操作仅对当前线程可见；从其他线程的角度来观察，会认为这个写操作根本还没有被当前线程执行。只有当前线程把本地内存中写过的数据刷新到主内存之后，这个写操作才能对其他线程可见。在这种情况下，当前线程和其它线程看到的操作执行顺序将不一致。</p>
 <h4 id="3-6-2-同步程序的顺序一致性效果"><a href="#3-6-2-同步程序的顺序一致性效果" class="headerlink" title="3.6.2-同步程序的顺序一致性效果"></a>3.6.2-同步程序的顺序一致性效果</h4><p>下面我们对前面的示例程序用锁来同步，看看正确同步的程序如何具有顺序一致性。</p>
@@ -1672,7 +1672,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <span class="token number">14</span>  <span class="token punctuation">}</span>                                        <span class="token comment" spellcheck="true">//释放锁</span>
 <span class="token number">15</span><span class="token punctuation">}</span></code></pre>
 <p>上面示例代码中，假设 A 线程执行 write() 方法后，B 线程执行 reade() 方法。这是一个正确同步的多线程程序。根据JMM规范，该程序的执行结果将与该程序在顺序一致性模型中的执行结果相同。下面是该程序在两个内存模型中的执行时序对比图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F%E5%AF%B9%E6%AF%94%E5%9B%BE.png" alt="执行时序对比图"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F%E5%AF%B9%E6%AF%94%E5%9B%BE.png" alt="执行时序对比图"></p>
 <p>在顺序一致性模型中，所有操作完全按程序的顺序执行。而在 JMM 中，临界区内的代码可以重排序（但 JMM 不允许临界区内的代码“逸出”到临界区之外，那样会破坏监视器的语义）。JMM 会在退出临界区和进入临界区这两个关键时间点做一些特别处理，使得线程在这两个时间点具有与顺序一致性模型相同的内存视图。虽然线程 A 在临界区内做了重排序，但由于监视器的互斥执行的特性，这里的线程 B 根本无法“观察”到线程 A 在临界区内的重排序。这种重排序既提高了执行效率，又没有改变程序的执行结果。</p>
 <p>从这里我们可以看到 JMM 在具体实现上的基本方针：在不改变（正确同步的）程序执行结果的前提下，尽可能的为编译器和处理器的优化打开方便之门。</p>
 <h4 id="3-6-3-未同步程序的执行特性"><a href="#3-6-3-未同步程序的执行特性" class="headerlink" title="3.6.3-未同步程序的执行特性"></a>3.6.3-未同步程序的执行特性</h4><p>未同步程序在 JMM 中的执行时，整体上是无序的，其执行结果无法预知。未同步程序在两个模型中的执行特性有下面几个差异：</p>
@@ -1683,12 +1683,12 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 </ol>
 <p>第三个差异与处理器总线的工作机制密切相关。在计算机中，数据通过总线在处理器和内存之间传递。每次处理器和内存之间的数据传递都是通过<strong>总线事务</strong>来完成的。总线事务包括读事务和写事务。读事务从内存传送数据到处理器，写事务从处理器传递数据到内存，每个事务会读／写内存中一个或多个物理上连续的字。总线会同步试图并发使用总线的事务。在一个处理器执行总线事务期间，总线会禁止其它所有的处理器和 I／O 设备执行内存的读／写。</p>
 <p>总线的工作机制：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%80%BB%E7%BA%BF%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png" alt="总线的工作机制"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%80%BB%E7%BA%BF%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png" alt="总线的工作机制"></p>
 <p>如上图所示，假设处理器 A、B、和 C 同时向总线发起总线事务，这时总线仲裁会对竞争作出裁决，假设总线在仲裁后判定处理器 A 在竞争中获胜（总线仲裁会确保所有处理器都能公平的访问内存）。此时处理器 A 继续它的总线事务，而其它两个处理器则要等待处理器 A 的总线事务完成后才能开始再次执行内存访问。假设在处理器 A 执行总线事务期间（不管这个总线事务是读事务还是写事务），处理器 D 向总线发起了总线事务，此时处理器 D 的这个请求会被总线禁止。</p>
 <p>总线的这些工作机制可以<strong>把所有处理器对内存的访问以串行化的方式来执行</strong>；<strong>在任意时间点，最多只能有一个处理器能访问内存</strong>。这个特性<strong>确保了单个总线事务之中的内存读/写操作具有原子性</strong>。</p>
 <p>在一些 32 位的处理器上，如果要求对 64 位数据的写操作具有原子性，会有比较大的开销。为了照顾这种处理器，Java 语言规范鼓励但不强求 JVM 对 64 位的 long 型变量和 double 型变量的写具有原子性。当 JVM 在这种处理器上运行时，会把一个 64 位 long/ double 型变量的写操作拆分为两个 32 位的写操作来执行。这两个 32 位的写操作可能会被分配到不同的总线事务中执行，此时对这个 64 位变量的写将不具有原子性。</p>
 <p>当单个内存操作不具有原子性，将可能会产生意想不到后果。请看下面示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/%E6%9C%AA%E5%90%8C%E6%AD%A5%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="未同步程序的执行时序图"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%9C%AA%E5%90%8C%E6%AD%A5%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="未同步程序的执行时序图"></p>
 <p>如上图所示，假设处理器 A 写一个 long 型变量，同时处理器 B 要读这个 long 型变量。处理器 A 中 64 位的写操作被拆分为两个 32 位的写操作，且这两个 32 位的写操作被分配到不同的写事务中执行。同时处理器 B 中 64 位的读操作被分配到单个的读事务中执行。当处理器 A 和 B 按上图的时序来执行时，处理器 B 将看到仅仅被处理器 A “写了一半“的无效值。</p>
 <p>注意，在 JSR -133 之前的旧内存模型中，一个 64 位 long/ double 型变量的<strong>读/写</strong>操作可以被拆分为两个 32 位的读/写操作来执行。从 JSR -133 内存模型开始（即从JDK5开始），仅仅只允许把一个 64 位 long/ double 型变量的<strong>写</strong>操作拆分为两个 32 位的写操作来执行，<strong>任意的读操作在JSR -133中都必须具有原子性</strong>（即任意读操作必须要在单个读事务中执行）。</p>
 <h3 id="3-7-Volatile原理"><a href="#3-7-Volatile原理" class="headerlink" title="3.7-Volatile原理"></a>3.7-Volatile原理</h3><h4 id="3-7-1-Volatile-特性"><a href="#3-7-1-Volatile-特性" class="headerlink" title="3.7.1-Volatile 特性"></a>3.7.1-Volatile 特性</h4><p>举个例子：</p>
@@ -1740,7 +1740,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <p>假设上面的程序 flag 变量用 volatile 修饰</p>
 <p>![volatile 写-读](volatile 写-读.png)</p>
 <h4 id="3-7-3-volatile-内存语义的实现"><a href="#3-7-3-volatile-内存语义的实现" class="headerlink" title="3.7.3-volatile 内存语义的实现"></a>3.7.3-volatile 内存语义的实现</h4><p>下面是 JMM 针对编译器制定的 volatile 重排序规则表：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/volatile%E9%87%8D%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99.png" alt="volatile重排序规则"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/volatile%E9%87%8D%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99.png" alt="volatile重排序规则"></p>
 <p>为了实现 volatile 的内存语义，编译器在生成字节码时，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序。</p>
 <p>下面是基于保守策略的 JMM 内存屏障插入策略：</p>
 <ul>
@@ -1750,9 +1750,9 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <li>在每个 volatile 读操作的后面插入一个 LoadStore 屏障。</li>
 </ul>
 <p>下面是保守策略下，volatile 写操作 插入内存屏障后生成的指令序列示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/volatile%E5%86%99%E6%93%8D%E4%BD%9C.png" alt="volatile写操作"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/volatile%E5%86%99%E6%93%8D%E4%BD%9C.png" alt="volatile写操作"></p>
 <p>下面是在保守策略下，volatile 读操作 插入内存屏障后生成的指令序列示意图：</p>
-<p><img src="/2020/03/14/java-duo-xian-cheng-yu-bing-fa/volatile%E8%AF%BB%E6%93%8D%E4%BD%9C.png" alt="volatile读操作"></p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/volatile%E8%AF%BB%E6%93%8D%E4%BD%9C.png" alt="volatile读操作"></p>
 <p>上述 volatile 写操作和 volatile 读操作的内存屏障插入策略非常保守。在实际执行时，只要不改变 volatile 写-读的内存语义，编译器可以根据具体情况省略不必要的屏障。</p>
 <h3 id="3-8-锁"><a href="#3-8-锁" class="headerlink" title="3.8-锁"></a>3.8-锁</h3><h4 id="3-8-1-锁释放和获取的内存语义"><a href="#3-8-1-锁释放和获取的内存语义" class="headerlink" title="3.8.1-锁释放和获取的内存语义"></a>3.8.1-锁释放和获取的内存语义</h4><p>当线程释放锁时，JMM 会把该线程对应的本地内存中的共享变量刷新到主内存中。</p>
 <p>当线程获取锁时，JMM 会把该线程对应的本地内存置为无效。从而使得被监视器保护的临界区代码必须要从主内存中去读取共享变量。</p>
@@ -1777,6 +1777,183 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
 <h4 id="3-9-2-读-final-域的重排序规则"><a href="#3-9-2-读-final-域的重排序规则" class="headerlink" title="3.9.2-读 final 域的重排序规则"></a>3.9.2-读 final 域的重排序规则</h4><p>在一个线程中，初次读对象引用与初次读该对象包含的 final 域，JMM 禁止处理器重排序这两个操作（注意，这个规则仅仅针对处理器）。编译器会在读 final 域操作的前面插入一个 LoadLoad 屏障。</p>
 <h4 id="3-9-3-final-域是引用类型"><a href="#3-9-3-final-域是引用类型" class="headerlink" title="3.9.3-final 域是引用类型"></a>3.9.3-final 域是引用类型</h4><p>对于引用类型，写 final 域的重排序规则对编译器和处理器增加了如下约束：</p>
 <p>在构造函数内对一个 final 引用的对象的成员域的写入，与随后在构造函数外把这个被构造对象的引用赋值给一个引用变量，这两个操作之间不能重排序。</p>
+<h2 id="4-线程池"><a href="#4-线程池" class="headerlink" title="4-线程池"></a>4-线程池</h2><h3 id="4-1-线程池介绍"><a href="#4-1-线程池介绍" class="headerlink" title="4.1-线程池介绍"></a>4.1-线程池介绍</h3><h4 id="4-1-1-为什么要使用线程池"><a href="#4-1-1-为什么要使用线程池" class="headerlink" title="4.1.1-为什么要使用线程池"></a>4.1.1-为什么要使用线程池</h4><p>首先，回顾线程池的相关知识，在 Java 诞生之初是没有线程池的概念的，而是先有线程，随着线程数的不断增加，人们发现需要一个专门的类来管理它们，于是才诞生了线程池。没有线程池的时候，每发布一个任务就需要创建一个新的线程，这样在任务少时是没有问题的，如代码所示。</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/** 
+* 描述：     单个任务的时候，新建线程来执行 
+*/</span> 
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OneTask</span> <span class="token punctuation">{</span> 
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+        Thread thread0 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Task</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread0<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> 
+
+    <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Task</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span> 
+
+        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+           System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Thread Name: "</span> <span class="token operator">+</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span></code></pre>
+<p>在这段代码中，我们发布了一个新的任务并放入子线程中，然后启动子线程执行任务，这时的任务也非常简单，只是打印出当前线程的名字，这种情况下，打印结果显示 Thread Name: Thread-0，即我们当前子线程的默认名字。</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png" alt="任务执行流程1"></p>
+<p>我们来看一下任务执行流程，如图所示，主线程调用 start() 方法，启动了一个 t0 的子线程。这是在一个任务的场景下，随着我们的任务增多，比如现在有 10 个任务了，那么我们就可以使用 for 循环新建 10 个子线程，如代码所示。</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/** 
+* 描述：     for循环新建10个线程 
+*/</span> 
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TenTask</span> <span class="token punctuation">{</span> 
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+            Thread thread <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Task</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            thread<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span> 
+
+    <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Task</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span> 
+
+        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Thread Name: "</span> <span class="token operator">+</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span></code></pre>
+<p>执行结果：</p>
+<pre><code>Thread Name: Thread-1
+Thread Name: Thread-4
+Thread Name: Thread-3
+Thread Name: Thread-2
+Thread Name: Thread-0
+Thread Name: Thread-5
+Thread Name: Thread-6
+Thread Name: Thread-7
+Thread Name: Thread-8
+Thread Name: Thread-9</code></pre><p>这里你会发现，打印出来的顺序是错乱的，比如 Thread-4 打印在了 Thread-3 之前，这是因为，虽然  Thread-3 比  Thread-4 先执行 start 方法，但是这并不代表  Thread-3 就会先运行，运行的顺序取决于线程调度器，有很大的随机性，这是需要我们注意的地方。</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B2.png" alt="任务执行流程2"></p>
+<p>我们再看来下线程的执行流程，如图所示，主线程通过 for 循环创建了 t0~t9 这 10 个子线程，它们都可以正常的执行任务，但如果此时我们的任务量突然飙升到 10000 会怎么样？我们先来看看依然用 for 循环的实现方式：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+    Thread thread <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Task</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    thread<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>如图所示，我们创建了 10000 个子线程，而 Java 程序中的线程与操作系统中的线程是一一对应的，此时假设线程中的任务需要一定的耗时才能够完成，便会产生很大的系统开销与资源浪费。</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B3.png" alt="任务执行流程3"></p>
+<p>创建线程时会产生系统开销，并且每个线程还会占用一定的内存等资源，更重要的是我们创建如此多的线程也会给稳定性带来危害，因为每个系统中，可创建线程的数量是有一个上限的，不可能无限的创建。线程执行完需要被回收，大量的线程又会给垃圾回收带来压力。但我们的任务确实非常多，如果都在主线程串行执行，那效率也太低了，那应该怎么办呢？于是便诞生了线程池来平衡线程与系统资源之间的关系。</p>
+<p>我们来总结下如果每个任务都创建一个线程会带来哪些问题：</p>
+<ul>
+<li>第一点，反复创建线程系统开销比较大，每个线程创建和销毁都需要时间，如果任务比较简单，那么就有可能导致创建和销毁线程消耗的资源比线程执行任务本身消耗的资源还要大。</li>
+<li>第二点，过多的线程会占用过多的内存等资源，还会带来过多的上下文切换，同时还会导致系统不稳定。</li>
+</ul>
+<h4 id="4-1-2-线程池解决问题思路"><a href="#4-1-2-线程池解决问题思路" class="headerlink" title="4.1.2-线程池解决问题思路"></a>4.1.2-线程池解决问题思路</h4><p>针对上面的两点问题，线程池有两个解决思路。</p>
+<p>首先，针对反复创建线程开销大的问题，线程池用一些固定的线程一直保持工作状态并反复执行任务。</p>
+<p>其次，针对过多线程占用太多内存资源的问题，解决思路更直接，线程池会根据需要创建线程，控制线程的总数量，避免占用过多内存资源。</p>
+<blockquote>
+<p>提交一个任务到线程池中，线程池的处理流程如下：</p>
+<ol>
+<li>判断线程池里的核心线程是否都在执行任务，如果不是（核心线程空闲或者还有核心线程没有被创建）则创建一个新的工作线程来执行任务。如果核心线程都在执行任务，则进入下个流程。</li>
+<li>线程池判断工作队列是否已满，如果工作队列没有满，则将新提交的任务存储在这个工作队列里。如果工作队列满了，则进入下个流程。</li>
+<li>判断线程池里的线程是否都处于工作状态，如果没有，则创建一个新的工作线程来执行任务。如果已经满了，则交给饱和策略来处理这个任务。</li>
+</ol>
+</blockquote>
+<h4 id="4-1-3-如何使用线程池"><a href="#4-1-3-如何使用线程池" class="headerlink" title="4.1.3-如何使用线程池"></a>4.1.3-如何使用线程池</h4><p>线程池就好比一个池塘，池塘里的水是有限且可控的，比如我们选择线程数固定数量的线程池，假设线程池有 5 个线程，但此时的任务大于 5 个，线程池会让余下的任务进行排队，而不是无限制的扩张线程数量，保障资源不会被过度消耗。如代码所示，我们往 5 个线程的线程池中放入 10000 个任务并打印当前线程名字，结果会是怎么样呢？</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/** 
+* 描述：     用固定线程数的线程池执行10000个任务 
+*/</span> 
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ThreadPoolDemo</span> <span class="token punctuation">{</span> 
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+        ExecutorService service <span class="token operator">=</span> Executors<span class="token punctuation">.</span><span class="token function">newFixedThreadPool</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+            service<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Task</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> 
+
+    <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Task</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span> 
+
+        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Thread Name: "</span> <span class="token operator">+</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span></code></pre>
+<p>执行效果：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-1</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-2</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-3</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-4</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-2</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-1</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-3</span>
+<span class="token attr-name">Thread</span> <span class="token attr-value">Name: pool-1-thread-5</span>
+
+...</code></pre>
+<p>如打印结果所示，打印的线程名始终在 Thread Name: pool-1-thread-1~5 之间变化，并没有超过这个范围，也就证明了线程池不会无限制地扩张线程的数量，始终是这5个线程在工作。</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png" alt="线程池执行流程"></p>
+<p>执行流程如图所示，首先创建了一个线程池，线程池中有 5 个线程，然后线程池将 10000 个任务分配给这 5 个线程，这 5 个线程反复领取任务并执行，直到所有任务执行完毕，这就是线程池的思想。</p>
+<h4 id="4-1-4-使用线程池的好处"><a href="#4-1-4-使用线程池的好处" class="headerlink" title="4.1.4-使用线程池的好处"></a>4.1.4-使用线程池的好处</h4><p>使用线程池比手动创建线程主要有三点好处。</p>
+<ul>
+<li>第一点，线程池可以解决线程生命周期的系统开销问题，同时还可以加快响应速度。因为线程池中的线程是可以复用的，我们只用少量的线程去执行大量的任务，这就大大减小了线程生命周期的开销。而且线程通常不是等接到任务后再临时创建，而是已经创建好时刻准备执行任务，这样就消除了线程创建所带来的延迟，提升了响应速度，增强了用户体验。</li>
+<li>第二点，线程池可以统筹内存和 CPU 的使用，避免资源使用不当。线程池会根据配置和任务数量灵活地控制线程数量，不够的时候就创建，太多的时候就回收，避免线程过多导致内存溢出，或线程太少导致 CPU 资源浪费，达到了一个完美的平衡。</li>
+<li>第三点，线程池可以统一管理资源。比如线程池可以统一管理任务队列和线程，可以统一开始或结束任务，比单个线程逐一处理任务要更方便、更易于管理，同时也有利于数据统计，比如我们可以很方便地统计出已经执行过的任务的数量。</li>
+</ul>
+<h3 id="4-2-线程池的各个参数的含义？"><a href="#4-2-线程池的各个参数的含义？" class="headerlink" title="4.2-线程池的各个参数的含义？"></a>4.2-线程池的各个参数的含义？</h3><h4 id="4-2-1-线程池的参数"><a href="#4-2-1-线程池的参数" class="headerlink" title="4.2.1-线程池的参数"></a>4.2.1-线程池的参数</h4><p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%8F%82%E6%95%B0.png" alt="线程池的参数"></p>
+<p>首先，我们来看下线程池中各个参数的含义，如表所示线程池主要有 6 个参数，其中第 3 个参数由 keepAliveTime + 时间单位组成。我们逐一看下它们各自的含义，corePoolSize 是核心线程数，也就是常驻线程池的线程数量，与它对应的是 maxPoolSize，表示线程池最大线程数量，当我们的任务特别多而 corePoolSize 核心线程数无法满足需求的时候，就会向线程池中增加线程，以便应对任务突增的情况。</p>
+<h4 id="4-2-2-线程创建的时机"><a href="#4-2-2-线程创建的时机" class="headerlink" title="4.2.2-线程创建的时机"></a>4.2.2-线程创建的时机</h4><p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E7%9A%84%E6%97%B6%E6%9C%BA.png" alt="线程创建的时机"></p>
+<p>接下来，我们来具体看下这两个参数所代表的含义，以及线程池中创建线程的时机。如上图所示，当提交任务后，线程池首先会检查当前线程数，如果此时线程数小于核心线程数，比如最开始线程数量为 0，则新建线程并执行任务，随着任务的不断增加，线程数会逐渐增加并达到核心线程数，此时如果仍有任务被不断提交，就会被放入 workQueue 任务队列中，等待核心线程执行完当前任务后重新从 workQueue 中提取正在等待被执行的任务。</p>
+<p>此时，假设我们的任务特别的多，已经达到了 workQueue 的容量上限，这时线程池就会启动后备力量，也就是 maxPoolSize 最大线程数，线程池会在 corePoolSize 核心线程数的基础上继续创建线程来执行任务，假设任务被不断提交，线程池会持续创建线程直到线程数达到 maxPoolSize 最大线程数，如果依然有任务被提交，这就超过了线程池的最大处理能力，这个时候线程池就会拒绝这些任务，我们可以看到实际上任务进来之后，线程池会逐一判断 corePoolSize 、workQueue 、maxPoolSize ，如果依然不能满足需求，则会拒绝任务。</p>
+<h4 id="4-2-3-corePoolSize-与-maxPoolSize"><a href="#4-2-3-corePoolSize-与-maxPoolSize" class="headerlink" title="4.2.3-corePoolSize 与 maxPoolSize"></a>4.2.3-corePoolSize 与 maxPoolSize</h4><p>通过上面的流程图，我们了解了 corePoolSize 和 maxPoolSize 的具体含义，corePoolSize 指的是核心线程数，线程池初始化时线程数默认为 0，当有新的任务提交后，会创建新线程执行任务，如果不做特殊设置，此后线程数通常不会再小于 corePoolSize ，因为它们是核心线程，即便未来可能没有可执行的任务也不会被销毁。随着任务量的增加，在任务队列满了之后，线程池会进一步创建新线程，最多可以达到 maxPoolSize 来应对任务多的场景，如果未来线程有空闲，大于 corePoolSize 的线程会被合理回收。所以正常情况下，线程池中的线程数量会处在 corePoolSize 与 maxPoolSize 的闭区间内。</p>
+<p><strong>“长工”与“临时工”</strong></p>
+<p>我们可以把 corePoolSize 与 maxPoolSize 比喻成长工与临时工，通常古代一个大户人家会有几个固定的长工，负责日常的工作，而大户人家起初肯定也是从零开始雇佣长工的。假如长工数量被老爷设定为 5 人，也就对应了 corePoolSize，不管这 5 个长工是忙碌还是空闲，都会一直在大户人家待着，可到了农忙或春节，长工的人手显然就不够用了，这时就需要雇佣更多的临时工，这些临时工就相当于在 corePoolSize 的基础上继续创建新线程，但临时工也是有上限的，也就对应了 maxPoolSize，随着农忙或春节结束，老爷考虑到人工成本便会解约掉这些临时工，家里工人数量便会从 maxPoolSize 降到 corePoolSize，所以老爷家的工人数量会一致保持在 corePoolSize 和 maxPoolSize 的区间。</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%22%E9%95%BF%E5%B7%A5%E2%80%9D%E4%B8%8E%E2%80%9C%E4%B8%B4%E6%97%B6%E5%B7%A5%22.gif" alt="“长工”与“临时工”"></p>
+<p>在这里我们用一个动画把整个线程池变化过程生动地描述出来，比如线程池的 corePoolSize 为 5，maxPoolSize 为 10，任务队列容量为 100，随着任务被提交，我们的线程数量会从 0 慢慢增长到 5，然后就不再增长了，新的任务会被放入队列中，直到队列被塞满，然后在 corePoolSize 的基础上继续创建新线程来执行队列中的任务，线程会逐渐增加到 maxPoolSize， 然后线程数不再增加，如果此时仍有任务被不断提交，线程池就会拒绝任务。随着队列中任务被执行完，被创建的 10 个线程现在无事可做了，这时线程池会根据 keepAliveTime 参数来销毁线程，已达到减少内存占用的目的。</p>
+<p>​       </p>
+<p>通过对流程图的理解和动画演示，我们总结出线程池的几个特点。</p>
+<p>线程池希望保持较少的线程数，并且只有在负载变得很大时才增加线程。</p>
+<p>线程池只有在任务队列填满时才创建多于 corePoolSize 的线程，如果使用的是无界队列（例如 LinkedBlockingQueue），那么由于队列不会满，所以线程数不会超过 corePoolSize。</p>
+<p>通过设置 corePoolSize 和 maxPoolSize 为相同的值，就可以创建固定大小的线程池。</p>
+<p>通过设置 maxPoolSize 为很高的值，例如 Integer.MAX_VALUE，就可以允许线程池创建任意多的线程。</p>
+<h4 id="4-2-4-keepAliveTime-时间单位"><a href="#4-2-4-keepAliveTime-时间单位" class="headerlink" title="4.2.4-keepAliveTime+时间单位"></a>4.2.4-keepAliveTime+时间单位</h4><p>第三个参数是 keepAliveTime + 时间单位，当线程池中线程数量多于核心线程数时，而此时又没有任务可做，线程池就会检测线程的 keepAliveTime，如果超过规定的时间，无事可做的线程就会被销毁，以便减少内存的占用和资源消耗。如果后期任务又多了起来，线程池也会根据规则重新创建线程，所以这是一个可伸缩的过程，比较灵活，我们也可以用 setKeepAliveTime 方法动态改变 keepAliveTime 的参数值。</p>
+<h4 id="4-2-5-ThreadFactory"><a href="#4-2-5-ThreadFactory" class="headerlink" title="4.2.5-ThreadFactory"></a>4.2.5-ThreadFactory</h4><p>第四个参数是 ThreadFactory，ThreadFactory 实际上是一个线程工厂，它的作用是生产线程以便执行任务。我们可以选择使用默认的线程工厂，创建的线程都会在同一个线程组，并拥有一样的优先级，且都不是守护线程，我们也可以选择自己定制线程工厂，以方便给线程自定义命名，不同的线程池内的线程通常会根据具体业务来定制不同的线程名。</p>
+<h4 id="4-2-6-workQueue-和-Handler"><a href="#4-2-6-workQueue-和-Handler" class="headerlink" title="4.2.6-workQueue 和 Handler"></a>4.2.6-workQueue 和 Handler</h4><p>最后两个参数是 workQueue 和 Handler，它们分别对应阻塞队列和任务拒绝策略，在后面的课时会对它们进行详细展开讲解。</p>
+<h3 id="4-3-线程池有哪-4-种拒绝策略？"><a href="#4-3-线程池有哪-4-种拒绝策略？" class="headerlink" title="4.3-线程池有哪 4 种拒绝策略？"></a>4.3-线程池有哪 4 种拒绝策略？</h3><h4 id="4-3-1-拒绝时机"><a href="#4-3-1-拒绝时机" class="headerlink" title="4.3.1-拒绝时机"></a>4.3.1-拒绝时机</h4><p>首先，新建线程池时可以指定它的任务拒绝策略，例如：</p>
+<pre class=" language-java"><code class="language-java"><span class="token function">newThreadPoolExecutor</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">LinkedBlockingQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+   <span class="token keyword">new</span> <span class="token class-name">ThreadPoolExecutor<span class="token punctuation">.</span>DiscardOldestPolicy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>以便在必要的时候按照我们的策略来拒绝任务，那么拒绝任务的时机是什么呢？线程池会在以下两种情况下会拒绝新提交的任务。</p>
+<ul>
+<li><p>第一种情况是当我们调用 shutdown 等方法关闭线程池后，即便此时可能线程池内部依然有没执行完的任务正在执行，但是由于线程池已经关闭，此时如果再向线程池内提交任务，就会遭到拒绝。</p>
+</li>
+<li><p>第二种情况是线程池没有能力继续处理新提交的任务，也就是工作已经非常饱和的时候。</p>
+<p>我们具体讲一下第二种情况，也就是由于工作饱和导致的拒绝。比如新建一个线程池，使用容量上限为 10 的 ArrayBlockingQueue 作为任务队列，并且指定线程池的核心线程数为 5，最大线程数为 10，假设此时有 20 个耗时任务被提交，在这种情况下，线程池会首先创建核心数量的线程，也就是5个线程来执行任务，然后往队列里去放任务，队列的 10 个容量被放满了之后，会继续创建新线程，直到达到最大线程数 10。此时线程池中一共有 20 个任务，其中 10 个任务正在被 10 个线程执行，还有 10 个任务在任务队列中等待，而且由于线程池的最大线程数量就是 10，所以已经不能再增加更多的线程来帮忙处理任务了，这就意味着此时线程池工作饱和，这个时候再提交新任务时就会被拒绝。</p>
+</li>
+</ul>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%8B%92%E7%BB%9D%E6%97%B6%E6%9C%BA.png" alt="拒绝时机"></p>
+<p>我们结合图示来分析上述情况，首先看右侧上方的队列部分，你可以看到目前队列已经满了，而图中队列下方的每个线程都在工作，且线程数已经达到最大值 10，如果此时再有新的任务提交，线程池由于没有能力继续处理新提交的任务，所以就会拒绝。</p>
+<p>我们了解了线程池拒绝任务的时机，那么我们如何正确地选择拒绝策略呢？Java 在 ThreadPoolExecutor 类中为我们提供了 4 种默认的拒绝策略来应对不同的场景，都实现了 RejectedExecutionHandler 接口，如图所示：</p>
+<p><img src="/2020/03/29/java-duo-xian-cheng-yu-bing-fa/%E6%8B%92%E7%BB%9D%E7%AD%96%E7%95%A5.png" alt="拒绝策略"></p>
+<h4 id="4-3-2-拒绝策略"><a href="#4-3-2-拒绝策略" class="headerlink" title="4.3.2-拒绝策略"></a>4.3.2-拒绝策略</h4><ul>
+<li>第一种拒绝策略是 AbortPolicy，这种拒绝策略在拒绝任务时，会直接抛出一个类型为 RejectedExecutionException 的 RuntimeException，让你感知到任务被拒绝了，于是你便可以根据业务逻辑选择重试或者放弃提交等策略。</li>
+<li>第二种拒绝策略是 DiscardPolicy，这种拒绝策略正如它的名字所描述的一样，当新任务被提交后直接被丢弃掉，也不会给你任何的通知，相对而言存在一定的风险，因为我们提交的时候根本不知道这个任务会被丢弃，可能造成数据丢失。</li>
+<li>第三种拒绝策略是 DiscardOldestPolicy，如果线程池没被关闭且没有能力执行，则会丢弃任务队列中的头结点，通常是存活时间最长的任务，这种策略与第二种不同之处在于它丢弃的不是最新提交的，而是队列中存活时间最长的，这样就可以腾出空间给新提交的任务，但同理它也存在一定的数据丢失风险。</li>
+<li>第四种拒绝策略是 CallerRunsPolicy，相对而言它就比较完善了，当有新任务提交后，如果线程池没被关闭且没有能力执行，则把这个任务交于提交任务的线程执行，也就是谁提交任务，谁就负责执行任务。这样做主要有两点好处。<ul>
+<li>第一点新提交的任务不会被丢弃，这样也就不会造成业务损失。</li>
+<li>第二点好处是，由于谁提交任务谁就要负责执行任务，这样提交任务的线程就得负责执行任务，而执行任务又是比较耗时的，在这段期间，提交任务的线程被占用，也就不会再提交新的任务，减缓了任务提交的速度，相当于是一个负反馈。在此期间，线程池中的线程也可以充分利用这段时间来执行掉一部分任务，腾出一定的空间，相当于是给了线程池一定的缓冲期。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-4-有哪-6-种常见的线程池？什么是-Java8-的-ForkJoinPool？"><a href="#4-4-有哪-6-种常见的线程池？什么是-Java8-的-ForkJoinPool？" class="headerlink" title="4.4-有哪 6 种常见的线程池？什么是 Java8 的 ForkJoinPool？"></a>4.4-有哪 6 种常见的线程池？什么是 Java8 的 ForkJoinPool？</h3><p>6 种常见的线程池如下。</p>
+<ul>
+<li>FixedThreadPool</li>
+<li>CachedThreadPool</li>
+<li>ScheduledThreadPool</li>
+<li>SingleThreadExecutor</li>
+<li>SingleThreadScheduledExecutor</li>
+<li>ForkJoinPool</li>
+</ul>
+<h4 id="4-4-1-FixedThreadPool"><a href="#4-4-1-FixedThreadPool" class="headerlink" title="4.4.1-FixedThreadPool"></a>4.4.1-FixedThreadPool</h4><p>第一种线程池叫作 FixedThreadPool，它的核心线程数和最大线程数是一样的，所以可以把它看作是固定线程数的线程池，它的特点是线程池中的线程数除了初始阶段需要从 0 开始增加外，之后的线程数量就是固定的，就算任务数超过线程数，线程池也不会再创建更多的线程来处理任务，而是会把超出线程处理能力的任务放到任务队列中进行等待。而且就算任务队列满了，到了本该继续增加线程数的时候，由于它的最大线程数和核心线程数是一样的，所以也无法再增加新的线程了。</p>
 
             </div>
             <hr/>
@@ -1802,7 +1979,7 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2020/03/14/java-duo-xian-cheng-yu-bing-fa/">https://fangpeng12.github.io/2020/03/14/java-duo-xian-cheng-yu-bing-fa/</a>
+                    <a href="https://fangpeng12.github.io/2020/03/29/java-duo-xian-cheng-yu-bing-fa/">https://fangpeng12.github.io/2020/03/29/java-duo-xian-cheng-yu-bing-fa/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -2019,31 +2196,31 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/03/14/mysql/">
+                <a href="/2020/03/30/mian-xiang-dui-xiang-she-ji/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="MySQL">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="面向对象设计">
                         
-                        <span class="card-title">MySQL</span>
+                        <span class="card-title">面向对象设计</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            MySQL基础和详解
+                            面向对象思想详解
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-14
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-30
                         </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/MySQL/" class="post-category">
-                                    MySQL
+                            <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" class="post-category">
+                                    系统设计
                                 </a>
                             
                             
@@ -2053,12 +2230,8 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
-                        <span class="chip bg-color">数据库</span>
-                    </a>
-                    
-                    <a href="/tags/MySQL/">
-                        <span class="chip bg-color">MySQL</span>
+                    <a href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">
+                        <span class="chip bg-color">面向对象</span>
                     </a>
                     
                 </div>
@@ -2072,31 +2245,31 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/03/14/chang-gou-shang-cheng-shi-zhan-liu/">
+                <a href="/2020/03/27/java-han-shu-shi-bian-cheng/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/2.jpg" class="responsive-img" alt="畅购商城实战（六）">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="Java函数式编程">
                         
-                        <span class="card-title">畅购商城实战（六）</span>
+                        <span class="card-title">Java函数式编程</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            畅购商城-SpringCloud微服务项目实战
+                            Java函数式编程入门和使用
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-14
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-27
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" class="post-category">
-                                    项目实战
+                            <a href="/categories/Java/" class="post-category">
+                                    Java
                                 </a>
                             
                             
@@ -2106,16 +2279,12 @@ at lesson6.WrongInit.main(WrongInit.java:32)</code></pre><p>这又是为什么�
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
-                        <span class="chip bg-color">微服务</span>
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
-                    <a href="/tags/SpringCloud/">
-                        <span class="chip bg-color">SpringCloud</span>
-                    </a>
-                    
-                    <a href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">
-                        <span class="chip bg-color">项目实战</span>
+                    <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/">
+                        <span class="chip bg-color">函数式编程</span>
                     </a>
                     
                 </div>
@@ -2302,7 +2471,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">547.2k</span>&nbsp;字
+                class="white-color">563.2k</span>&nbsp;字
             
             
             
