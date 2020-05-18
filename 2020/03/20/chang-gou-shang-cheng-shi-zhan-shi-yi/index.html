@@ -5,7 +5,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="畅购商城实战（十一）, 空白格的博客">
-    <meta name="description" content="畅购商城实战（十一） | 空白格的博客">
+    <meta name="description" content="第11章 订单学习目标
+登录页的配置
+登录成功跳转实现
+结算页查询实现
+下单实现
+变更库存
+增加积分
+支付流程介绍
+微信扫码支付介绍
+
+1 登录页面配置前面使用的都是采用Postman实现登录，接着我们实现一次oauth自定义登录。
+1.1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -464,14 +475,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    6.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    25 分
                 </div>
                 
 				
@@ -487,7 +498,630 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h1 id="第11章-订单"><a href="#第11章-订单" class="headerlink" title="第11章 订单"></a>第11章 订单</h1><h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ul>
+<li>登录页的配置</li>
+<li>登录成功跳转实现</li>
+<li>结算页查询实现</li>
+<li>下单实现</li>
+<li>变更库存</li>
+<li>增加积分</li>
+<li>支付流程介绍</li>
+<li>微信扫码支付介绍</li>
+</ul>
+<h2 id="1-登录页面配置"><a href="#1-登录页面配置" class="headerlink" title="1 登录页面配置"></a>1 登录页面配置</h2><p>前面使用的都是采用Postman实现登录，接着我们实现一次oauth自定义登录。</p>
+<h3 id="1-1-准备工作"><a href="#1-1-准备工作" class="headerlink" title="1.1 准备工作"></a>1.1 准备工作</h3><p>(1)静态资源导入</p>
+<p>将<code>资料/页面/前端</code>登录相关的静态资源导入到changgou-user-oauth中,如下图。</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562915052385.png" alt></p>
+<p>(2)引入thymeleaf</p>
+<p>修改changgou-user-oauth，引入thymeleaf模板引擎</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--thymeleaf--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-thymeleaf<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>(3)登录配置</p>
+<p>修改changgou-user-oauth,编写一个控制器<code>com.changgou.oauth.controller.LoginRedirect</code>，实现登录页跳转，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Controller</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/oauth"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginRedirect</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">/***
+     * 跳转到登录页面
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/login"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> String <span class="token function">login</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">"login"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(4)登录页配置</p>
+<p>针对静态资源和登录页面，我们需要实现忽略安全配置，并且要指定登录页面。修改<code>com.changgou.oauth.config.WebSecurityConfig</code>的2个<code>configure</code>方法，代码如下：</p>
+<p>第1个<code>configure</code>配置:</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562915569036.png" alt></p>
+<p>第2个<code>configure</code>配置：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562915628959.png" alt></p>
+<p>测试</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562915685045.png" alt></p>
+<h3 id="1-2-登录实现"><a href="#1-2-登录实现" class="headerlink" title="1.2 登录实现"></a>1.2 登录实现</h3><p>点击登录按钮，访问之前的登录方法实现登录，我们需要对登录页做一下调整。</p>
+<p>(1)引入thymeleaf命名空间</p>
+<p>修改login.html，引入命名空间</p>
+<p>(2)登录脚本</p>
+<p>点击登录按钮，使用vue+axios实现登录，我们需要定义脚本访问后台登录方法。</p>
+<p>先添加vue入口标签：修改login.html，在73行左右的标签上添加id=”app”,代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562916130104.png" alt></p>
+<p>引入js</p>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/js/vue.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/js/axios.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>登录脚本实现：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562916232437.png" alt></p>
+<p>(3)表单修改</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562916009358.png" alt></p>
+<p>（4）测试</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562916296639.png" alt></p>
+<h3 id="1-3-登录跳转"><a href="#1-3-登录跳转" class="headerlink" title="1.3 登录跳转"></a>1.3 登录跳转</h3><p>用户没有登录的时候，我们直接访问购物车，效果如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1565298003250.png" alt></p>
+<p>我们可以发现，返回的只是个错误状态码，不方便测试，我们可以重定向到登录页面，让用户登录，我们可以修改网关的头文件，让用户每次没登录的时候，都跳转到登录页面。</p>
+<p>修改changgou-gateway-web的<code>com.changgou.filter.AuthorizeFilter</code>，代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1565298291291.png" alt></p>
+<p>此时再测试，就可以跳转到登录页面了。当然，在工作中，这里不能直接跳转到登录页，应该提示状态给页面，让页面根据判断跳转，这里只是为了方便测试。</p>
+<h3 id="1-4-成功登录跳转到原访问页"><a href="#1-4-成功登录跳转到原访问页" class="headerlink" title="1.4 成功登录跳转到原访问页"></a>1.4 成功登录跳转到原访问页</h3><p>上面虽然实现了登录跳转，但登录成功后却并没有返回到要访问的购物车页面，我们可以将用户要访问的页面作为参数传递给登录控制器，登录控制器记录下来，每次登录成功后，再跳转记录访问路劲参数指定的页面即可。</p>
+<p>(1)修改网关携带当前URI</p>
+<p>修改changgou-gateway-web的<code>com.changgou.filter.AuthorizeFilter</code>，在之前的URL后面添加FROM参数以及FROM参数的值为<code>request.getURI()</code>，代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1565298329794.png" alt></p>
+<p>(2)认证服务器获取FROM参数</p>
+<p>修改changgou-user-oauth的<code>com.changgou.oauth.controller.LoginRedirect</code>记录访问来源页，代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562919857116.png" alt></p>
+<p>修改页面，获取来源页信息，并存到from变量中，登录成功后跳转到该地址。</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562919950185.png" alt></p>
+<p>此时再测试，就可以识别未登录用户，跳转到登录页，然后根据登录状态，如果登录成功，则跳转到来源页。</p>
+<h2 id="2-订单结页"><a href="#2-订单结页" class="headerlink" title="2 订单结页"></a>2 订单结页</h2><h3 id="2-1-收件地址分析"><a href="#2-1-收件地址分析" class="headerlink" title="2.1 收件地址分析"></a>2.1 收件地址分析</h3><p>用户从购物车页面点击结算，跳转到订单结算页，结算页需要加载用户对应的收件地址，如下图：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558301821667.png" alt></p>
+<p>表结构分析：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>tb_address<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>id<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'用户名'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>provinceid<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'省'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>cityid<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'市'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>areaid<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'县/区'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>phone<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'电话'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>address<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'详细地址'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>contact<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'联系人'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_default<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'是否是默认 1默认 0否'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>alias<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'别名'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token operator">=</span><span class="token number">66</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8<span class="token punctuation">;</span></code></pre>
+<p>我们可以根据用户登录名去tb_address表中查询对应的数据。</p>
+<h3 id="2-2-实现用户收件地址查询"><a href="#2-2-实现用户收件地址查询" class="headerlink" title="2.2 实现用户收件地址查询"></a>2.2 实现用户收件地址查询</h3><h4 id="2-2-1-代码实现"><a href="#2-2-1-代码实现" class="headerlink" title="2.2.1 代码实现"></a>2.2.1 代码实现</h4><p>(1)业务层</p>
+<p>业务层接口</p>
+<p>修改changgou-service-user微服务，需改com.changgou.user.service.AddressService接口，添加根据用户名字查询用户收件地址信息，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 收件地址查询
+ * @param username
+ * @return
+ */</span>
+List<span class="token operator">&lt;</span>Address<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>业务层接口实现类</p>
+<p>修改changgou-service-user微服务，修改com.changgou.user.service.impl.AddressServiceImpl类，添加根据用户查询用户收件地址信息实现方法，如下代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 收件地址查询
+ * @param username
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> List<span class="token operator">&lt;</span>Address<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Address address <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Address</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    address<span class="token punctuation">.</span><span class="token function">setUsername</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> addressMapper<span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span>address<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(2)控制层</p>
+<p>修改changgou-service-user微服务，修改com.changgou.user.controller.AddressController，添加根据用户名查询用户收件信息方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/****
+ * 用户收件地址
+ */</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/user/list"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>Address<span class="token operator">>></span> <span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取用户登录信息</span>
+    Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> userMap <span class="token operator">=</span> TokenDecode<span class="token punctuation">.</span><span class="token function">getUserInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String username <span class="token operator">=</span> userMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//查询用户收件地址</span>
+    List<span class="token operator">&lt;</span>Address<span class="token operator">></span> addressList <span class="token operator">=</span> addressService<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"查询成功！"</span><span class="token punctuation">,</span>addressList<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="2-2-2-测试"><a href="#2-2-2-测试" class="headerlink" title="2.2.2 测试"></a>2.2.2 测试</h4><p>访问 <a href="http://localhost:8001/api/address/user/list" target="_blank" rel="noopener">http://localhost:8001/api/address/user/list</a></p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1565299241187.png" alt></p>
+<h4 id="2-2-3-运送清单"><a href="#2-2-3-运送清单" class="headerlink" title="2.2.3 运送清单"></a>2.2.3 运送清单</h4><p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558302467737.png" alt></p>
+<p>运送清单其实就是购物车列表，直接查询之前的购物车列表即可，这里不做说明了。</p>
+<h2 id="3-下单"><a href="#3-下单" class="headerlink" title="3 下单"></a>3 下单</h2><h3 id="3-1-业务分析"><a href="#3-1-业务分析" class="headerlink" title="3.1 业务分析"></a>3.1 业务分析</h3><p>点击结算页的时候，会立即创建订单数据，创建订单数据会将数据存入到2张表中，分别是订单表和订单明细表，此处还需要修改商品对应的库存数量。</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558302715038.png" alt></p>
+<p>订单表结构如下：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>tb_order<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>id<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单id'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>total_num<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'数量合计'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>total_money<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'金额合计'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pre_money<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'优惠金额'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>post_fee<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'邮费'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pay_money<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'实付金额'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pay_type<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'支付类型，1、在线支付、0 货到付款'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>create_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单创建时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>update_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单更新时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pay_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'付款时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>consign_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'发货时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>end_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'交易完成时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>close_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'交易关闭时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>shipping_name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'物流名称'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>shipping_code<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'物流单号'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'用户名称'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>buyer_message<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'买家留言'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>buyer_rate<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'是否评价'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>receiver_contact<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'收货人'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>receiver_mobile<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'收货人手机'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>receiver_address<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'收货人地址'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>source_type<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单来源：1:web，2：app，3：微信公众号，4：微信小程序  5 H5手机页面'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>transaction_id<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">30</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'交易流水号'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>order_status<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单状态,0:未完成,1:已完成，2：已退货'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pay_status<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'支付状态,0:未支付，1：已支付，2：支付失败'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>consign_status<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'发货状态,0:未发货，1：已发货，2：已收货'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_delete<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'是否删除'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">KEY</span> <span class="token punctuation">`</span>create_time<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>create_time<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">KEY</span> <span class="token punctuation">`</span><span class="token keyword">status</span><span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>order_status<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">KEY</span> <span class="token punctuation">`</span>payment_type<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>pay_type<span class="token punctuation">`</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8 <span class="token keyword">COLLATE</span><span class="token operator">=</span>utf8_bin<span class="token punctuation">;</span></code></pre>
+<p>订单明细表结构如下：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>tb_order_item<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>id<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'ID'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>category_id1<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'1级分类'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>category_id2<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'2级分类'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>category_id3<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'3级分类'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>spu_id<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'SPU_ID'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>sku_id<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'SKU_ID'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>order_id<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'订单ID'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'商品名称'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>price<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'单价'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>num<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'数量'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>money<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'总金额'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>pay_money<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'实付金额'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>image<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'图片地址'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>weight<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'重量'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>post_fee<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'运费'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_return<span class="token punctuation">`</span> char<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'是否退货,0:未退货，1：已退货'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">KEY</span> <span class="token punctuation">`</span>item_id<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>sku_id<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">KEY</span> <span class="token punctuation">`</span>order_id<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>order_id<span class="token punctuation">`</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8 <span class="token keyword">COLLATE</span><span class="token operator">=</span>utf8_bin<span class="token punctuation">;</span></code></pre>
+<h3 id="3-2-下单实现"><a href="#3-2-下单实现" class="headerlink" title="3.2 下单实现"></a>3.2 下单实现</h3><p>下单的时候，先添加订单往tb_order表中增加数据，再添加订单明细，往tb_order_item表中增加数据。</p>
+<h4 id="3-2-1-代码实现"><a href="#3-2-1-代码实现" class="headerlink" title="3.2.1 代码实现"></a>3.2.1 代码实现</h4><p>这里先修改changgou-service-order微服务，实现下单操作，这里会生成订单号，我们首先需要在启动类中创建一个IdWorker对象。</p>
+<p>在<code>com.changgou.OrderApplication</code>中创建IdWorker，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> IdWorker <span class="token function">idWorker</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">IdWorker</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(1)业务层</p>
+<p>修改changgou-service-order微服务，修改com.changgou.order.service.impl.OrderServiceImpl,代码如下：</p>
+<p>修改订单微服务添加com.changgou.order.service.impl.OrderServiceImpl,代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OrderServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">OrderService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> OrderMapper orderMapper<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> OrderItemMapper orderItemMapper<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> CartService cartService<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> IdWorker idWorker<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> RedisTemplate redisTemplate<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/***
+     * 添加订单
+     * @param order
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">add</span><span class="token punctuation">(</span>Order order<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//查询出用户的所有购物车</span>
+        List<span class="token operator">&lt;</span>OrderItem<span class="token operator">></span> orderItems <span class="token operator">=</span> cartService<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//统计计算</span>
+        <span class="token keyword">int</span> totalMoney <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> totalPayMoney<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> num <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>OrderItem orderItem <span class="token operator">:</span> orderItems<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//总金额</span>
+            totalMoney<span class="token operator">+=</span>orderItem<span class="token punctuation">.</span><span class="token function">getMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment" spellcheck="true">//实际支付金额</span>
+            totalPayMoney<span class="token operator">+=</span>orderItem<span class="token punctuation">.</span><span class="token function">getPayMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//总数量</span>
+            num<span class="token operator">+=</span>orderItem<span class="token punctuation">.</span><span class="token function">getNum</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        order<span class="token punctuation">.</span><span class="token function">setTotalNum</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        order<span class="token punctuation">.</span><span class="token function">setTotalMoney</span><span class="token punctuation">(</span>totalMoney<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        order<span class="token punctuation">.</span><span class="token function">setPayMoney</span><span class="token punctuation">(</span>totalPayMoney<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        order<span class="token punctuation">.</span><span class="token function">setPreMoney</span><span class="token punctuation">(</span>totalMoney<span class="token operator">-</span>totalPayMoney<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//其他数据完善</span>
+        order<span class="token punctuation">.</span><span class="token function">setCreateTime</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        order<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getCreateTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        order<span class="token punctuation">.</span><span class="token function">setBuyerRate</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">//0:未评价，1：已评价</span>
+        order<span class="token punctuation">.</span><span class="token function">setSourceType</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>       <span class="token comment" spellcheck="true">//来源，1：WEB</span>
+        order<span class="token punctuation">.</span><span class="token function">setOrderStatus</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>      <span class="token comment" spellcheck="true">//0:未完成,1:已完成，2：已退货</span>
+        order<span class="token punctuation">.</span><span class="token function">setPayStatus</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">//0:未支付，1：已支付，2：支付失败</span>
+        order<span class="token punctuation">.</span><span class="token function">setConsignStatus</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//0:未发货，1：已发货，2：已收货</span>
+        order<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token string">"NO."</span><span class="token operator">+</span>idWorker<span class="token punctuation">.</span><span class="token function">nextId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> count <span class="token operator">=</span> orderMapper<span class="token punctuation">.</span><span class="token function">insertSelective</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//添加订单明细</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>OrderItem orderItem <span class="token operator">:</span> orderItems<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            orderItem<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token string">"NO."</span><span class="token operator">+</span>idWorker<span class="token punctuation">.</span><span class="token function">nextId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            orderItem<span class="token punctuation">.</span><span class="token function">setIsReturn</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            orderItem<span class="token punctuation">.</span><span class="token function">setOrderId</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            orderItemMapper<span class="token punctuation">.</span><span class="token function">insertSelective</span><span class="token punctuation">(</span>orderItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">//清除Redis缓存购物车数据</span>
+        redisTemplate<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span><span class="token string">"Cart_"</span><span class="token operator">+</span>order<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> count<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(2)控制层</p>
+<p>修改changgou-service-order微服务，修改com.changgou.order.controller.OrderController类，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> TokenDecode tokenDecode<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/***
+ * 新增Order数据
+ * @param order
+ * @return
+ */</span>
+<span class="token annotation punctuation">@PostMapping</span>
+<span class="token keyword">public</span> Result <span class="token function">add</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> Order order<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取用户名</span>
+    Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> userMap <span class="token operator">=</span> tokenDecode<span class="token punctuation">.</span><span class="token function">getUserInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String username <span class="token operator">=</span> userMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//设置购买用户</span>
+    order<span class="token punctuation">.</span><span class="token function">setUsername</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    orderService<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"添加成功"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="3-2-2-测试"><a href="#3-2-2-测试" class="headerlink" title="3.2.2 测试"></a>3.2.2 测试</h4><p>保存订单测试，表数据变化如下：</p>
+<p>tb_order表数据：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558305141933.png" alt></p>
+<p>tb_order_item表数据：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558305178030.png" alt></p>
+<h3 id="3-3-库存变更"><a href="#3-3-库存变更" class="headerlink" title="3.3 库存变更"></a>3.3 库存变更</h3><h4 id="3-3-1-业务分析"><a href="#3-3-1-业务分析" class="headerlink" title="3.3.1 业务分析"></a>3.3.1 业务分析</h4><p>上面操作只实现了下单操作，但对应的库存还没跟着一起减少，我们在下单之后，应该调用商品微服务，将下单的商品库存减少，销量增加。每次订单微服务只需要将用户名传到商品微服务，商品微服务通过用户名到Redis中查询对应的购物车数据，然后执行库存减少，库存减少需要控制当前商品库存&gt;=销售数量。</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558305399244.png" alt></p>
+<p>如何控制库存数量&gt;=销售数量呢？其实可以通过SQL语句实现，每次减少数量的时候，加个条件判断。</p>
+<p><code>where num&gt;=#{num}</code>即可。</p>
+<p>该工程中一会儿需要查询购物车数据，所以需要引入订单的api，在pom.xml中添加如下依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--order api 依赖--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-service-order-api<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h4 id="3-3-2-代码实现"><a href="#3-3-2-代码实现" class="headerlink" title="3.3.2 代码实现"></a>3.3.2 代码实现</h4><p>要调用其他微服务，需要将头文件中的令牌数据携带到其他微服务中取，所以我们不能使用hystrix的多线程模式，修改changgou-service-goods的applicatin.yml配置，代码如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#hystrix 配置</span>
+<span class="token attr-name">hystrix</span><span class="token punctuation">:</span>
+<span class="token attr-name">  command</span><span class="token punctuation">:</span>
+<span class="token attr-name">    default</span><span class="token punctuation">:</span>
+<span class="token attr-name">      execution</span><span class="token punctuation">:</span>
+<span class="token attr-name">        isolation</span><span class="token punctuation">:</span>
+<span class="token attr-name">          thread</span><span class="token punctuation">:</span>
+<span class="token attr-name">            timeoutInMilliseconds</span><span class="token punctuation">:</span> <span class="token attr-value">10000</span>
+<span class="token attr-name">          strategy</span><span class="token punctuation">:</span> <span class="token attr-value">SEMAPHORE</span></code></pre>
+<p>每次还需要使用拦截器添加头文件信息，修改配置类com.changgou.GoodsApplication添加拦截器，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> FeignInterceptor <span class="token function">feignInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">FeignInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(1)Dao层</p>
+<p>修改changgou-service-goods微服务的<code>com.changgou.goods.dao.SkuMapper</code>接口，增加库存递减方法,代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * 递减库存
+ * @param orderItem
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Update</span><span class="token punctuation">(</span><span class="token string">"UPDATE tb_sku SET num=num-#{num},sale_num=sale_num+#{num} WHERE id=#{skuId} AND num>=#{num}"</span><span class="token punctuation">)</span>
+<span class="token keyword">int</span> <span class="token function">decrCount</span><span class="token punctuation">(</span>OrderItem orderItem<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>(2)业务层</p>
+<p>修改changgou-service-goods微服务的<code>com.changgou.goods.service.SkuService</code>接口，添加如下方法：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 库存递减
+ * @param username
+ */</span>
+<span class="token keyword">void</span> <span class="token function">decrCount</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>修改changgou-service-goods微服务的<code>com.changgou.goods.service.impl.SkuServiceImpl</code>实现类，添加一个实现方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> RedisTemplate redisTemplate<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/***
+ * 库存递减
+ * @param username
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">decrCount</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取购物车数据</span>
+    List<span class="token operator">&lt;</span>OrderItem<span class="token operator">></span> orderItems <span class="token operator">=</span> redisTemplate<span class="token punctuation">.</span><span class="token function">boundHashOps</span><span class="token punctuation">(</span><span class="token string">"Cart_"</span> <span class="token operator">+</span> username<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//循环递减</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>OrderItem orderItem <span class="token operator">:</span> orderItems<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//递减库存</span>
+        <span class="token keyword">int</span> count <span class="token operator">=</span> skuMapper<span class="token punctuation">.</span><span class="token function">decrCount</span><span class="token punctuation">(</span>orderItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>count<span class="token operator">&lt;=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span><span class="token string">"库存不足，递减失败！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(3)控制层</p>
+<p>修改changgou-service-goods的<code>com.changgou.goods.controller.SkuController</code>类，添加库存递减方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 库存递减
+ * @param username
+ * @return
+ */</span>
+<span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/decr/count"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">decrCount</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//库存递减</span>
+    skuService<span class="token punctuation">.</span><span class="token function">decrCount</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"库存递减成功！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(4)创建feign</p>
+<p>同时在changgou-service-goods-api工程添加<code>com.changgou.goods.feign.SkuFeign</code>的实现，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 库存递减
+ * @param username
+ * @return
+ */</span>
+<span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/decr/count"</span><span class="token punctuation">)</span>
+Result <span class="token function">decrCount</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"username"</span><span class="token punctuation">)</span> String username<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="3-3-3-调用库存递减"><a href="#3-3-3-调用库存递减" class="headerlink" title="3.3.3  调用库存递减"></a>3.3.3  调用库存递减</h4><p>修改changgou-service-order微服务的com.changgou.order.service.impl.OrderServiceImpl类的add方法，增加库存递减的调用。</p>
+<p>先注入SkuFeign</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> SkuFeign skuFeign<span class="token punctuation">;</span></code></pre>
+<p>再调用库存递减方法</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">//库存减库存</span>
+skuFeign<span class="token punctuation">.</span><span class="token function">decrCount</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>完整代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562934989293.png" alt></p>
+<h4 id="3-3-4-测试"><a href="#3-3-4-测试" class="headerlink" title="3.3.4 测试"></a>3.3.4 测试</h4><p>库存减少前，查询数据库Sku数据如下：个数98，销量0</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558304696063.png" alt></p>
+<p>使用Postman执行 <a href="http://localhost:18081/api/order/add" target="_blank" rel="noopener">http://localhost:18081/api/order/add</a> </p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558305086257.png" alt></p>
+<p>执行测试后，剩余库存97，销量1</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558304731338.png" alt></p>
+<h3 id="3-4-增加积分"><a href="#3-4-增加积分" class="headerlink" title="3.4 增加积分"></a>3.4 增加积分</h3><p>比如每次下单完成之后，给用户增加10个积分，支付完成后赠送优惠券，优惠券可用于支付时再次抵扣。我们先完成增加积分功能。如下表：points表示用户积分</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>tb_user<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+  <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'用户名'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>password<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'密码，加密存储'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>phone<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'注册手机号'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>email<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'注册邮箱'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>created<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'创建时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>updated<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'修改时间'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>source_type<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'会员来源：1:PC，2：H5，3：Android，4：IOS'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>nick_name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'昵称'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>name<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'真实姓名'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span><span class="token keyword">status</span><span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'使用状态（1正常 0非正常）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>head_pic<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">150</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'头像地址'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>qq<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'QQ号码'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_mobile_check<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'0'</span> <span class="token keyword">COMMENT</span> <span class="token string">'手机是否验证 （0否  1是）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>is_email_check<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'0'</span> <span class="token keyword">COMMENT</span> <span class="token string">'邮箱是否检测（0否  1是）'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>sex<span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'1'</span> <span class="token keyword">COMMENT</span> <span class="token string">'性别，1男，0女'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>user_level<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'会员等级'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>points<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'积分'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>experience_value<span class="token punctuation">`</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'经验值'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>birthday<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'出生年月日'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>last_login_time<span class="token punctuation">`</span> <span class="token keyword">datetime</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'最后登录时间'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>username<span class="token punctuation">`</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">UNIQUE</span> <span class="token keyword">KEY</span> <span class="token punctuation">`</span>username<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>username<span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">USING</span> <span class="token keyword">BTREE</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8 <span class="token keyword">COMMENT</span><span class="token operator">=</span><span class="token string">'用户表'</span><span class="token punctuation">;</span></code></pre>
+<h4 id="3-4-1-代码实现"><a href="#3-4-1-代码实现" class="headerlink" title="3.4.1 代码实现"></a>3.4.1 代码实现</h4><p>(1)dao层</p>
+<p>修改changgou-service-user微服务的<code>com.changgou.user.dao.UserMapper</code>接口，增加用户积分方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 增加用户积分
+ * @param username
+ * @param pint
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Update</span><span class="token punctuation">(</span><span class="token string">"UPDATE tb_user SET points=points+#{point} WHERE  username=#{username}"</span><span class="token punctuation">)</span>
+<span class="token keyword">int</span> <span class="token function">addUserPoints</span><span class="token punctuation">(</span><span class="token annotation punctuation">@Param</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span> String username<span class="token punctuation">,</span> <span class="token annotation punctuation">@Param</span><span class="token punctuation">(</span><span class="token string">"point"</span><span class="token punctuation">)</span> Integer pint<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>(2)业务层</p>
+<p>修改changgou-service-user微服务的<code>com.changgou.user.service.UserService</code>接口，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 添加用户积分
+ * @param username
+ * @param pint
+ * @return
+ */</span>
+<span class="token keyword">int</span> <span class="token function">addUserPoints</span><span class="token punctuation">(</span>String username<span class="token punctuation">,</span>Integer pint<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>修改changgou-service-user微服务的<code>com.changgou.user.service.impl.UserServiceImpl</code>，增加添加积分方法实现，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 修改用户积分
+ * @param username
+ * @param pint
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">addUserPoints</span><span class="token punctuation">(</span>String username<span class="token punctuation">,</span> Integer pint<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> userMapper<span class="token punctuation">.</span><span class="token function">addUserPoints</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span>pint<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(3)控制层</p>
+<p>修改changgou-service-user微服务的<code>com.changgou.user.controller.UserController</code>，添加增加用户积分方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> TokenDecode tokenDecode<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/***
+ * 增加用户积分
+ * @param points:要添加的积分
+ */</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/points/add"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">addPoints</span><span class="token punctuation">(</span>Integer points<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取用户名</span>
+    Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> userMap <span class="token operator">=</span> tokenDecode<span class="token punctuation">.</span><span class="token function">getUserInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String username <span class="token operator">=</span> userMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//添加积分</span>
+    userService<span class="token punctuation">.</span><span class="token function">addUserPoints</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span>points<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"添加积分成功！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(4)Feign添加</p>
+<p>修改changgou-service-user-api工程，修改<code>com.changgou.user.feign.UserFeign</code>，添加增加用户积分方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 添加用户积分
+ * @param points
+ * @return
+ */</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/points/add"</span><span class="token punctuation">)</span>
+Result <span class="token function">addPoints</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"points"</span><span class="token punctuation">)</span>Integer points<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h4 id="3-4-2-增加积分调用"><a href="#3-4-2-增加积分调用" class="headerlink" title="3.4.2 增加积分调用"></a>3.4.2 增加积分调用</h4><p>修改changgou-service-order，添加changgou-service-user-api的依赖，修改pom.xml,添加如下依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--user api 依赖--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.changgou<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>changgou-service-user-api<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.0-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>在增加订单的时候，同时添加用户积分，修改changgou-service-order微服务的<code>com.changgou.order.service.impl.OrderServiceImpl</code>下单方法，增加调用添加积分方法，代码如下：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562936344817.png" alt></p>
+<p>修改changgou-service-order的启动类<code>com.changgou.OrderApplication</code>，添加feign的包路径：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1562938889771.png" alt></p>
+<h2 id="4-支付流程分析"><a href="#4-支付流程分析" class="headerlink" title="4 支付流程分析"></a>4 支付流程分析</h2><h3 id="4-1-订单支付分析"><a href="#4-1-订单支付分析" class="headerlink" title="4.1 订单支付分析"></a>4.1 订单支付分析</h3><p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558490059984.png" alt></p>
+<p>如上图，步骤分析如下：</p>
+<pre class=" language-properties"><code class="language-properties">1.用户下单之后，订单数据会存入到MySQL中，同时会将订单对应的支付日志存入到Redis，以队列的方式存储。
+2.用户下单后，进入支付页面，支付页面调用支付系统，从微信支付获取二维码数据，并在页面生成支付二维码。
+3.用户扫码支付后，微信支付服务器会通调用前预留的回调地址，并携带支付状态信息。
+4.支付系统接到支付状态信息后，将支付状态信息发送给RabbitMQ
+5.订单系统监听RabbitMQ中的消息获取支付状态，并根据支付状态修改订单状态
+6.为了防止网络问题导致notifyurl没有接到对应数据，定时任务定时获取Redis中队列数据去微信支付接口查询状态，并定时更新对应状态。</code></pre>
+<h3 id="4-2-二维码创建-了解"><a href="#4-2-二维码创建-了解" class="headerlink" title="4.2 二维码创建(了解)"></a>4.2 二维码创建(了解)</h3><p>今天主要讲微信支付，后面为了看到效果，我们简单说下利用qrious制作二维码插件。</p>
+<p>qrious是一款基于HTML5 Canvas的纯JS二维码生成插件。通过qrious.js可以快速生成各种二维码，你可以控制二维码的尺寸颜色，还可以将生成的二维码进行Base64编码。</p>
+<p>qrious.js二维码插件的可用配置参数如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>background</td>
+<td>String</td>
+<td>“white”</td>
+<td>二维码的背景颜色。</td>
+</tr>
+<tr>
+<td>foreground</td>
+<td>String</td>
+<td>“black”</td>
+<td>二维码的前景颜色。</td>
+</tr>
+<tr>
+<td>level</td>
+<td>String</td>
+<td>“L”</td>
+<td>二维码的误差校正级别(L, M, Q, H)。</td>
+</tr>
+<tr>
+<td>mime</td>
+<td>String</td>
+<td>“image/png”</td>
+<td>二维码输出为图片时的MIME类型。</td>
+</tr>
+<tr>
+<td>size</td>
+<td>Number</td>
+<td>100</td>
+<td>二维码的尺寸，单位像素。</td>
+</tr>
+<tr>
+<td>value</td>
+<td>String</td>
+<td>“”</td>
+<td>需要编码为二维码的值</td>
+</tr>
+</tbody></table>
+<p>下面的代码即可生成一张二维码</p>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>二维码入门小demo<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>qrious<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>qrious.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script language-javascript">
+ <span class="token keyword">var</span> qr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">QRious</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        element<span class="token punctuation">:</span>document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'qrious'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        size<span class="token punctuation">:</span><span class="token number">250</span><span class="token punctuation">,</span>        
+         level<span class="token punctuation">:</span><span class="token string">'H'</span><span class="token punctuation">,</span>       
+         value<span class="token punctuation">:</span><span class="token string">'http://www.itheima.com'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></code></pre>
+<p>运行效果：</p>
+<p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1549706445665.png" alt></p>
+<p>大家掏出手机，扫一下看看是否会看到黑马的官网呢？</p>
+<h2 id="5-微信扫码支付简介"><a href="#5-微信扫码支付简介" class="headerlink" title="5 微信扫码支付简介"></a>5 微信扫码支付简介</h2><h3 id="5-1微信扫码支付申请"><a href="#5-1微信扫码支付申请" class="headerlink" title="5.1微信扫码支付申请"></a>5.1微信扫码支付申请</h3><p>微信扫码支付是商户系统按微信支付协议生成支付二维码，用户再用微信“扫一扫”完成支付的模式。该模式适用于PC网站支付、实体店单品或订单支付、媒体广告支付等场景。</p>
+<p>申请步骤：（了解）</p>
+<p><strong>第一步：注册公众号（类型须为：服务号）</strong></p>
+<p>请根据营业执照类型选择以下主体注册：<a href="http://kf.qq.com/faq/120911VrYVrA151009JB3i2Q.html" target="_blank" rel="noopener">个体工商户</a>| <a href="http://kf.qq.com/faq/120911VrYVrA151013MfYvYV.html" target="_blank" rel="noopener">企业/公司</a>| <a href="http://kf.qq.com/faq/161220eaAJjE161220IJn6zU.html" target="_blank" rel="noopener">政府</a>| <a href="http://kf.qq.com/faq/161220IFBJFv161220YnqAbQ.html" target="_blank" rel="noopener">媒体</a>| <a href="http://kf.qq.com/faq/120911VrYVrA151013nYFZ7Z.html" target="_blank" rel="noopener">其他类型</a>。</p>
+<p><strong>第二步：认证公众号</strong></p>
+<p>公众号认证后才可申请微信支付，认证费：300元/次。</p>
+<p><strong>第三步：提交资料申请微信支付</strong></p>
+<p>登录公众平台，点击左侧菜单【微信支付】，开始填写资料等待审核，审核时间为1-5个工作日内。</p>
+<p><strong>第四步：开户成功，登录商户平台进行验证</strong></p>
+<p>资料审核通过后，请登录联系人邮箱查收商户号和密码，并登录商户平台填写财付通备付金打的小额资金数额，完成账户验证。</p>
+<p><strong>第五步：在线签署协议</strong></p>
+<p>本协议为线上电子协议，签署后方可进行交易及资金结算，签署完立即生效。</p>
+<p>本课程已经提供好“传智播客”的微信支付账号，学员无需申请。</p>
+<h3 id="5-2-开发文档"><a href="#5-2-开发文档" class="headerlink" title="5.2 开发文档"></a>5.2 开发文档</h3><p>微信支付接口调用的整体思路：</p>
+<p>按API要求组装参数，以XML方式发送（POST）给微信支付接口（URL）,微信支付接口也是以XML方式给予响应。程序根据返回的结果（其中包括支付URL）生成二维码或判断订单状态。</p>
+<p>在线微信支付开发文档：</p>
+<p><a href="https://pay.weixin.qq.com/wiki/doc/api/index.html" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/index.html</a></p>
+<p>如果你不能联网，请查阅讲义配套资源 （资源\配套软件\微信扫码支付\开发文档）</p>
+<p>我们在本章课程中会用到”统一下单”和”查询订单”两组API  </p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">1.</span> <span class="token attr-value">appid：微信公众账号或开放平台APP的唯一标识</span>
+<span class="token attr-name">2.</span> <span class="token attr-value">mch_id：商户号  (配置文件中的partner)</span>
+<span class="token attr-name">3.</span> <span class="token attr-value">partnerkey：商户密钥</span>
+<span class="token attr-name">4.</span> <span class="token attr-value">sign:数字签名, 根据微信官方提供的密钥和一套算法生成的一个加密信息, 就是为了保证交易的安全性</span></code></pre>
+<h3 id="5-3-微信支付模式介绍"><a href="#5-3-微信支付模式介绍" class="headerlink" title="5.3 微信支付模式介绍"></a>5.3 微信支付模式介绍</h3><h4 id="5-3-1-模式一"><a href="#5-3-1-模式一" class="headerlink" title="5.3.1 模式一"></a>5.3.1 模式一</h4><p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558448158371.png" alt></p>
+<p>业务流程说明：</p>
+<pre class=" language-properties"><code class="language-properties">1.商户后台系统根据微信支付规定格式生成二维码（规则见下文），展示给用户扫码。
+2.用户打开微信“扫一扫”扫描二维码，微信客户端将扫码内容发送到微信支付系统。
+3.微信支付系统收到客户端请求，发起对商户后台系统支付回调URL的调用。调用请求将带productid和用户的openid等参数，并要求商户系统返回交数据包,详细请见"本节3.1回调数据输入参数"
+4.商户后台系统收到微信支付系统的回调请求，根据productid生成商户系统的订单。
+5.商户系统调用微信支付【统一下单API】请求下单，获取交易会话标识（prepay_id）
+6.微信支付系统根据商户系统的请求生成预支付交易，并返回交易会话标识（prepay_id）。
+7.商户后台系统得到交易会话标识prepay_id（2小时内有效）。
+8.商户后台系统将prepay_id返回给微信支付系统。返回数据见"本节3.2回调数据输出参数"
+9.微信支付系统根据交易会话标识，发起用户端授权支付流程。
+10.用户在微信客户端输入密码，确认支付后，微信客户端提交支付授权。
+11.微信支付系统验证后扣款，完成支付交易。
+12.微信支付系统完成支付交易后给微信客户端返回交易结果，并将交易结果通过短信、微信消息提示用户。微信客户端展示支付交易结果页面。
+13.微信支付系统通过发送异步消息通知商户后台系统支付结果。商户后台系统需回复接收情况，通知微信后台系统不再发送该单的支付通知。
+14.未收到支付通知的情况，商户后台系统调用【查询订单API】。
+15.商户确认订单已支付后给用户发货。</code></pre>
+<h4 id="5-3-2-模式二"><a href="#5-3-2-模式二" class="headerlink" title="5.3.2 模式二"></a>5.3.2 模式二</h4><p><img src="/2020/03/20/chang-gou-shang-cheng-shi-zhan-shi-yi/1558448510488.png" alt></p>
+<p>业务流程说明：</p>
+<pre class=" language-properties"><code class="language-properties">1.商户后台系统根据用户选购的商品生成订单。
+2.用户确认支付后调用微信支付【统一下单API】生成预支付交易；
+3.微信支付系统收到请求后生成预支付交易单，并返回交易会话的二维码链接code_url。
+4.商户后台系统根据返回的code_url生成二维码。
+5.用户打开微信“扫一扫”扫描二维码，微信客户端将扫码内容发送到微信支付系统。
+6.微信支付系统收到客户端请求，验证链接有效性后发起用户支付，要求用户授权。
+7.用户在微信客户端输入密码，确认支付后，微信客户端提交授权。
+8.微信支付系统根据用户授权完成支付交易。
+9.微信支付系统完成支付交易后给微信客户端返回交易结果，并将交易结果通过短信、微信消息提示用户。微信客户端展示支付交易结果页面。
+10.微信支付系统通过发送异步消息通知商户后台系统支付结果。商户后台系统需回复接收情况，通知微信后台系统不再发送该单的支付通知。
+11.未收到支付通知的情况，商户后台系统调用【查询订单API】。
+12.商户确认订单已支付后给用户发货。</code></pre>
+
             </div>
             <hr/>
 
@@ -1016,7 +1650,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">581k</span>&nbsp;字
+                class="white-color">587.1k</span>&nbsp;字
             
             
             
