@@ -5,7 +5,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="畅购商城实战（十二）, 空白格的博客">
-    <meta name="description" content="畅购商城实战（十二） | 空白格的博客">
+    <meta name="description" content="第12章 微信支付学习目标
+能够说出微信支付开发的整体思路
+
+生成支付二维码
+
+查询支付状态
+
+实现支付日志的生成与订单状态的修改、删除订单
+
+支付状态回查
+
+MQ处理支付回调状态
+
+定时处理订单状态
+
+
+1 开发准备1.1 开发文档微信支">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -464,14 +480,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    5.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    24 分
                 </div>
                 
 				
@@ -487,7 +503,849 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <h1 id="第12章-微信支付"><a href="#第12章-微信支付" class="headerlink" title="第12章 微信支付"></a>第12章 微信支付</h1><h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ul>
+<li><p>能够说出微信支付开发的整体思路</p>
+</li>
+<li><p>生成支付二维码</p>
+</li>
+<li><p>查询支付状态</p>
+</li>
+<li><p>实现支付日志的生成与订单状态的修改、删除订单</p>
+</li>
+<li><p>支付状态回查</p>
+</li>
+<li><p>MQ处理支付回调状态</p>
+</li>
+<li><p>定时处理订单状态</p>
+</li>
+</ul>
+<h2 id="1-开发准备"><a href="#1-开发准备" class="headerlink" title="1 开发准备"></a>1 开发准备</h2><h3 id="1-1-开发文档"><a href="#1-1-开发文档" class="headerlink" title="1.1 开发文档"></a>1.1 开发文档</h3><p>微信支付接口调用的整体思路：</p>
+<p>按API要求组装参数，以XML方式发送（POST）给微信支付接口（URL）,微信支付接口也是以XML方式给予响应。程序根据返回的结果（其中包括支付URL）生成二维码或判断订单状态。</p>
+<p>在线微信支付开发文档：</p>
+<p><a href="https://pay.weixin.qq.com/wiki/doc/api/index.html" target="_blank" rel="noopener">https://pay.weixin.qq.com/wiki/doc/api/index.html</a></p>
+<p>如果你不能联网，请查阅讲义配套资源 （资源\配套软件\微信扫码支付\开发文档）</p>
+<p>我们在本章课程中会用到”统一下单”和”查询订单”两组API  </p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">1.</span> <span class="token attr-value">appid：微信公众账号或开放平台APP的唯一标识</span>
+<span class="token attr-name">2.</span> <span class="token attr-value">mch_id：商户号  (配置文件中的partner)</span>
+<span class="token attr-name">3.</span> <span class="token attr-value">partnerkey：商户密钥</span>
+<span class="token attr-name">4.</span> <span class="token attr-value">sign:数字签名, 根据微信官方提供的密钥和一套算法生成的一个加密信息, 就是为了保证交易的安全性</span></code></pre>
+<h3 id="1-2-微信支付模式回顾"><a href="#1-2-微信支付模式回顾" class="headerlink" title="1.2 微信支付模式回顾"></a>1.2 微信支付模式回顾</h3><p><strong>模式二</strong></p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558448510488.png" alt></p>
+<p>业务流程说明：</p>
+<pre class=" language-properties"><code class="language-properties">1.商户后台系统根据用户选购的商品生成订单。
+2.用户确认支付后调用微信支付【统一下单API】生成预支付交易；
+3.微信支付系统收到请求后生成预支付交易单，并返回交易会话的二维码链接code_url。
+4.商户后台系统根据返回的code_url生成二维码。
+5.用户打开微信“扫一扫”扫描二维码，微信客户端将扫码内容发送到微信支付系统。
+6.微信支付系统收到客户端请求，验证链接有效性后发起用户支付，要求用户授权。
+7.用户在微信客户端输入密码，确认支付后，微信客户端提交授权。
+8.微信支付系统根据用户授权完成支付交易。
+9.微信支付系统完成支付交易后给微信客户端返回交易结果，并将交易结果通过短信、微信消息提示用户。微信客户端展示支付交易结果页面。
+10.微信支付系统通过发送异步消息通知商户后台系统支付结果。商户后台系统需回复接收情况，通知微信后台系统不再发送该单的支付通知。
+11.未收到支付通知的情况，商户后台系统调用【查询订单API】。
+12.商户确认订单已支付后给用户发货。</code></pre>
+<h3 id="1-3-微信支付SDK"><a href="#1-3-微信支付SDK" class="headerlink" title="1.3 微信支付SDK"></a>1.3 微信支付SDK</h3><p>微信支付提供了SDK, 大家下载后打开源码，install到本地仓库。</p>
+<p>使用微信支付SDK,在maven工程中引入依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--微信支付--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.github.wxpay<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>wxpay-sdk<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>0.0.3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>我们主要会用到微信支付SDK的以下功能：</p>
+<p>获取随机字符串</p>
+<pre class=" language-java"><code class="language-java">WXPayUtil<span class="token punctuation">.</span><span class="token function">generateNonceStr</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>MAP转换为XML字符串（自动添加签名）</p>
+<pre class=" language-java"><code class="language-java"> WXPayUtil<span class="token punctuation">.</span><span class="token function">generateSignedXml</span><span class="token punctuation">(</span>param<span class="token punctuation">,</span> partnerkey<span class="token punctuation">)</span></code></pre>
+<p>XML字符串转换为MAP</p>
+<pre class=" language-java"><code class="language-java">WXPayUtil<span class="token punctuation">.</span><span class="token function">xmlToMap</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span></code></pre>
+<p>为了方便微信支付开发，我们可以在<code>changgou-common</code>工程下引入依赖</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--微信支付--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.github.wxpay<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>wxpay-sdk<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>0.0.3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h3 id="1-4-HttpClient工具类"><a href="#1-4-HttpClient工具类" class="headerlink" title="1.4 HttpClient工具类"></a>1.4 HttpClient工具类</h3><p>HttpClient是Apache Jakarta Common下的子项目，用来提供高效的、最新的、功能丰富的支持HTTP协议的客户端编程工具包，并且它支持HTTP协议最新的版本和建议。HttpClient已经应用在很多的项目中，比如Apache Jakarta上很著名的另外两个开源项目Cactus和HTMLUnit都使用了HttpClient。</p>
+<p>HttpClient通俗的讲就是模拟了浏览器的行为，如果我们需要在后端向某一地址提交数据获取结果，就可以使用HttpClient.</p>
+<p>关于HttpClient（原生）具体的使用不属于我们本章的学习内容，我们这里这里为了简化HttpClient的使用，提供了工具类HttpClient（对原生HttpClient进行了封装）</p>
+<p>HttpClient工具类代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HttpClient</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> String url<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> param<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> statusCode<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String content<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String xmlParam<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">boolean</span> isHttps<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isHttps</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> isHttps<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setHttps</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> isHttps<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>isHttps <span class="token operator">=</span> isHttps<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> String <span class="token function">getXmlParam</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> xmlParam<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setXmlParam</span><span class="token punctuation">(</span>String xmlParam<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>xmlParam <span class="token operator">=</span> xmlParam<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token function">HttpClient</span><span class="token punctuation">(</span>String url<span class="token punctuation">,</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> param<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>url <span class="token operator">=</span> url<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>param <span class="token operator">=</span> param<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token function">HttpClient</span><span class="token punctuation">(</span>String url<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>url <span class="token operator">=</span> url<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setParameter</span><span class="token punctuation">(</span>Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> map<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        param <span class="token operator">=</span> map<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addParameter</span><span class="token punctuation">(</span>String key<span class="token punctuation">,</span> String value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>param <span class="token operator">==</span> null<span class="token punctuation">)</span>
+            param <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">post</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ClientProtocolException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
+        HttpPost http <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpPost</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">setEntity</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">execute</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">put</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ClientProtocolException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
+        HttpPut http <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpPut</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">setEntity</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">execute</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ClientProtocolException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>param <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            StringBuilder url <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">boolean</span> isFirst <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span>String key <span class="token operator">:</span> param<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>isFirst<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    url<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"?"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+                    url<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"&amp;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                url<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"="</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>param<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span>url <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        HttpGet http <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpGet</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">execute</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * set http post,put param
+     */</span>
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">setEntity</span><span class="token punctuation">(</span>HttpEntityEnclosingRequestBase http<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>param <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            List<span class="token operator">&lt;</span>NameValuePair<span class="token operator">></span> nvps <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedList</span><span class="token operator">&lt;</span>NameValuePair<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span>String key <span class="token operator">:</span> param<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                nvps<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">BasicNameValuePair</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> param<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 参数</span>
+            <span class="token punctuation">}</span>
+            http<span class="token punctuation">.</span><span class="token function">setEntity</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">UrlEncodedFormEntity</span><span class="token punctuation">(</span>nvps<span class="token punctuation">,</span> Consts<span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 设置参数</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>xmlParam <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            http<span class="token punctuation">.</span><span class="token function">setEntity</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StringEntity</span><span class="token punctuation">(</span>xmlParam<span class="token punctuation">,</span> Consts<span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">execute</span><span class="token punctuation">(</span>HttpUriRequest http<span class="token punctuation">)</span> <span class="token keyword">throws</span> ClientProtocolException<span class="token punctuation">,</span>
+            IOException <span class="token punctuation">{</span>
+        CloseableHttpClient httpClient <span class="token operator">=</span> null<span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>isHttps<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                SSLContext sslContext <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SSLContextBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">loadTrustMaterial</span><span class="token punctuation">(</span>null<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TrustStrategy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            <span class="token comment" spellcheck="true">// 信任所有</span>
+                            <span class="token annotation punctuation">@Override</span>
+                            <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isTrusted</span><span class="token punctuation">(</span>X509Certificate<span class="token punctuation">[</span><span class="token punctuation">]</span> chain<span class="token punctuation">,</span>
+                                                     String authType<span class="token punctuation">)</span>
+                                    <span class="token keyword">throws</span> CertificateException <span class="token punctuation">{</span>
+                                <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                            <span class="token punctuation">}</span>
+                        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SSLConnectionSocketFactory sslsf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SSLConnectionSocketFactory</span><span class="token punctuation">(</span>
+                        sslContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                httpClient <span class="token operator">=</span> HttpClients<span class="token punctuation">.</span><span class="token function">custom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setSSLSocketFactory</span><span class="token punctuation">(</span>sslsf<span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                httpClient <span class="token operator">=</span> HttpClients<span class="token punctuation">.</span><span class="token function">createDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            CloseableHttpResponse response <span class="token operator">=</span> httpClient<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span>http<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>response <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span><span class="token function">getStatusLine</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        statusCode <span class="token operator">=</span> response<span class="token punctuation">.</span><span class="token function">getStatusLine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getStatusCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">}</span>
+                    HttpEntity entity <span class="token operator">=</span> response<span class="token punctuation">.</span><span class="token function">getEntity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token comment" spellcheck="true">// 响应内容</span>
+                    content <span class="token operator">=</span> EntityUtils<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>entity<span class="token punctuation">,</span> Consts<span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                response<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+            httpClient<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getStatusCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> statusCode<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> String <span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ParseException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> content<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>HttpClient工具类使用的步骤</p>
+<pre class=" language-java"><code class="language-java">HttpClient client<span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">HttpClient</span><span class="token punctuation">(</span>请求的url地址<span class="token punctuation">)</span><span class="token punctuation">;</span>
+client<span class="token punctuation">.</span><span class="token function">setHttps</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//是否是https协议</span>
+client<span class="token punctuation">.</span><span class="token function">setXmlParam</span><span class="token punctuation">(</span>xmlParam<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//发送的xml数据</span>
+client<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//执行post请求</span>
+String result <span class="token operator">=</span> client<span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//获取结果</span></code></pre>
+<p>将HttpClient工具包放到common工程下并引入依赖，引入依赖后就可以直接使用上述的工具包了。</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--httpclient支持--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.apache.httpcomponents<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>httpclient<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<h3 id="1-5-支付微服务搭建"><a href="#1-5-支付微服务搭建" class="headerlink" title="1.5 支付微服务搭建"></a>1.5 支付微服务搭建</h3><p>(1)创建changgou-service-pay</p>
+<p>创建支付微服务changgou-service-pay，只要实现支付相关操作。</p>
+<p>(2)application.yml</p>
+<p>创建application.yml，配置文件如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">server</span><span class="token punctuation">:</span>
+<span class="token attr-name">  port</span><span class="token punctuation">:</span> <span class="token attr-value">18092</span>
+<span class="token attr-name">spring</span><span class="token punctuation">:</span>
+<span class="token attr-name">  application</span><span class="token punctuation">:</span>
+<span class="token attr-name">    name</span><span class="token punctuation">:</span> <span class="token attr-value">pay</span>
+<span class="token attr-name">  main</span><span class="token punctuation">:</span>
+<span class="token attr-name">    allow-bean-definition-overriding</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">eureka</span><span class="token punctuation">:</span>
+<span class="token attr-name">  client</span><span class="token punctuation">:</span>
+<span class="token attr-name">    service-url</span><span class="token punctuation">:</span>
+<span class="token attr-name">      defaultZone</span><span class="token punctuation">:</span> <span class="token attr-value">http://127.0.0.1:7001/eureka</span>
+<span class="token attr-name">  instance</span><span class="token punctuation">:</span>
+<span class="token attr-name">    prefer-ip-address</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">feign</span><span class="token punctuation">:</span>
+<span class="token attr-name">  hystrix</span><span class="token punctuation">:</span>
+<span class="token attr-name">    enabled</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token comment" spellcheck="true">#hystrix 配置</span>
+<span class="token attr-name">hystrix</span><span class="token punctuation">:</span>
+<span class="token attr-name">  command</span><span class="token punctuation">:</span>
+<span class="token attr-name">    default</span><span class="token punctuation">:</span>
+<span class="token attr-name">      execution</span><span class="token punctuation">:</span>
+<span class="token attr-name">        timeout</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">        #如果enabled设置为false，则请求超时交给ribbon控制</span>
+<span class="token attr-name">          enabled</span><span class="token punctuation">:</span> <span class="token attr-value">true</span>
+<span class="token attr-name">        isolation</span><span class="token punctuation">:</span>
+<span class="token attr-name">          strategy</span><span class="token punctuation">:</span> <span class="token attr-value">SEMAPHORE</span>
+
+<span class="token comment" spellcheck="true">#微信支付信息配置</span>
+<span class="token attr-name">weixin</span><span class="token punctuation">:</span>
+<span class="token attr-name">  appid</span><span class="token punctuation">:</span> <span class="token attr-value">wx8397f8696b538317</span>
+<span class="token attr-name">  partner</span><span class="token punctuation">:</span> <span class="token attr-value">1473426802</span>
+<span class="token attr-name">  partnerkey</span><span class="token punctuation">:</span> <span class="token attr-value">T6m9iK73b0kn9g5v426MKfHQH7X8rKwb</span>
+<span class="token attr-name">  notifyurl</span><span class="token punctuation">:</span> <span class="token attr-value">http://www.itcast.cn</span></code></pre>
+<p>appid： 微信公众账号或开放平台APP的唯一标识</p>
+<p>partner：财付通平台的商户账号</p>
+<p>partnerkey：财付通平台的商户密钥</p>
+<p>notifyurl:  回调地址</p>
+<p>(3)启动类创建</p>
+<p>在<code>changgou-service-pay</code>中创建<code>com.changgou.WeixinPayApplication</code>，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootApplication</span><span class="token punctuation">(</span>exclude<span class="token operator">=</span><span class="token punctuation">{</span>DataSourceAutoConfiguration<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@EnableEurekaClient</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WeixinPayApplication</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>WeixinPayApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="2-微信支付二维码生成"><a href="#2-微信支付二维码生成" class="headerlink" title="2 微信支付二维码生成"></a>2 微信支付二维码生成</h2><h3 id="2-1需求分析与实现思路"><a href="#2-1需求分析与实现思路" class="headerlink" title="2.1需求分析与实现思路"></a>2.1需求分析与实现思路</h3><p>在支付页面上生成支付二维码，并显示订单号和金额</p>
+<p>用户拿出手机,打开微信扫描页面上的二维码,然后在微信中完成支付</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558475798785.png" alt></p>
+<h3 id="2-2-实现思路"><a href="#2-2-实现思路" class="headerlink" title="2.2 实现思路"></a>2.2 实现思路</h3><p>我们通过HttpClient工具类实现对远程支付接口的调用。</p>
+<p>接口链接：<a href="https://api.mch.weixin.qq.com/pay/unifiedorder" target="_blank" rel="noopener">https://api.mch.weixin.qq.com/pay/unifiedorder</a></p>
+<p>具体参数参见“统一下单”API, 构建参数发送给统一下单的url ，返回的信息中有支付url，根据url生成二维码，显示的订单号和金额也在返回的信息中。</p>
+<h3 id="2-3-代码实现"><a href="#2-3-代码实现" class="headerlink" title="2.3 代码实现"></a>2.3 代码实现</h3><p>(1)业务层</p>
+<p>新增<code>com.changgou.service.WeixinPayService</code>接口，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">WeixinPayService</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">/*****
+     * 创建二维码
+     * @param out_trade_no : 客户端自定义订单编号
+     * @param total_fee    : 交易金额,单位：分
+     * @return
+     */</span>
+    <span class="token keyword">public</span> Map <span class="token function">createNative</span><span class="token punctuation">(</span>String out_trade_no<span class="token punctuation">,</span> String total_fee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>创建<code>com.changgou.service.impl.WeixinPayServiceImpl</code>类,并发送Post请求获取预支付信息，包含二维码扫码支付地址。代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WeixinPayServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">WeixinPayService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${weixin.appid}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String appid<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${weixin.partner}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String partner<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${weixin.partnerkey}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String partnerkey<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${weixin.notifyurl}"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> String notifyurl<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/****
+     * 创建二维码
+     * @param out_trade_no : 客户端自定义订单编号
+     * @param total_fee    : 交易金额,单位：分
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Map <span class="token function">createNative</span><span class="token punctuation">(</span>String out_trade_no<span class="token punctuation">,</span> String total_fee<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//1、封装参数</span>
+            Map param <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"appid"</span><span class="token punctuation">,</span> appid<span class="token punctuation">)</span><span class="token punctuation">;</span>                              <span class="token comment" spellcheck="true">//应用ID</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"mch_id"</span><span class="token punctuation">,</span> partner<span class="token punctuation">)</span><span class="token punctuation">;</span>                           <span class="token comment" spellcheck="true">//商户ID号</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"nonce_str"</span><span class="token punctuation">,</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">generateNonceStr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//随机数</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"body"</span><span class="token punctuation">,</span> <span class="token string">"畅购"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                                <span class="token comment" spellcheck="true">//订单描述</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"out_trade_no"</span><span class="token punctuation">,</span>out_trade_no<span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment" spellcheck="true">//商户订单号</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"total_fee"</span><span class="token punctuation">,</span> total_fee<span class="token punctuation">)</span><span class="token punctuation">;</span>                      <span class="token comment" spellcheck="true">//交易金额</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"spbill_create_ip"</span><span class="token punctuation">,</span> <span class="token string">"127.0.0.1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>           <span class="token comment" spellcheck="true">//终端IP</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"notify_url"</span><span class="token punctuation">,</span> notifyurl<span class="token punctuation">)</span><span class="token punctuation">;</span>                    <span class="token comment" spellcheck="true">//回调地址</span>
+            param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"trade_type"</span><span class="token punctuation">,</span> <span class="token string">"NATIVE"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                     <span class="token comment" spellcheck="true">//交易类型</span>
+
+            <span class="token comment" spellcheck="true">//2、将参数转成xml字符，并携带签名</span>
+            String paramXml <span class="token operator">=</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">generateSignedXml</span><span class="token punctuation">(</span>param<span class="token punctuation">,</span> partnerkey<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment" spellcheck="true">///3、执行请求</span>
+            HttpClient httpClient <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpClient</span><span class="token punctuation">(</span><span class="token string">"https://api.mch.weixin.qq.com/pay/unifiedorder"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            httpClient<span class="token punctuation">.</span><span class="token function">setHttps</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            httpClient<span class="token punctuation">.</span><span class="token function">setXmlParam</span><span class="token punctuation">(</span>paramXml<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            httpClient<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment" spellcheck="true">//4、获取参数</span>
+            String content <span class="token operator">=</span> httpClient<span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> stringMap <span class="token operator">=</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">xmlToMap</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"stringMap:"</span><span class="token operator">+</span>stringMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment" spellcheck="true">//5、获取部分页面所需参数</span>
+            Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> dataMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            dataMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"code_url"</span><span class="token punctuation">,</span>stringMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"code_url"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            dataMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"out_trade_no"</span><span class="token punctuation">,</span>out_trade_no<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            dataMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"total_fee"</span><span class="token punctuation">,</span>total_fee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">return</span> dataMap<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(2) 控制层</p>
+<p>创建<code>com.changgou.controller.WeixinPayController</code>,主要调用WeixinPayService的方法获取创建二维码的信息，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/weixin/pay"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@CrossOrigin</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WeixinPayController</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> WeixinPayService weixinPayService<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/***
+     * 创建二维码
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/create/native"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result <span class="token function">createNative</span><span class="token punctuation">(</span>String outtradeno<span class="token punctuation">,</span> String money<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> resultMap <span class="token operator">=</span> weixinPayService<span class="token punctuation">.</span><span class="token function">createNative</span><span class="token punctuation">(</span>outtradeno<span class="token punctuation">,</span>money<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"创建二维码预付订单成功！"</span><span class="token punctuation">,</span>resultMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这里我们订单号通过随机数生成，金额暂时写死，后续开发我们再对接业务系统得到订单号和金额</p>
+<p>Postman测试<code>http://localhost:18092/weixin/pay/create/native?outtradeno=No000000001&amp;money=1</code></p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1563241115226.png" alt></p>
+<p>打开支付页面/pay.html，修改value路径，然后打开，会出现二维码，可以扫码试试</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558476420961.png" alt></p>
+<p>测试如下：</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1549718968481.png" alt></p>
+<h2 id="3-检测支付状态"><a href="#3-检测支付状态" class="headerlink" title="3 检测支付状态"></a>3 检测支付状态</h2><h3 id="3-1-需求分析"><a href="#3-1-需求分析" class="headerlink" title="3.1 需求分析"></a>3.1 需求分析</h3><p>当用户支付成功后跳转到成功页面</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558476664135.png" alt></p>
+<p>当返回异常时跳转到错误页面</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558476701485.png" alt></p>
+<h3 id="3-2-实现思路"><a href="#3-2-实现思路" class="headerlink" title="3.2 实现思路"></a>3.2 实现思路</h3><p>我们通过HttpClient工具类实现对远程支付接口的调用。</p>
+<p>接口链接：<a href="https://api.mch.weixin.qq.com/pay/orderquery" target="_blank" rel="noopener">https://api.mch.weixin.qq.com/pay/orderquery</a></p>
+<p>具体参数参见“查询订单”API, 我们在controller方法中轮询调用查询订单（间隔3秒），当返回状态为success时，我们会在controller方法返回结果。前端代码收到结果后跳转到成功页面。</p>
+<h3 id="3-3-代码实现"><a href="#3-3-代码实现" class="headerlink" title="3.3 代码实现"></a>3.3 代码实现</h3><p>(1)业务层</p>
+<p>修改<code>com.changgou.service.WeixinPayService</code>，新增方法定义</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 查询订单状态
+ * @param out_trade_no : 客户端自定义订单编号
+ * @return
+ */</span>
+<span class="token keyword">public</span> Map <span class="token function">queryPayStatus</span><span class="token punctuation">(</span>String out_trade_no<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>在com.changgou.pay.service.impl.WeixinPayServiceImpl中增加实现方法</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 查询订单状态
+ * @param out_trade_no : 客户端自定义订单编号
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Map <span class="token function">queryPayStatus</span><span class="token punctuation">(</span>String out_trade_no<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//1.封装参数</span>
+        Map param <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"appid"</span><span class="token punctuation">,</span>appid<span class="token punctuation">)</span><span class="token punctuation">;</span>                            <span class="token comment" spellcheck="true">//应用ID</span>
+        param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"mch_id"</span><span class="token punctuation">,</span>partner<span class="token punctuation">)</span><span class="token punctuation">;</span>                         <span class="token comment" spellcheck="true">//商户号</span>
+        param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"out_trade_no"</span><span class="token punctuation">,</span>out_trade_no<span class="token punctuation">)</span><span class="token punctuation">;</span>              <span class="token comment" spellcheck="true">//商户订单编号</span>
+        param<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"nonce_str"</span><span class="token punctuation">,</span>WXPayUtil<span class="token punctuation">.</span><span class="token function">generateNonceStr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//随机字符</span>
+
+        <span class="token comment" spellcheck="true">//2、将参数转成xml字符，并携带签名</span>
+        String paramXml <span class="token operator">=</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">generateSignedXml</span><span class="token punctuation">(</span>param<span class="token punctuation">,</span>partnerkey<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//3、发送请求</span>
+        HttpClient httpClient <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpClient</span><span class="token punctuation">(</span><span class="token string">"https://api.mch.weixin.qq.com/pay/orderquery"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        httpClient<span class="token punctuation">.</span><span class="token function">setHttps</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        httpClient<span class="token punctuation">.</span><span class="token function">setXmlParam</span><span class="token punctuation">(</span>paramXml<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        httpClient<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//4、获取返回值，并将返回值转成Map</span>
+        String content <span class="token operator">=</span> httpClient<span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">xmlToMap</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(2)控制层</p>
+<p>在<code>com.changgou.controller.WeixinPayController</code>新增方法，用于查询支付状态，代码如下：</p>
+<p>上图代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 查询支付状态
+ * @param outtradeno
+ * @return
+ */</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/status/query"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">queryStatus</span><span class="token punctuation">(</span>String outtradeno<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> resultMap <span class="token operator">=</span> weixinPayService<span class="token punctuation">.</span><span class="token function">queryPayStatus</span><span class="token punctuation">(</span>outtradeno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Result</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span>StatusCode<span class="token punctuation">.</span>OK<span class="token punctuation">,</span><span class="token string">"查询状态成功！"</span><span class="token punctuation">,</span>resultMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="4-订单状态操作准备工作"><a href="#4-订单状态操作准备工作" class="headerlink" title="4 订单状态操作准备工作"></a>4 订单状态操作准备工作</h2><h3 id="4-1-需求分析"><a href="#4-1-需求分析" class="headerlink" title="4.1 需求分析"></a>4.1 需求分析</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558490059984.png" alt></p>
+<p>我们现在系统还有个问题需要解决：支付后订单状态没有改变</p>
+<p>流程回顾：</p>
+<pre class=" language-properties"><code class="language-properties">1.用户下单之后，订单数据会存入到MySQL中，同时会将订单对应的支付日志存入到Redis，以List+Hash的方式存储。
+2.用户下单后，进入支付页面，支付页面调用支付系统，从微信支付获取二维码数据，并在页面生成支付二维码。
+3.用户扫码支付后，微信支付服务器会通调用前预留的回调地址，并携带支付状态信息。
+4.支付系统接到支付状态信息后，将支付状态信息发送给RabbitMQ
+5.订单系统监听RabbitMQ中的消息获取支付状态，并根据支付状态修改订单状态
+6.为了防止网络问题导致notifyurl没有接到对应数据，定时任务定时获取Redis中队列数据去微信支付接口查询状态，并定时更新对应状态。</code></pre>
+<p>需要做的工作：</p>
+<pre class=" language-properties"><code class="language-properties">1.创建订单时，同时将订单信息放到Redis中，以List和Hash各存一份
+2.实现回调地址接收支付状态信息
+3.将订单支付状态信息发送给RabbitMQ
+4.订单系统中监听支付状态信息，如果是支付成功，修改订单状态，如果是支付失败，删除订单(或者改成支付失败)
+<span class="token attr-name">5.防止网络异常无法接收到回调地址的支付信息，定时任务从Redis</span> <span class="token attr-value">List中读取数据判断是否支付，如果支付了，修改订单状态，如果未支付，将支付信息放入队列，下次再检测，如果支付失败删除订单(或者改成支付失败)。</span></code></pre>
+<h3 id="4-2-Redis存储订单信息"><a href="#4-2-Redis存储订单信息" class="headerlink" title="4.2 Redis存储订单信息"></a>4.2 Redis存储订单信息</h3><p>每次添加订单后，会根据订单检查用户是否是否支付成功，我们不建议每次都操作数据库，每次操作数据库会增加数据库的负载，我们可以选择将用户的订单信息存入一份到Redis中，提升读取速度。</p>
+<p>修改<code>changgou-service-order</code>微服务的<code>com.changgou.order.service.impl.OrderServiceImpl</code>类中的<code>add</code>方法，如果是线上支付，将用户订单数据存入到Redis中,由于每次创建二维码，需要用到订单编号 ，所以也需要将添加的订单信息返回。</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1566106841171.png" alt></p>
+<p>上图代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
+ * 增加Order
+ * 金额校验:后台校验
+ * @param order
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Order <span class="token function">add</span><span class="token punctuation">(</span>Order order<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//...略</span>
+
+    <span class="token comment" spellcheck="true">//修改库存</span>
+    skuFeign<span class="token punctuation">.</span><span class="token function">decrCount</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//添加用户积分</span>
+    userFeign<span class="token punctuation">.</span><span class="token function">addPoints</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//线上支付，记录订单</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getPayType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//将支付记录存入到Reids namespace  key  value</span>
+        redisTemplate<span class="token punctuation">.</span><span class="token function">boundHashOps</span><span class="token punctuation">(</span><span class="token string">"Order"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">//删除购物车信息</span>
+    <span class="token comment" spellcheck="true">//redisTemplate.delete("Cart_" + order.getUsername());</span>
+
+    <span class="token keyword">return</span> order<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>修改<code>com.changgou.order.controller.OrderController</code>的add方法，将订单对象返回，因为页面需要获取订单的金额和订单号用于创建二维码，代码如下：</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1566107006010.png" alt></p>
+<h3 id="4-3-修改订单状态"><a href="#4-3-修改订单状态" class="headerlink" title="4.3 修改订单状态"></a>4.3 修改订单状态</h3><p>订单支付成功后，需要修改订单状态并持久化到数据库，修改订单的同时，需要将Redis中的订单删除，所以修改订单状态需要将订单日志也传过来，实现代码如下：</p>
+<p>修改com.changgou.order.service.OrderService，添加修改订单状态方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 根据订单ID修改订单状态
+ * @param transactionid 交易流水号
+ * @param orderId
+ */</span>
+<span class="token keyword">void</span> <span class="token function">updateStatus</span><span class="token punctuation">(</span>String orderId<span class="token punctuation">,</span>String transactionid<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>修改com.changgou.order.service.impl.OrderServiceImpl，添加修改订单状态实现方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 订单修改
+ * @param orderId
+ * @param transactionid  微信支付的交易流水号
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">updateStatus</span><span class="token punctuation">(</span>String orderId<span class="token punctuation">,</span>String transactionid<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//1.修改订单</span>
+    Order order <span class="token operator">=</span> orderMapper<span class="token punctuation">.</span><span class="token function">selectByPrimaryKey</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    order<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//时间也可以从微信接口返回过来，这里为了方便，我们就直接使用当前时间了</span>
+    order<span class="token punctuation">.</span><span class="token function">setPayTime</span><span class="token punctuation">(</span>order<span class="token punctuation">.</span><span class="token function">getUpdateTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//不允许这么写</span>
+    order<span class="token punctuation">.</span><span class="token function">setTransactionId</span><span class="token punctuation">(</span>transactionid<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//交易流水号</span>
+    order<span class="token punctuation">.</span><span class="token function">setPayStatus</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//已支付</span>
+    orderMapper<span class="token punctuation">.</span><span class="token function">updateByPrimaryKeySelective</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//2.删除Redis中的订单记录</span>
+    redisTemplate<span class="token punctuation">.</span><span class="token function">boundHashOps</span><span class="token punctuation">(</span><span class="token string">"Order"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="4-4-删除订单"><a href="#4-4-删除订单" class="headerlink" title="4.4 删除订单"></a>4.4 删除订单</h3><p>如果用户订单支付失败了，或者支付超时了，我们需要删除用户订单，删除订单的同时需要回滚库存，这里回滚库存我们就不实现了，作为同学们的作业。实现如下：</p>
+<p>修改<code>changgou-service-order</code>的com.changgou.order.service.OrderService，添加删除订单方法，我们只需要将订单id传入进来即可实现，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 删除订单操作
+ * @param id
+ */</span>
+<span class="token keyword">void</span> <span class="token function">deleteOrder</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>修改<code>changgou-service-order</code>的com.changgou.order.service.impl.OrderServiceImpl，添加删除订单实现方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 订单的删除操作
+ */</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">deleteOrder</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//改状态</span>
+    Order order <span class="token operator">=</span> <span class="token punctuation">(</span>Order<span class="token punctuation">)</span> redisTemplate<span class="token punctuation">.</span><span class="token function">boundHashOps</span><span class="token punctuation">(</span><span class="token string">"Order"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    order<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    order<span class="token punctuation">.</span><span class="token function">setPayStatus</span><span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//支付失败</span>
+    orderMapper<span class="token punctuation">.</span><span class="token function">updateByPrimaryKeySelective</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//删除缓存</span>
+    redisTemplate<span class="token punctuation">.</span><span class="token function">boundHashOps</span><span class="token punctuation">(</span><span class="token string">"Order"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="5-支付信息回调"><a href="#5-支付信息回调" class="headerlink" title="5 支付信息回调"></a>5 支付信息回调</h2><h3 id="5-1-接口分析"><a href="#5-1-接口分析" class="headerlink" title="5.1 接口分析"></a>5.1 接口分析</h3><p>每次实现支付之后，微信支付都会将用户支付结果返回到指定路径，而指定路径是指创建二维码的时候填写的<code>notifyurl</code>参数,响应的数据以及相关文档参考一下地址：<code>https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_7&amp;index=8</code></p>
+<h4 id="5-1-1-返回参数分析"><a href="#5-1-1-返回参数分析" class="headerlink" title="5.1.1 返回参数分析"></a>5.1.1 返回参数分析</h4><p>通知参数如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">字段名</th>
+<th align="left">变量名</th>
+<th align="left">必填</th>
+<th align="left">类型</th>
+<th align="left">示例值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">返回状态码</td>
+<td align="left">return_code</td>
+<td align="left">是</td>
+<td align="left">String(16)</td>
+<td align="left">SUCCESS</td>
+<td align="left">SUCCESS</td>
+</tr>
+<tr>
+<td align="left">返回信息</td>
+<td align="left">return_msg</td>
+<td align="left">是</td>
+<td align="left">String(128)</td>
+<td align="left">OK</td>
+<td align="left">OK</td>
+</tr>
+</tbody></table>
+<p>以下字段在return_code为SUCCESS的时候有返回</p>
+<table>
+<thead>
+<tr>
+<th align="left">字段名</th>
+<th align="left">变量名</th>
+<th align="left">必填</th>
+<th align="left">类型</th>
+<th align="left">示例值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">公众账号ID</td>
+<td align="left">appid</td>
+<td align="left">是</td>
+<td align="left">String(32)</td>
+<td align="left">wx8888888888888888</td>
+<td align="left">微信分配的公众账号ID（企业号corpid即为此appId）</td>
+</tr>
+<tr>
+<td align="left">业务结果</td>
+<td align="left">result_code</td>
+<td align="left">是</td>
+<td align="left">String(16)</td>
+<td align="left">SUCCESS</td>
+<td align="left">SUCCESS/FAIL</td>
+</tr>
+<tr>
+<td align="left">商户订单号</td>
+<td align="left">out_trade_no</td>
+<td align="left">是</td>
+<td align="left">String(32)</td>
+<td align="left">1212321211201407033568112322</td>
+<td align="left">商户系统内部订单号</td>
+</tr>
+<tr>
+<td align="left">微信支付订单号</td>
+<td align="left">transaction_id</td>
+<td align="left">是</td>
+<td align="left">String(32)</td>
+<td align="left">1217752501201407033233368018</td>
+<td align="left">微信支付订单号</td>
+</tr>
+</tbody></table>
+<h4 id="5-1-2-响应分析"><a href="#5-1-2-响应分析" class="headerlink" title="5.1.2 响应分析"></a>5.1.2 响应分析</h4><p>回调地址接收到数据后，需要响应信息给微信服务器，告知已经收到数据，不然微信服务器会再次发送4次请求推送支付信息。</p>
+<table>
+<thead>
+<tr>
+<th align="left">字段名</th>
+<th align="left">变量名</th>
+<th align="left">必填</th>
+<th align="left">类型</th>
+<th align="left">示例值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">返回状态码</td>
+<td align="left">return_code</td>
+<td align="left">是</td>
+<td align="left">String(16)</td>
+<td align="left">SUCCESS</td>
+<td align="left">请按示例值填写</td>
+</tr>
+<tr>
+<td align="left">返回信息</td>
+<td align="left">return_msg</td>
+<td align="left">是</td>
+<td align="left">String(128)</td>
+<td align="left">OK</td>
+<td align="left">请按示例值填写</td>
+</tr>
+</tbody></table>
+<p>举例如下：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>xml</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>return_code</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[SUCCESS]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>return_code</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>return_msg</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[OK]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>return_msg</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>xml</span><span class="token punctuation">></span></span></code></pre>
+<h3 id="5-2-回调接收数据实现"><a href="#5-2-回调接收数据实现" class="headerlink" title="5.2 回调接收数据实现"></a>5.2 回调接收数据实现</h3><p>修改<code>changgou-service-pay</code>微服务的com.changgou.pay.controller.WeixinPayController,添加回调方法，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 支付回调
+ * @param request
+ * @return
+ */</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/notify/url"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> String <span class="token function">notifyUrl</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    InputStream inStream<span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//读取支付回调数据</span>
+        inStream <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ByteArrayOutputStream outSteam <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ByteArrayOutputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> buffer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>len <span class="token operator">=</span> inStream<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>buffer<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            outSteam<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        outSteam<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        inStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 将支付回调数据转换成xml字符串</span>
+        String result <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>outSteam<span class="token punctuation">.</span><span class="token function">toByteArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"utf-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//将xml字符串转换成Map结构</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> map <span class="token operator">=</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">xmlToMap</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//响应数据设置</span>
+        Map respMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        respMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"return_code"</span><span class="token punctuation">,</span><span class="token string">"SUCCESS"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        respMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"return_msg"</span><span class="token punctuation">,</span><span class="token string">"OK"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">mapToXml</span><span class="token punctuation">(</span>respMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//记录错误日志</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="6-MQ处理支付回调状态"><a href="#6-MQ处理支付回调状态" class="headerlink" title="6 MQ处理支付回调状态"></a>6 MQ处理支付回调状态</h2><h3 id="6-1-业务分析"><a href="#6-1-业务分析" class="headerlink" title="6.1 业务分析"></a>6.1 业务分析</h3><p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558490059984.png" alt></p>
+<p>支付系统是独立于其他系统的服务，不做相关业务逻辑操作，只做支付处理，所以回调地址接收微信服务返回的支付状态后，立即将消息发送给RabbitMQ，订单系统再监听支付状态数据，根据状态数据做出修改订单状态或者删除订单操作。</p>
+<h3 id="6-2-发送支付状态"><a href="#6-2-发送支付状态" class="headerlink" title="6.2 发送支付状态"></a>6.2 发送支付状态</h3><p>(1)集成RabbitMQ</p>
+<p>修改支付微服务，集成RabbitMQ，添加如下依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--加入ampq--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-amqp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>这里我们建议在后台手动创建队列，并绑定队列。如果使用程序创建队列，可以按照如下方式实现。</p>
+<p>修改application.yml，配置支付队列和交换机信息，代码如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#位置支付交换机和队列</span>
+<span class="token attr-name">mq</span><span class="token punctuation">:</span>
+<span class="token attr-name">  pay</span><span class="token punctuation">:</span>
+<span class="token attr-name">    exchange</span><span class="token punctuation">:</span>
+<span class="token attr-name">      order</span><span class="token punctuation">:</span> <span class="token attr-value">exchange.order</span>
+<span class="token attr-name">    queue</span><span class="token punctuation">:</span>
+<span class="token attr-name">      order</span><span class="token punctuation">:</span> <span class="token attr-value">queue.order</span>
+<span class="token attr-name">    routing</span><span class="token punctuation">:</span>
+<span class="token attr-name">      key</span><span class="token punctuation">:</span> <span class="token attr-value">queue.order</span></code></pre>
+<p>创建队列以及交换机并让队列和交换机绑定，修改com.changgou.WeixinPayApplication,添加如下代码：</p>
+<pre class=" language-java"><code class="language-java"><span class="token comment" spellcheck="true">/***
+ * 创建DirectExchange交换机
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> DirectExchange <span class="token function">basicExchange</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DirectExchange</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"mq.pay.exchange.order"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">,</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">/***
+ * 创建队列
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Bean</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"queueOrder"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Queue <span class="token function">queueOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Queue</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"mq.pay.queue.order"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">/****
+ * 队列绑定到交换机上
+ * @return
+ */</span>
+<span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> Binding <span class="token function">basicBinding</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> BindingBuilder<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token function">queueOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token function">basicExchange</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">with</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"mq.pay.routing.key"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h4 id="6-2-2-发送MQ消息"><a href="#6-2-2-发送MQ消息" class="headerlink" title="6.2.2 发送MQ消息"></a>6.2.2 发送MQ消息</h4><p>修改回调方法，在接到支付信息后，立即将支付信息发送给RabbitMQ，代码如下：</p>
+<p><img src="/2020/03/21/chang-gou-shang-cheng-shi-zhan-shi-er/1558578639907.png" alt></p>
+<p>上图代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${mq.pay.exchange.order}"</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> String exchange<span class="token punctuation">;</span>
+<span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${mq.pay.queue.order}"</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> String queue<span class="token punctuation">;</span>
+<span class="token annotation punctuation">@Value</span><span class="token punctuation">(</span><span class="token string">"${mq.pay.routing.key}"</span><span class="token punctuation">)</span>
+<span class="token keyword">private</span> String routing<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> WeixinPayService weixinPayService<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">private</span> RabbitTemplate rabbitTemplate<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/***
+ * 支付回调
+ * @param request
+ * @return
+ */</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/notify/url"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> String <span class="token function">notifyUrl</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    InputStream inStream<span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//读取支付回调数据</span>
+        inStream <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ByteArrayOutputStream outSteam <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ByteArrayOutputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> buffer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">byte</span><span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>len <span class="token operator">=</span> inStream<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>buffer<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            outSteam<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        outSteam<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        inStream<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 将支付回调数据转换成xml字符串</span>
+        String result <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>outSteam<span class="token punctuation">.</span><span class="token function">toByteArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"utf-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//将xml字符串转换成Map结构</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> String<span class="token operator">></span> map <span class="token operator">=</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">xmlToMap</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//将消息发送给RabbitMQ</span>
+        rabbitTemplate<span class="token punctuation">.</span><span class="token function">convertAndSend</span><span class="token punctuation">(</span>exchange<span class="token punctuation">,</span>routing<span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>map<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//响应数据设置</span>
+        Map respMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        respMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"return_code"</span><span class="token punctuation">,</span><span class="token string">"SUCCESS"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        respMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"return_msg"</span><span class="token punctuation">,</span><span class="token string">"OK"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> WXPayUtil<span class="token punctuation">.</span><span class="token function">mapToXml</span><span class="token punctuation">(</span>respMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//记录错误日志</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="6-3-监听MQ消息处理订单"><a href="#6-3-监听MQ消息处理订单" class="headerlink" title="6.3 监听MQ消息处理订单"></a>6.3 监听MQ消息处理订单</h3><p>在订单微服务中，我们需要监听MQ支付状态消息，并实现订单数据操作。</p>
+<h4 id="6-3-1-集成RabbitMQ"><a href="#6-3-1-集成RabbitMQ" class="headerlink" title="6.3.1 集成RabbitMQ"></a>6.3.1 集成RabbitMQ</h4><p>在订单微服务中，先集成RabbitMQ，再监听队列消息。</p>
+<p>在pom.xml中引入如下依赖：</p>
+<pre class=" language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--加入ampq--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-amqp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></code></pre>
+<p>在application.yml中配置rabbitmq配置，代码如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#位置支付交换机和队列</span>
+<span class="token attr-name">mq</span><span class="token punctuation">:</span>
+<span class="token attr-name">  pay</span><span class="token punctuation">:</span>
+<span class="token attr-name">    queue</span><span class="token punctuation">:</span>
+<span class="token attr-name">      order</span><span class="token punctuation">:</span> <span class="token attr-value">queue.order</span></code></pre>
+<h4 id="6-3-2-监听消息修改订单"><a href="#6-3-2-监听消息修改订单" class="headerlink" title="6.3.2 监听消息修改订单"></a>6.3.2 监听消息修改订单</h4><p>在订单微服务于中创建com.changgou.order.consumer.OrderPayMessageListener，并在该类中consumeMessage方法，用于监听消息，并根据支付状态处理订单，代码如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token annotation punctuation">@RabbitListener</span><span class="token punctuation">(</span>queues <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"${mq.pay.queue.order}"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">OrderPayMessageListener</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> RedisTemplate redisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> OrderService orderService<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/***
+     * 接收消息
+     */</span>
+    <span class="token annotation punctuation">@RabbitHandler</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">consumeMessage</span><span class="token punctuation">(</span>String msg<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">//将数据转成Map</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>String<span class="token operator">></span> result <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">parseObject</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span>Map<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//return_code=SUCCESS</span>
+        String return_code <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"return_code"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//业务结果</span>
+        String result_code <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"result_code"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//业务结果 result_code=SUCCESS/FAIL，修改订单状态</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>return_code<span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//获取订单号</span>
+            String outtradeno <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"out_trade_no"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//业务结果</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>result_code<span class="token punctuation">.</span><span class="token function">equalsIgnoreCase</span><span class="token punctuation">(</span><span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>outtradeno<span class="token operator">!=</span>null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">//修改订单状态  out_trade_no</span>
+                    orderService<span class="token punctuation">.</span><span class="token function">updateStatus</span><span class="token punctuation">(</span>outtradeno<span class="token punctuation">,</span>result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"transaction_id"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">//订单删除</span>
+                orderService<span class="token punctuation">.</span><span class="token function">deleteOrder</span><span class="token punctuation">(</span>outtradeno<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="7-定时处理订单状态"><a href="#7-定时处理订单状态" class="headerlink" title="7 定时处理订单状态"></a>7 定时处理订单状态</h2><h3 id="7-1-业务分析"><a href="#7-1-业务分析" class="headerlink" title="7.1 业务分析"></a>7.1 业务分析</h3><p>在现实场景中，可能会出现这么种情况，就是用户支付后，有可能畅购服务网络不通或者服务器挂了，此时会导致回调地址无法接收到用户支付状态，这时候我们需要取微信服务器查询。所以我们之前订单信息的ID存入到了Redis队列，主要用于解决这种网络不可达造成支付状态无法回调获取的问题。</p>
+<p>实现思路如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">1.每次下单，都将订单存入到Reids</span> <span class="token attr-value">List队列中</span>
+<span class="token attr-name">2.定时每5秒检查一次Redis</span> <span class="token attr-value">队列中是否有数据，如果有，则再去查询微信服务器支付状态</span>
+3.如果已支付，则修改订单状态
+4.如果没有支付，是等待支付，则再将订单存入到Redis队列中，等会再次检查
+5.如果是支付失败，直接删除订单信息并修改订单状态</code></pre>
+
             </div>
             <hr/>
 
@@ -1016,7 +1874,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">595.1k</span>&nbsp;字
+                class="white-color">608.7k</span>&nbsp;字
             
             
             
