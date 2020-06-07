@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-06-02T15:52:15.195Z</updated>
+  <updated>2020-06-07T13:20:12.737Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -15,6 +15,78 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>IO模型</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/io-mo-xing/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/io-mo-xing/</id>
+    <published>2020-06-07T13:20:12.000Z</published>
+    <updated>2020-06-07T13:20:12.737Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>布隆过滤器和位图</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/bu-long-guo-lu-qi-he-wei-tu/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/bu-long-guo-lu-qi-he-wei-tu/</id>
+    <published>2020-06-07T13:20:01.000Z</published>
+    <updated>2020-06-07T13:20:01.533Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>一致性Hash算法</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/yi-zhi-xing-hash-suan-fa/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/yi-zhi-xing-hash-suan-fa/</id>
+    <published>2020-06-07T13:19:43.000Z</published>
+    <updated>2020-06-07T13:19:43.683Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Nginx学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/</id>
+    <published>2020-06-07T06:42:56.000Z</published>
+    <updated>2020-06-07T14:49:27.145Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Nginx学习笔记&quot;&gt;&lt;a href=&quot;#Nginx学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Nginx学习笔记&quot;&gt;&lt;/a&gt;Nginx学习笔记&lt;/h1&gt;&lt;h2 id=&quot;1-什么是Nginx？&quot;&gt;&lt;a href=&quot;#1-什么是Nginx？&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Nginx" scheme="https://fangpeng12.github.io/categories/Nginx/"/>
+    
+    
+      <category term="Nginx" scheme="https://fangpeng12.github.io/tags/Nginx/"/>
+    
+  </entry>
   
   <entry>
     <title>分布式ID解决方案</title>
@@ -164,13 +236,21 @@
   </entry>
   
   <entry>
-    <title>常见加密、解密算法</title>
+    <title>常见加密算法</title>
     <link href="https://fangpeng12.github.io/2020/04/12/chang-jian-jia-mi-jie-mi-suan-fa/"/>
     <id>https://fangpeng12.github.io/2020/04/12/chang-jian-jia-mi-jie-mi-suan-fa/</id>
     <published>2020-04-12T15:53:59.000Z</published>
-    <updated>2020-06-02T15:54:58.314Z</updated>
+    <updated>2020-06-07T02:19:30.962Z</updated>
     
     <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;常见加密算法&quot;&gt;&lt;a href=&quot;#常见加密算法&quot; class=&quot;headerlink&quot; title=&quot;常见加密算法&quot;&gt;&lt;/a&gt;常见加密算法&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;数字签名&lt;/strong&gt;、&lt;strong&gt;信息加密&lt;/strong&gt;
+        
+      
     
     </summary>
     
@@ -413,128 +493,6 @@
     
     
       <category term="面向对象" scheme="https://fangpeng12.github.io/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java多线程与并发</title>
-    <link href="https://fangpeng12.github.io/2020/03/29/java-duo-xian-cheng-yu-bing-fa/"/>
-    <id>https://fangpeng12.github.io/2020/03/29/java-duo-xian-cheng-yu-bing-fa/</id>
-    <published>2020-03-29T06:31:11.000Z</published>
-    <updated>2020-05-16T15:26:46.112Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Java多线程与并发&quot;&gt;&lt;a href=&quot;#Java多线程与并发&quot; class=&quot;headerlink&quot; title=&quot;Java多线程与并发&quot;&gt;&lt;/a&gt;Java多线程与并发&lt;/h1&gt;&lt;h2 id=&quot;1-线程的基础&quot;&gt;&lt;a href=&quot;#1-线程的基础&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="多线程" scheme="https://fangpeng12.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
-    
-      <category term="并发" scheme="https://fangpeng12.github.io/tags/%E5%B9%B6%E5%8F%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java函数式编程</title>
-    <link href="https://fangpeng12.github.io/2020/03/27/java-han-shu-shi-bian-cheng/"/>
-    <id>https://fangpeng12.github.io/2020/03/27/java-han-shu-shi-bian-cheng/</id>
-    <published>2020-03-27T12:59:55.000Z</published>
-    <updated>2020-05-16T06:11:52.641Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Java函数式编程&quot;&gt;&lt;a href=&quot;#Java函数式编程&quot; class=&quot;headerlink&quot; title=&quot;Java函数式编程&quot;&gt;&lt;/a&gt;Java函数式编程&lt;/h1&gt;&lt;h2 id=&quot;1-Lambda表达式&quot;&gt;&lt;a href=&quot;#1-Lambda表达式&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="函数式编程" scheme="https://fangpeng12.github.io/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>畅购商城（十六）之集群高可用</title>
-    <link href="https://fangpeng12.github.io/2020/03/26/chang-gou-shang-cheng-shi-zhan-shi-liu/"/>
-    <id>https://fangpeng12.github.io/2020/03/26/chang-gou-shang-cheng-shi-zhan-shi-liu/</id>
-    <published>2020-03-26T12:49:36.000Z</published>
-    <updated>2020-06-04T15:54:03.239Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;第16章-集群高可用&quot;&gt;&lt;a href=&quot;#第16章-集群高可用&quot; class=&quot;headerlink&quot; title=&quot;第16章 集群高可用&quot;&gt;&lt;/a&gt;第16章 集群高可用&lt;/h1&gt;&lt;h2 id=&quot;学习目标&quot;&gt;&lt;a href=&quot;#学习目标&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="项目实战" scheme="https://fangpeng12.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
-    
-    
-      <category term="微服务" scheme="https://fangpeng12.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-      <category term="SpringCloud" scheme="https://fangpeng12.github.io/tags/SpringCloud/"/>
-    
-      <category term="项目实战" scheme="https://fangpeng12.github.io/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>畅购商城（十五）之分布式事务</title>
-    <link href="https://fangpeng12.github.io/2020/03/26/chang-gou-shang-cheng-shi-zhan-shi-wu/"/>
-    <id>https://fangpeng12.github.io/2020/03/26/chang-gou-shang-cheng-shi-zhan-shi-wu/</id>
-    <published>2020-03-25T16:00:39.000Z</published>
-    <updated>2020-06-04T15:54:32.158Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;第15章-分布式事务&quot;&gt;&lt;a href=&quot;#第15章-分布式事务&quot; class=&quot;headerlink&quot; title=&quot;第15章 分布式事务&quot;&gt;&lt;/a&gt;第15章 分布式事务&lt;/h1&gt;&lt;h2 id=&quot;学习目标&quot;&gt;&lt;a href=&quot;#学习目标&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="项目实战" scheme="https://fangpeng12.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
-    
-    
-      <category term="微服务" scheme="https://fangpeng12.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-      <category term="SpringCloud" scheme="https://fangpeng12.github.io/tags/SpringCloud/"/>
-    
-      <category term="项目实战" scheme="https://fangpeng12.github.io/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
     
   </entry>
   

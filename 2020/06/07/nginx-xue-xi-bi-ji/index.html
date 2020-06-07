@@ -1,0 +1,1837 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Nginx学习笔记, 空白格的博客">
+    <meta name="description" content="Nginx学习笔记1-什么是Nginx？Nginx (engine x) 是一款轻量级的 Web 服务器 、反向代理服务器及电子邮件（IMAP/POP3）代理服务器。
+Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资源的消耗而闻">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Nginx学习笔记 | 空白格的博客</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="空白格的博客" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">空白格的博客</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">空白格的博客</div>
+        <div class="logo-desc">
+            
+            个人技术博客：主要是一些技术杂谈和学习笔记的分享
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/fangpeng12" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #36b3ec;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/fangpeng12" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Nginx学习笔记
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Nginx/">
+                                <span class="chip bg-color">Nginx</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Nginx/" class="post-category">
+                                Nginx
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-06-07
+                </div>
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    10.4k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    39 分
+                </div>
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Nginx学习笔记"><a href="#Nginx学习笔记" class="headerlink" title="Nginx学习笔记"></a>Nginx学习笔记</h1><h2 id="1-什么是Nginx？"><a href="#1-什么是Nginx？" class="headerlink" title="1-什么是Nginx？"></a>1-什么是Nginx？</h2><p><strong>Nginx (engine x)</strong> 是一款轻量级的 Web 服务器 、反向代理服务器及电子邮件（IMAP/POP3）代理服务器。</p>
+<p>Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资源的消耗而闻名．业界一致认为它是Apache2.2＋mod_proxy_balancer的轻量级代替者，不仅是因为响应静态页面的速度非常快，而且它的模块数量达到Apache的近2/3。对proxy和rewrite模块的支持很彻底，还支持mod_fcgi、ssl、vhosts ，适合用来做mongrel clusters的前端HTTP响应。<br>Nginx和Apache一样使用模块化设计，nginx模块包括内置模块和第三方模块，其中内置模块中包含主模块和事件模块。</p>
+<p><strong>Nginx处理请求逻辑图</strong></p>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/20190511170603322.png" alt></p>
+<h2 id="2-正向代理和反向代理"><a href="#2-正向代理和反向代理" class="headerlink" title="2-正向代理和反向代理"></a>2-正向代理和反向代理</h2><h3 id="2-1-什么是正向代理？"><a href="#2-1-什么是正向代理？" class="headerlink" title="2.1-什么是正向代理？"></a>2.1-什么是正向代理？</h3><p>正向代理，意思是一个位于客户端和原始服务器(origin server)之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标(原始服务器)，然后代理向原始服务器转交请求并将获得的内容返回给客户端。客户端才能使用正向代理。</p>
+<ul>
+<li>客户端请求目标服务器之间的代理服务器</li>
+<li>请求会先经过代理服务器，然后再转发请求到目标服务器，获得内容后，最后再响应给客户端</li>
+</ul>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
+<h3 id="2-2-什么是反向代理？"><a href="#2-2-什么是反向代理？" class="headerlink" title="2.2-什么是反向代理？"></a>2.2-什么是反向代理？</h3><p>反向代理，客户端是无感知代理的存在，以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端。</p>
+<p>反向代理（Reverse Proxy）方式是指以代理服务器来接受 internet 上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给 internet 上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。</p>
+<p><strong>作用：</strong></p>
+<ul>
+<li>保证内网的安全，公网作为访问地址，web服务器谁内网；</li>
+<li>负载均衡</li>
+</ul>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
+<h2 id="3-Nginx的作用"><a href="#3-Nginx的作用" class="headerlink" title="3-Nginx的作用"></a>3-Nginx的作用</h2><h3 id="3-1-Nginx可以提供的服务"><a href="#3-1-Nginx可以提供的服务" class="headerlink" title="3.1-Nginx可以提供的服务"></a>3.1-Nginx可以提供的服务</h3><ul>
+<li><p><strong>正向代理</strong></p>
+</li>
+<li><p><strong>反向代理</strong></p>
+</li>
+<li><p><strong>HTTP服务器</strong></p>
+<p>Nginx本身也是一个静态资源的服务器，当只有静态资源的时候，就可以使用Nginx来做服务器，同时现在也很流行动静分离，就可以通过Nginx来实现，首先看看Nginx做静态资源服务器。</p>
+<p>现在很多项目流行前后分离，也就是前端服务器和后端服务器分离，分别部署，这样的方式能让前后端人员能各司其职，不需要互相依赖，而前后分离中，前端项目的运行是不需要用Tomcat、Apache等服务器环境的，因此可以直接用nginx来作为静态服务器。</p>
+</li>
+<li><p><strong>负载均衡</strong></p>
+<p>负载均衡也是Nginx常用的一个功能，负载均衡其意思就是分摊到多个操作单元上进行执行，例如Web服务器、FTP服务器、企业关键应用服务器和其它关键任务服务器等，从而共同完成工作任务。简单而言就是当有2台或以上服务器时，根据规则随机的将请求分发到指定的服务器上处理，<strong>负载均衡配置一般都需要同时配置反向代理，通过反向代理跳转到负载均衡</strong>。</p>
+</li>
+</ul>
+<h3 id="3-2-Nginx的优点"><a href="#3-2-Nginx的优点" class="headerlink" title="3.2-Nginx的优点"></a>3.2-Nginx的优点</h3><ol>
+<li>高并发。静态小文件</li>
+<li>占用资源少。2万并发、10个线程，内存消耗几百M。</li>
+<li>功能种类比较多。web,cache,proxy。每一个功能都不是特别强。</li>
+<li>支持epoll模型，使得nginx可以支持高并发。</li>
+<li>nginx 配合动态服务和Apache有区别。（FASTCGI 接口）</li>
+<li>利用nginx可以对IP限速，可以限制连接数。</li>
+<li>配置简单，更灵活。</li>
+</ol>
+<h2 id="4-Nginx的安装与使用"><a href="#4-Nginx的安装与使用" class="headerlink" title="4-Nginx的安装与使用"></a>4-Nginx的安装与使用</h2><h3 id="4-1-Nginx的安装"><a href="#4-1-Nginx的安装" class="headerlink" title="4.1-Nginx的安装"></a>4.1-Nginx的安装</h3><p>详细安装方法请参考：</p>
+<blockquote>
+<p><a href="https://github.com/dunwu/nginx-tutorial/blob/master/docs/nginx-ops.md" target="_blank" rel="noopener">https://github.com/dunwu/nginx-tutorial/blob/master/docs/nginx-ops.md</a></p>
+</blockquote>
+<h3 id="4-2-Nginx的使用"><a href="#4-2-Nginx的使用" class="headerlink" title="4.2-Nginx的使用"></a>4.2-Nginx的使用</h3><p>nginx 的使用比较简单，就是几条命令。</p>
+<p>常用到的命令如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">nginx</span> <span class="token attr-value">-s stop       快速关闭Nginx，可能不保存相关信息，并迅速终止web服务。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-s quit       平稳关闭Nginx，保存相关信息，有安排的结束web服务。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-s reload     因改变了Nginx相关配置，需要重新加载配置而重载。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-s reopen     重新打开日志文件。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-c filename   为 Nginx 指定一个配置文件，来代替缺省的。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-t            不运行，而仅仅测试配置文件。nginx 将检查配置文件的语法的正确性，并尝试打开配置文件中所引用到的文件。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-v            显示 nginx 的版本。</span>
+<span class="token attr-name">nginx</span> <span class="token attr-value">-V            显示 nginx 的版本，编译器版本和配置参数。</span></code></pre>
+<p>如果不想每次都敲命令，可以在 nginx 安装目录下新添一个启动批处理文件<strong>startup.bat</strong>，双击即可运行。内容如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">@echo</span> <span class="token attr-value">off</span>
+<span class="token attr-name">rem</span> <span class="token attr-value">如果启动前已经启动nginx并记录下pid文件，会kill指定进程</span>
+<span class="token attr-name">nginx.exe</span> <span class="token attr-value">-s stop</span>
+
+<span class="token attr-name">rem</span> <span class="token attr-value">测试配置文件语法正确性</span>
+<span class="token attr-name">nginx.exe</span> <span class="token attr-value">-t -c conf/nginx.conf</span>
+
+<span class="token attr-name">rem</span> <span class="token attr-value">显示版本信息</span>
+<span class="token attr-name">nginx.exe</span> <span class="token attr-value">-v</span>
+
+<span class="token attr-name">rem</span> <span class="token attr-value">按照指定配置去启动nginx</span>
+<span class="token attr-name">nginx.exe</span> <span class="token attr-value">-c conf/nginx.conf</span></code></pre>
+<p>如果是运行在 Linux 下，写一个 shell 脚本，大同小异。</p>
+<h2 id="5-Nginx配置实战"><a href="#5-Nginx配置实战" class="headerlink" title="5-Nginx配置实战"></a>5-Nginx配置实战</h2><h3 id="5-1-http-反向代理配置"><a href="#5-1-http-反向代理配置" class="headerlink" title="5.1-http 反向代理配置"></a>5.1-http 反向代理配置</h3><p>nginx.conf 配置文件如下：<br><strong>注：conf / nginx.conf 是 nginx 的默认配置文件。你也可以使用 nginx -c 指定你的配置文件</strong></p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#运行用户</span>
+<span class="token comment" spellcheck="true">#user somebody;</span>
+
+<span class="token comment" spellcheck="true">#启动进程,通常设置成和cpu的数量相等</span>
+<span class="token attr-name">worker_processes</span> <span class="token attr-value"> 1;</span>
+
+<span class="token comment" spellcheck="true">#全局错误日志</span>
+<span class="token attr-name">error_log</span> <span class="token attr-value"> D:/Tools/nginx-1.10.1/logs/error.log;</span>
+<span class="token attr-name">error_log</span> <span class="token attr-value"> D:/Tools/nginx-1.10.1/logs/notice.log  notice;</span>
+<span class="token attr-name">error_log</span> <span class="token attr-value"> D:/Tools/nginx-1.10.1/logs/info.log  info;</span>
+
+<span class="token comment" spellcheck="true">#PID文件，记录当前启动的nginx的进程ID</span>
+<span class="token attr-name">pid</span> <span class="token attr-value">       D:/Tools/nginx-1.10.1/logs/nginx.pid;</span>
+
+<span class="token comment" spellcheck="true">#工作模式及连接数上限</span>
+<span class="token attr-name">events</span> <span class="token attr-value">{</span>
+<span class="token attr-name">        use</span> <span class="token attr-value">epoll;    #默认使用epoll</span>
+<span class="token attr-name">    worker_connections</span> <span class="token attr-value">1024;    #单个后台worker process进程的最大并发链接数</span>
+}
+
+<span class="token comment" spellcheck="true">#设定http服务器，利用它的反向代理功能提供负载均衡支持</span>
+<span class="token attr-name">http</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">    #设定mime类型(邮件支持类型),类型由mime.types文件定义</span>
+<span class="token attr-name">    include</span> <span class="token attr-value">      D:/Tools/nginx-1.10.1/conf/mime.types;</span>
+<span class="token attr-name">    default_type</span> <span class="token attr-value"> application/octet-stream;</span>
+
+<span class="token comment" spellcheck="true">    #设定日志</span>
+<span class="token attr-name">    log_format</span> <span class="token attr-value"> main  '[$remote_addr] - [$remote_user] [$time_local] "$request" '</span>
+<span class="token attr-name">                      '$status</span> <span class="token attr-value">$body_bytes_sent "$http_referer" '</span>
+<span class="token attr-name">                      '"$http_user_agent"</span> <span class="token attr-value">"$http_x_forwarded_for"';</span>
+
+<span class="token attr-name">    access_log</span> <span class="token attr-value">   D:/Tools/nginx-1.10.1/logs/access.log main;</span>
+<span class="token attr-name">    rewrite_log</span> <span class="token attr-value">    on;</span>
+
+<span class="token comment" spellcheck="true">    #sendfile 指令指定 nginx 是否调用 sendfile 函数（zero copy 方式）来输出文件，对于普通应用，</span>
+<span class="token comment" spellcheck="true">    #必须设为 on,如果用来进行下载等应用磁盘IO重负载应用，可设置为 off，以平衡磁盘与网络I/O处理速度，降低系统的uptime.</span>
+<span class="token attr-name">    sendfile</span> <span class="token attr-value">       on;</span>
+<span class="token comment" spellcheck="true">    #tcp_nopush     on;</span>
+
+<span class="token comment" spellcheck="true">    #连接超时时间</span>
+<span class="token attr-name">    keepalive_timeout</span> <span class="token attr-value"> 120;</span>
+<span class="token attr-name">    tcp_nodelay</span> <span class="token attr-value">       on;</span>
+
+<span class="token comment" spellcheck="true">    #gzip压缩开关</span>
+<span class="token comment" spellcheck="true">    #gzip  on;</span>
+
+<span class="token comment" spellcheck="true">    #设定实际的服务器列表</span>
+<span class="token attr-name">    upstream</span> <span class="token attr-value">zp_server1{</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">127.0.0.1:8089;</span>
+    }
+
+<span class="token comment" spellcheck="true">    #HTTP服务器</span>
+<span class="token attr-name">    server</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">        #监听80端口，80端口是知名端口号，用于HTTP协议</span>
+<span class="token attr-name">        listen</span> <span class="token attr-value">      80;</span>
+
+<span class="token comment" spellcheck="true">        #定义使用www.xx.com访问</span>
+<span class="token attr-name">        server_name</span> <span class="token attr-value"> www.helloworld.com;</span>
+
+<span class="token comment" spellcheck="true">        #首页</span>
+<span class="token attr-name">        index</span> <span class="token attr-value">index.html</span>
+
+<span class="token comment" spellcheck="true">        #指向webapp的目录</span>
+<span class="token attr-name">        root</span> <span class="token attr-value">D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp;</span>
+
+<span class="token comment" spellcheck="true">        #编码格式</span>
+<span class="token attr-name">        charset</span> <span class="token attr-value">utf-8;</span>
+
+<span class="token comment" spellcheck="true">        #代理配置参数</span>
+<span class="token attr-name">        proxy_connect_timeout</span> <span class="token attr-value">180;</span>
+<span class="token attr-name">        proxy_send_timeout</span> <span class="token attr-value">180;</span>
+<span class="token attr-name">        proxy_read_timeout</span> <span class="token attr-value">180;</span>
+<span class="token attr-name">        proxy_set_header</span> <span class="token attr-value">Host $host;</span>
+<span class="token attr-name">        proxy_set_header</span> <span class="token attr-value">X-Forwarder-For $remote_addr;</span>
+
+<span class="token comment" spellcheck="true">        #反向代理的路径（和upstream绑定），location 后面设置映射的路径</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">/ {</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value">http://zp_server1;</span>
+        }
+
+<span class="token comment" spellcheck="true">        #静态文件，nginx自己处理</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">~ ^/(images|javascript|js|css|flash|media|static)/ {</span>
+<span class="token attr-name">            root</span> <span class="token attr-value">D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp\views;</span>
+<span class="token comment" spellcheck="true">            #过期30天，静态文件不怎么更新，过期可以设大一点，如果频繁更新，则可以设置得小一点。</span>
+<span class="token attr-name">            expires</span> <span class="token attr-value">30d;</span>
+        }
+
+<span class="token comment" spellcheck="true">        #设定查看Nginx状态的地址</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">/NginxStatus {</span>
+<span class="token attr-name">            stub_status</span> <span class="token attr-value">          on;</span>
+<span class="token attr-name">            access_log</span> <span class="token attr-value">           on;</span>
+<span class="token attr-name">            auth_basic</span> <span class="token attr-value">           "NginxStatus";</span>
+<span class="token attr-name">            auth_basic_user_file</span> <span class="token attr-value"> conf/htpasswd;</span>
+        }
+
+<span class="token comment" spellcheck="true">        #禁止访问 .htxxx 文件</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">~ /\.ht {</span>
+<span class="token attr-name">            deny</span> <span class="token attr-value">all;</span>
+        }
+
+<span class="token comment" spellcheck="true">        #错误处理页面（可选择性配置）</span>
+<span class="token comment" spellcheck="true">        #error_page   404              /404.html;</span>
+<span class="token comment" spellcheck="true">        #error_page   500 502 503 504  /50x.html;</span>
+<span class="token comment" spellcheck="true">        #location = /50x.html {</span>
+<span class="token comment" spellcheck="true">        #    root   html;</span>
+<span class="token comment" spellcheck="true">        #}</span>
+    }
+}</code></pre>
+<ol>
+<li>启动 webapp，注意启动绑定的端口要和 nginx 中的 <code>upstream</code> 设置的端口保持一致。</li>
+<li>更改 host：在 C:\Windows\System32\drivers\etc 目录下的 host 文件中添加一条 DNS 记录</li>
+</ol>
+<pre><code>127.0.0.1 www.helloworld.com</code></pre><ol start="3">
+<li>启动前文中 startup.bat 的命令</li>
+<li>在浏览器中访问 <code>www.helloworld.com</code>，不出意外，已经可以访问了。</li>
+</ol>
+<h3 id="5-2-Nginx跨域解决方案"><a href="#5-2-Nginx跨域解决方案" class="headerlink" title="5.2-Nginx跨域解决方案"></a>5.2-Nginx跨域解决方案</h3><p><strong>为什么会有跨域问题？</strong></p>
+<p>浏览器的同源策略拒绝了我们的请求。  所谓同源是指，域名，协议，端口相同，浏览器执行一个脚本时同源的脚本才会被执行。如果非同源，那么在请求数据时，浏览器会在控制台中报上面的异常，提示拒绝访问。这是为了同一浏览器打开多个网站时，保护你的A网站登陆信息不被B网站拿去访问A网站，B网站登陆信息同理。</p>
+<p>web 领域开发中，经常采用前后端分离模式。这种模式下，前端和后端分别是独立的 web 应用程序，例如：后端是 Java 程序，前端是 React 或 Vue 应用。如果项目没做前后端分离，是不会有跨域问题的。前后端分离的项目中，前端调用后台服务时，报错 <code>No &#39;Access-Control-Allow-Origin&#39; header is present on the requested resource</code>，你就是遇到了跨域问题。</p>
+<p>各自独立的 web app 在互相访问时，势必存在跨域问题。解决跨域问题一般有两种思路：</p>
+<ol>
+<li><p><strong>CORS</strong></p>
+<p>在后端服务器设置 HTTP 响应头，把你需要运行访问的域名加入加入 <code>Access-Control-Allow-Origin</code>中。</p>
+</li>
+<li><p><strong>jsonp</strong></p>
+<p>把后端根据请求，构造 json 数据，并返回，前端用 jsonp 跨域。</p>
+</li>
+</ol>
+<p><strong>需要说明的是，nginx 根据第一种思路，也提供了一种解决跨域的解决方案</strong>。</p>
+<p><strong>举例：</strong></p>
+<p><code>www.helloworld.com</code> 网站是由一个前端 app ，一个后端 app 组成的。前端端口号为 9000， 后端端口号为 8080。</p>
+<p>前端和后端如果使用 http 进行交互时，请求会被拒绝，因为存在跨域问题。来看看，nginx 是怎么解决的吧：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">location</span> <span class="token attr-value">/ {</span>
+<span class="token comment" spellcheck="true">   # 检查域名后缀</span>
+<span class="token attr-name">   if</span> <span class="token attr-value">($http_origin ~ \.test\.com) {</span>
+<span class="token comment" spellcheck="true">               # 允许跨域请求的域，*代表所有，$http_origin动态获取请求客户端请求的域</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Origin $http_origin;</span>
+<span class="token comment" spellcheck="true">        # 允许请求的方法，比如 GET/POST/PUT/DELETE</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Methods GET,POST,OPTIONS;</span>
+<span class="token comment" spellcheck="true">        # 允许带上 cookie 请求</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Credentials true;</span>
+<span class="token comment" spellcheck="true">        # 允许请求的 header</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type;</span>
+<span class="token comment" spellcheck="true">        # 预检命令的缓存，如果不缓存每次会发送两次请求</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Max-Age 1728000;</span>
+   }
+<span class="token comment" spellcheck="true">   # options请求不转给后端，直接返回204</span>
+<span class="token comment" spellcheck="true">   # 第二个if会导致上面的add_header无效，这是nginx的问题，这里直接重复执行下</span>
+<span class="token attr-name">   if</span> <span class="token attr-value">($request_method = OPTIONS) {</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Origin $http_origin;</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Methods GET,POST,OPTIONS;</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Credentials true;</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type;</span>
+<span class="token attr-name">        add_header</span> <span class="token attr-value">Access-Control-Max-Age 1728000;</span>
+<span class="token attr-name">        return</span> <span class="token attr-value">204;</span>
+   }
+
+<span class="token comment" spellcheck="true">   # 其他请求代理到后端</span>
+<span class="token attr-name">   proxy_set_header</span> <span class="token attr-value">Host $host;</span>
+<span class="token attr-name">   proxy_redirect</span> <span class="token attr-value">off;</span>
+<span class="token attr-name">   proxy_set_header</span> <span class="token attr-value">X-Real-IP $remote_addr;</span>
+<span class="token attr-name">   proxy_set_header</span> <span class="token attr-value">X-Scheme $scheme;</span>
+<span class="token attr-name">   proxy_set_header</span> <span class="token attr-value">X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+<span class="token attr-name">   proxy_set_header</span> <span class="token attr-value">X-Forwarded-Proto $scheme;</span>
+<span class="token attr-name">   proxy_pass</span> <span class="token attr-value">http://xxx.xxx.xxx.xxx;</span>
+<span class="token attr-name">}</span> </code></pre>
+<h4 id="1-Access-Control-Allow-Origin"><a href="#1-Access-Control-Allow-Origin" class="headerlink" title="1. Access-Control-Allow-Origin"></a>1. <strong>Access-Control-Allow-Origin</strong></h4><pre><code>服务器默认是不被允许跨域的。给Nginx服务器配置`Access-Control-Allow-Origin *`后，表示服务器可以接受所有的请求源（Origin）,即接受所有跨域的请求。</code></pre><h4 id="2-Access-Control-Allow-Headers-是为了防止出现以下错误："><a href="#2-Access-Control-Allow-Headers-是为了防止出现以下错误：" class="headerlink" title="2. Access-Control-Allow-Headers 是为了防止出现以下错误："></a>2. <strong>Access-Control-Allow-Headers</strong> 是为了防止出现以下错误：</h4><pre><code>Request header field Content-Type is not allowed by Access-Control-Allow-Headers in preflight response.</code></pre><p>这个错误表示当前请求Content-Type的值不被支持。其实是我们发起了”application/json”的类型请求导致的。这里涉及到一个概念：<code>预检请求（preflight request）</code>,请看下面”预检请求”的介绍。</p>
+<h4 id="3-Access-Control-Allow-Methods-是为了防止出现以下错误："><a href="#3-Access-Control-Allow-Methods-是为了防止出现以下错误：" class="headerlink" title="3. Access-Control-Allow-Methods 是为了防止出现以下错误："></a>3. <strong>Access-Control-Allow-Methods</strong> 是为了防止出现以下错误：</h4><pre><code>Content-Type is not allowed by Access-Control-Allow-Headers in preflight response.</code></pre><h4 id="4-给OPTIONS-添加-204的返回，是为了处理在发送POST请求时Nginx依然拒绝访问的错误"><a href="#4-给OPTIONS-添加-204的返回，是为了处理在发送POST请求时Nginx依然拒绝访问的错误" class="headerlink" title="4.给OPTIONS 添加 204的返回，是为了处理在发送POST请求时Nginx依然拒绝访问的错误"></a>4.给<code>OPTIONS</code> 添加 <code>204</code>的返回，是为了处理在发送POST请求时Nginx依然拒绝访问的错误</h4><p>发送”预检请求”时，需要用到方法 <code>OPTIONS</code> ,所以服务器需要允许该方法。</p>
+<h3 id="5-3-Nginx防盗链"><a href="#5-3-Nginx防盗链" class="headerlink" title="5.3-Nginx防盗链"></a>5.3-Nginx防盗链</h3><p>防盗链的意义在于防止网站中的文件链接在其他网站中被使用，盗链的文件或图片在其他网站中加载，在这个过程中，实质上加载的请求是被盗链服务器上响应的，这就造成了一些不正常流量(并非自己网站的正常打开页面加载的处理请求)造成了消耗不必要的带宽。</p>
+<p>要实现防盗链，需要了解HTTP协议中的请求头部的Referer头域和采用URL的格式表示访问当前网页或者文件的源地址。通过该头域的值，我们可以检测到访问目标资源的源地址。这样，如果我们检测到Referer(rui’fe~)头域中的值并不是自己站点内的URL，就采取组织措施，实现防盗链。</p>
+<p>nginx防盗链使用到了valid_referers这个名单定义项(相当是定义白名单域名，如需定义多个域名使用空格分隔，非这里定义的域名会在转跳中返回403状态码)，if中定义：非名单里里的域名可以定义返回403状态拒绝访问或返回一个盗链显示图片，如果使用盗链显示图片就定义rewrite跳转到那个图片的URL。</p>
+<ul>
+<li>location中定义防止盗链的文件类型，以正则的语法进行匹配</li>
+<li>expires、access_log定义了这些文件过期时间和日志不记录类型的配置，防盗链与静态文件过期时间和访问日志不记录可以在一个location中定义配置</li>
+<li>rewrite设定指定转跳，设定指定转跳的URL地址，返回状态码302</li>
+<li>return跟rewrite类似，只不过在最后处理请求时是直接拒绝掉这个盗链的请求，返回状态码403</li>
+</ul>
+<pre class=" language-properties"><code class="language-properties">server{
+..
+<span class="token comment" spellcheck="true">    # 对源站点验证</span>
+<span class="token attr-name">    valid_referers</span> <span class="token attr-value">*.xxx.com;</span>
+<span class="token comment" spellcheck="true">    # 非法引入会进入下方判断</span>
+<span class="token attr-name">    if($invalid_referer)</span> <span class="token attr-value">{</span>
+<span class="token attr-name">        return</span> <span class="token attr-value">404;</span>
+    }
+...
+}</code></pre>
+<h3 id="5-4-负载均衡配置"><a href="#5-4-负载均衡配置" class="headerlink" title="5.4-负载均衡配置"></a>5.4-负载均衡配置</h3><p>反向代理的例子中，代理仅仅指向一个服务器。</p>
+<p>但是，网站在实际运营过程中，多半都是有多台服务器运行着同样的 app，这时需要使用负载均衡来分流。</p>
+<p>nginx 也可以实现简单的负载均衡功能。</p>
+<p>假设这样一个应用场景：将应用部署在 192.168.1.11:80、192.168.1.12:80、192.168.1.13:80 三台 linux 环境的服务器上。网站域名叫 <code>www.helloworld.com</code>，公网 IP 为 192.168.1.11。在公网 IP 所在的服务器上部署 nginx，对所有请求做负载均衡处理。</p>
+<p>nginx.conf 配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">http</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">     #设定mime类型,类型由mime.type文件定义</span>
+<span class="token attr-name">    include</span> <span class="token attr-value">      /etc/nginx/mime.types;</span>
+<span class="token attr-name">    default_type</span> <span class="token attr-value"> application/octet-stream;</span>
+<span class="token comment" spellcheck="true">    #设定日志格式</span>
+<span class="token attr-name">    access_log</span> <span class="token attr-value">   /var/log/nginx/access.log;</span>
+
+<span class="token comment" spellcheck="true">    #设定负载均衡的服务器列表</span>
+<span class="token attr-name">    upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token comment" spellcheck="true">        #weigth参数表示权值，权值越高被分配到的几率越大</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.11:80   weight=5;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.12:80   weight=1;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.13:80   weight=6;</span>
+    }
+
+<span class="token comment" spellcheck="true">   #HTTP服务器</span>
+<span class="token attr-name">   server</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">        #侦听80端口</span>
+<span class="token attr-name">        listen</span> <span class="token attr-value">      80;</span>
+
+<span class="token comment" spellcheck="true">        #定义使用www.xx.com访问</span>
+<span class="token attr-name">        server_name</span> <span class="token attr-value"> www.helloworld.com;</span>
+
+<span class="token comment" spellcheck="true">        #对所有请求进行负载均衡请求</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">/ {</span>
+<span class="token attr-name">            root</span> <span class="token attr-value">       /root;                 #定义服务器的默认网站根目录位置</span>
+<span class="token attr-name">            index</span> <span class="token attr-value">      index.html index.htm;  #定义首页索引文件的名称</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value"> http://load_balance_server ;#请求转向load_balance_server 定义的服务器列表</span>
+
+<span class="token comment" spellcheck="true">            #以下是一些反向代理的配置(可选择性配置)</span>
+<span class="token comment" spellcheck="true">            #proxy_redirect off;</span>
+<span class="token attr-name">            proxy_set_header</span> <span class="token attr-value">Host $host;</span>
+<span class="token attr-name">            proxy_set_header</span> <span class="token attr-value">X-Real-IP $remote_addr;</span>
+<span class="token comment" spellcheck="true">            #后端的Web服务器可以通过X-Forwarded-For获取用户真实IP</span>
+<span class="token attr-name">            proxy_set_header</span> <span class="token attr-value">X-Forwarded-For $remote_addr;</span>
+<span class="token attr-name">            proxy_connect_timeout</span> <span class="token attr-value">90;          #nginx跟后端服务器连接超时时间(代理连接超时)</span>
+<span class="token attr-name">            proxy_send_timeout</span> <span class="token attr-value">90;             #后端服务器数据回传时间(代理发送超时)</span>
+<span class="token attr-name">            proxy_read_timeout</span> <span class="token attr-value">90;             #连接成功后，后端服务器响应时间(代理接收超时)</span>
+<span class="token attr-name">            proxy_buffer_size</span> <span class="token attr-value">4k;              #设置代理服务器（nginx）保存用户头信息的缓冲区大小</span>
+<span class="token attr-name">            proxy_buffers</span> <span class="token attr-value">4 32k;               #proxy_buffers缓冲区，网页平均在32k以下的话，这样设置</span>
+<span class="token attr-name">            proxy_busy_buffers_size</span> <span class="token attr-value">64k;       #高负荷下缓冲大小（proxy_buffers*2）</span>
+<span class="token attr-name">            proxy_temp_file_write_size</span> <span class="token attr-value">64k;    #设定缓存文件夹大小，大于这个值，将从upstream服务器传</span>
+
+<span class="token attr-name">            client_max_body_size</span> <span class="token attr-value">10m;          #允许客户端请求的最大单文件字节数</span>
+<span class="token attr-name">            client_body_buffer_size</span> <span class="token attr-value">128k;      #缓冲区代理缓冲用户端请求的最大字节数</span>
+        }
+    }
+}</code></pre>
+<p><strong>Nginx的负载均衡策略</strong></p>
+<h4 id="1-轮循-round-robin-默认策略（RR-默认）"><a href="#1-轮循-round-robin-默认策略（RR-默认）" class="headerlink" title="1. 轮循(round-robin)默认策略（RR-默认）"></a>1. 轮循(round-robin)默认策略（RR-默认）</h4><p>根据请求次数，将每个请求均匀分配到每台服务器,如果后端服务器宕机，自动剔除。</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#动态服务器组</span>
+<span class="token attr-name">upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token comment" spellcheck="true">        #默认使用轮询策略</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.11:80;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.12:80;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.13:80;</span>
+    }</code></pre>
+<p>最基本的配置方法，上面的例子就是轮询的方式，它是upstream模块默认的负载均衡默认策略。每个请求会按时间顺序逐一分配到不同的后端服务器。</p>
+<p>有如下参数：</p>
+<table>
+<thead>
+<tr>
+<th>fail_timeout</th>
+<th>与max_fails结合使用。</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>max_fails</td>
+<td>设置在fail_timeout参数设置的时间内最大失败次数，如果在这个时间内，所有针对该服务器的请求都失败了，那么认为该服务器会被认为是停机了，</td>
+</tr>
+<tr>
+<td>fail_time</td>
+<td>服务器会被认为停机的时间长度,默认为10s。</td>
+</tr>
+<tr>
+<td>backup</td>
+<td>标记该服务器为备用服务器。当主服务器停止时，请求会被发送到它这里。</td>
+</tr>
+<tr>
+<td>down</td>
+<td>标记服务器永久停机了。</td>
+</tr>
+</tbody></table>
+<p>注意：</p>
+<ul>
+<li>在轮询中，如果服务器down掉了，会自动剔除该服务器。</li>
+<li>缺省配置就是轮询策略。</li>
+<li>此策略适合服务器配置相当，无状态且短平快的服务使用。</li>
+</ul>
+<h4 id="2-权重-Weight"><a href="#2-权重-Weight" class="headerlink" title="2. 权重(Weight)"></a>2. 权重(Weight)</h4><p>权重方式，在轮询策略的基础上指定轮询的几率，指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token comment" spellcheck="true">        #weigth参数表示权值，权值越高被分配到的几率越大</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.11:80   weight=5;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.12:80   weight=1;</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">192.168.1.13:80   weight=6;</span>
+    }</code></pre>
+<p>注意：</p>
+<ul>
+<li>权重越高分配到需要处理的请求越多。</li>
+<li>此策略可以与least_conn和ip_hash结合使用。</li>
+<li>此策略比较适合服务器的硬件配置差别比较大的情况。</li>
+</ul>
+<h4 id="3-ip-hash"><a href="#3-ip-hash" class="headerlink" title="3. ip_hash"></a>3. ip_hash</h4><p>在负载均衡系统中，假如用户在某台服务器上登录了，那么该用户第二次请求的时候，因为我们是负载均衡系统，每次请求都会重新定位到服务器集群中的某一个，那么<strong>已经登录某一个服务器的用户再重新定位到另一个服务器，其登录信息将会丢失，这样显然是不妥的</strong>。<br>我们可以采用<strong>ip_hash</strong>指令解决这个问题，如果客户已经访问了某个服务器，当用户再次访问时，会将该请求通过<strong>哈希算法，自动定位到该服务器</strong>。<br>每个请求按访问ip的hash结果分配，这样每个访客固定访问一个后端服务器，可以解决<strong>session的问题</strong>。</p>
+<p>指定负载均衡器按照基于客户端IP的分配方式，这个方法确保了相同的客户端的请求一直发送到相同的服务器，以保证session会话。这样每个访客都固定访问一个后端服务器，可以解决session不能跨服务器的问题。</p>
+<p><strong>同一客户端的Web请求被分发到同一个后端服务器进行处理，使用该策略可以有效的避免用户Session失效的问题。该策略可以连续产生1045个互异的value，经过20次hash仍然找不到可用的机器时，算法会退化成轮循。</strong></p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#动态服务器组</span>
+<span class="token attr-name">  upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token attr-name">    ip_hash;</span> <span class="token attr-value"> #保证每个访客固定访问一个后端服务器</span>
+<span class="token attr-name">    server</span> <span class="token attr-value">localhost:8080  weight=2; #tomcat 7.0</span>
+<span class="token attr-name">    server</span> <span class="token attr-value">localhost:8081; #tomcat 8.0</span>
+<span class="token attr-name">    server</span> <span class="token attr-value">localhost:8082; #tomcat 8.5</span>
+<span class="token attr-name">    server</span> <span class="token attr-value">localhost:8083  max_fails=3 fail_timeout=20s; #tomcat 9.0</span>
+  }</code></pre>
+<p>注意：</p>
+<ul>
+<li>在nginx版本1.3.1之前，不能在ip_hash中使用权重（weight）。</li>
+<li>ip_hash不能与backup同时使用。</li>
+<li>此策略适合有状态服务，比如session。</li>
+<li>当有服务器需要剔除，必须手动down掉。</li>
+</ul>
+<h4 id="4-最少连接-least-conn"><a href="#4-最少连接-least-conn" class="headerlink" title="4. 最少连接(least_conn)"></a>4. 最少连接(least_conn)</h4><p>把请求转发给连接数较少的后端服务器。轮询算法是把请求平均的转发给各个后端，使它们的负载大致相同；但是，有些请求占用的时间很长，会导致其所在的后端负载较高。这种情况下，least_conn这种方式就可以达到更好的负载均衡效果。</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#动态服务器组</span>
+<span class="token attr-name">upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token attr-name">  least_conn;</span> <span class="token attr-value"> #把请求转发给连接数较少的后端服务器</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8080  weight=2; #tomcat 7.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8081; #tomcat 8.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8082 backup; #tomcat 8.5</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8083  max_fails=3 fail_timeout=20s; #tomcat 9.0</span>
+}</code></pre>
+<p><strong>注意：</strong></p>
+<ul>
+<li>此负载均衡策略适合请求处理时间长短不一造成服务器过载的情况。</li>
+</ul>
+<h4 id="5-参数说明"><a href="#5-参数说明" class="headerlink" title="5. 参数说明"></a>5. 参数说明</h4><ul>
+<li><p>weight</p>
+<p>启用权重策略，总数按照10进行计算，如果分配为3，则表示所有连接中的30%分配给该服务器,默认值为1；</p>
+</li>
+<li><p>max_fail/fail_timeout</p>
+<p>某台服务器允许请求失败的次数，超过最大数后，在fail_timeout时间内，新的请求不会分配给这台机器，等fail_timeout时间过去后， 会再尝试请求这台服务器，如此循环往复；如果设置为0，反向代理服务器则会将这台服务器设置为永久无效状态。max_fail默认为1，fail_timeout默认为10秒；</p>
+</li>
+<li><p>backup</p>
+<p>将某台服务器设定为备用机，当列表中的其他服务器都不可用时，启用备用机；</p>
+</li>
+<li><p>down</p>
+<p>将某台服务器设定为不可用状态；</p>
+</li>
+<li><p>max_conns</p>
+<p>限制分配给某台服务器的最大连接数，超过这个数量，反向代理服务器将不会分配新的连接，默认为0，表示不限制；</p>
+</li>
+</ul>
+<h4 id="6-第三方策略"><a href="#6-第三方策略" class="headerlink" title="6. 第三方策略"></a>6. 第三方策略</h4><p>扩展策略默认不被编译进nginx内核，如果启用该策略，需要自行编译安装，需要安装第三方插件。</p>
+<ul>
+<li><p><strong>fair</strong></p>
+<p>按照服务器端的响应时间来分配请求，响应时间短的优先分配。</p>
+<p>根据后台服务器的响应时间判断负载情况，从中选出负载最轻的后端服务。但是在实际请款中，网络环境往往不那么简单，所以慎用。</p>
+<p>在编译安装后，如果需要启用该策略，需要在upstream标签中添加<code>fair;</code>,启用该策略后，加权轮循将失效。</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#动态服务器组</span>
+<span class="token attr-name">upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8080; #tomcat 7.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8081; #tomcat 8.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8082; #tomcat 8.5</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8083; #tomcat 9.0</span>
+<span class="token attr-name">  fair;</span> <span class="token attr-value"> #实现响应时间短的优先分配</span>
+}</code></pre>
+</li>
+<li><p><strong>url_hash</strong></p>
+<p>按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，要配合缓存命中来使用。同一个资源多次请求，可能会到达不同的服务器上，导致不必要的多次下载，缓存命中率不高，以及一些资源时间的浪费。而使用url_hash，可以使得同一个url（也就是同一个资源请求）会到达同一台服务器，一旦缓存住了资源，再此收到请求，就可以从缓存中读取。　</p>
+<ul>
+<li>按照请求url的hash结果来分配请求，试每个url定向到同一个后端服务器，在1.7.2之后的nginx版本中，该模块应集成到内核中，不需要单独安装；</li>
+<li>启用该策略，需要在upstream标签中添加`hash $request_url;。</li>
+</ul>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">#动态服务器组</span>
+<span class="token attr-name">upstream</span> <span class="token attr-value">load_balance_server {</span>
+<span class="token attr-name">  hash</span> <span class="token attr-value">$request_uri;  #实现每个url定向到同一个后端服务器</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8080; #tomcat 7.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8081; #tomcat 8.0</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8082; #tomcat 8.5</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">localhost:8083; #tomcat 9.0</span>
+}</code></pre>
+</li>
+</ul>
+<h3 id="5-5-网站有多个-webapp-的配置"><a href="#5-5-网站有多个-webapp-的配置" class="headerlink" title="5.5-网站有多个 webapp 的配置"></a>5.5-网站有多个 webapp 的配置</h3><p>当一个网站功能越来越丰富时，往往需要将一些功能相对独立的模块剥离出来，独立维护。这样的话，通常，会有多个 webapp。</p>
+<p>举个例子：假如 <code>www.helloworld.com</code> 站点有好几个 webapp，finance（金融）、product（产品）、admin（用户中心）。访问这些应用的方式通过上下文(context)来进行区分:</p>
+<blockquote>
+<p><a href="http://www.helloworld.com/finance/" target="_blank" rel="noopener">www.helloworld.com/finance/</a></p>
+<p><a href="http://www.helloworld.com/product/" target="_blank" rel="noopener">www.helloworld.com/product/</a></p>
+<p><a href="http://www.helloworld.com/admin/" target="_blank" rel="noopener">www.helloworld.com/admin/</a></p>
+</blockquote>
+<p>我们知道，http 的默认端口号是 80，如果在一台服务器上同时启动这 3 个 webapp 应用，都用 80 端口，肯定是不成的。所以，这三个应用需要分别绑定不同的端口号。</p>
+<p>那么，问题来了，用户在实际访问 <code>www.helloworld.com</code> 站点时，访问不同 webapp，总不会还带着对应的端口号去访问吧。所以，你再次需要用到反向代理来做处理。</p>
+<p>配置也不难，来看看怎么做吧：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">http</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">    #此处省略一些基本配置</span>
+<span class="token attr-name">    upstream</span> <span class="token attr-value">product_server{</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">www.helloworld.com:8081;</span>
+    }
+
+<span class="token attr-name">    upstream</span> <span class="token attr-value">admin_server{</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">www.helloworld.com:8082;</span>
+    }
+
+<span class="token attr-name">    upstream</span> <span class="token attr-value">finance_server{</span>
+<span class="token attr-name">        server</span> <span class="token attr-value">www.helloworld.com:8083;</span>
+    }
+
+<span class="token attr-name">    server</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">        #此处省略一些基本配置</span>
+<span class="token comment" spellcheck="true">        #默认指向product的server</span>
+<span class="token attr-name">        location</span> <span class="token attr-value">/ {</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value">http://product_server;</span>
+        }
+
+<span class="token attr-name">        location</span> <span class="token attr-value">/product/{</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value">http://product_server;</span>
+        }
+
+<span class="token attr-name">        location</span> <span class="token attr-value">/admin/ {</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value">http://admin_server;</span>
+        }
+
+<span class="token attr-name">        location</span> <span class="token attr-value">/finance/ {</span>
+<span class="token attr-name">            proxy_pass</span> <span class="token attr-value">http://finance_server;</span>
+        }
+    }
+}</code></pre>
+<h3 id="5-6-https-反向代理配置"><a href="#5-6-https-反向代理配置" class="headerlink" title="5.6-https 反向代理配置"></a>5.6-https 反向代理配置</h3><p>一些对安全性要求比较高的站点，可能会使用 HTTPS（一种使用 ssl 通信标准的安全 HTTP 协议）。</p>
+<p>这里不科普 HTTP 协议和 SSL 标准。但是，使用 nginx 配置 https 需要知道几点：</p>
+<ul>
+<li>HTTPS 的固定端口号是 443，不同于 HTTP 的 80 端口</li>
+<li>SSL 标准需要引入安全证书，所以在 nginx.conf 中你需要指定证书和它对应的 key</li>
+</ul>
+<p>其他和 http 反向代理基本一样，只是在 <code>Server</code> 部分配置有些不同。</p>
+<p>首先要确定 Nginx有没安装了ssl 模块。</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">nginx</span> <span class="token attr-value">-V</span>
+<span class="token comment" spellcheck="true"># 如未安装需进入Nginx 源码目录重新编译，在原命令基础上添加--with-http_ssl_module再进行编译安装 </span>
+<span class="token attr-name">./configure</span> <span class="token attr-value">--prefix=/usr/local/nginx ... --with-http_ssl_module</span></code></pre>
+<pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true">  #HTTP服务器</span>
+<span class="token attr-name">  server</span> <span class="token attr-value">{</span>
+<span class="token comment" spellcheck="true">      #监听443端口。443为知名端口号，主要用于HTTPS协议</span>
+<span class="token attr-name">      listen</span> <span class="token attr-value">      443 ssl;</span>
+
+<span class="token comment" spellcheck="true">      #定义使用www.xx.com访问</span>
+<span class="token attr-name">      server_name</span> <span class="token attr-value"> www.helloworld.com;</span>
+
+<span class="token comment" spellcheck="true">      #ssl证书文件位置(常见证书文件格式为：crt/pem)</span>
+<span class="token attr-name">      ssl_certificate</span> <span class="token attr-value">     cert.pem;</span>
+<span class="token comment" spellcheck="true">      #ssl证书key位置</span>
+<span class="token attr-name">      ssl_certificate_key</span> <span class="token attr-value"> cert.key;</span>
+
+<span class="token comment" spellcheck="true">      #ssl配置参数（选择性配置）</span>
+<span class="token attr-name">      ssl_session_cache</span> <span class="token attr-value">   shared:SSL:1m;</span>
+<span class="token attr-name">      ssl_session_timeout</span> <span class="token attr-value"> 5m;</span>
+<span class="token comment" spellcheck="true">      #数字签名，此处使用MD5</span>
+<span class="token attr-name">      ssl_ciphers</span> <span class="token attr-value"> HIGH:!aNULL:!MD5;</span>
+<span class="token attr-name">      ssl_prefer_server_ciphers</span> <span class="token attr-value"> on;</span>
+
+<span class="token attr-name">      location</span> <span class="token attr-value">/ {</span>
+<span class="token attr-name">          root</span> <span class="token attr-value">  /root;</span>
+<span class="token attr-name">          index</span> <span class="token attr-value"> index.html index.htm;</span>
+      }
+  }</code></pre>
+<h3 id="5-7-静态站点配置"><a href="#5-7-静态站点配置" class="headerlink" title="5.7-静态站点配置"></a>5.7-静态站点配置</h3><p>有时候，我们需要配置静态站点(即 html 文件和一堆静态资源)。</p>
+<p>举例来说：如果所有的静态资源都放在了 <code>/app/dist</code> 目录下，我们只需要在 <code>nginx.conf</code> 中指定首页以及这个站点的 host 即可。</p>
+<p>配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">worker_processes</span> <span class="token attr-value"> 1;</span>
+
+<span class="token attr-name">events</span> <span class="token attr-value">{</span>
+<span class="token attr-name">    worker_connections</span> <span class="token attr-value"> 1024;</span>
+}
+
+<span class="token attr-name">http</span> <span class="token attr-value">{</span>
+<span class="token attr-name">    include</span> <span class="token attr-value">      mime.types;</span>
+<span class="token attr-name">    default_type</span> <span class="token attr-value"> application/octet-stream;</span>
+<span class="token attr-name">    sendfile</span> <span class="token attr-value">       on;</span>
+<span class="token attr-name">    keepalive_timeout</span> <span class="token attr-value"> 65;</span>
+
+<span class="token attr-name">    gzip</span> <span class="token attr-value">on;</span>
+<span class="token attr-name">    gzip_types</span> <span class="token attr-value">text/plain application/x-javascript text/css application/xml text/javascript application/javascript image/jpeg image/gif image/png;</span>
+<span class="token attr-name">    gzip_vary</span> <span class="token attr-value">on;</span>
+
+<span class="token attr-name">    server</span> <span class="token attr-value">{</span>
+<span class="token attr-name">        listen</span> <span class="token attr-value">      80;</span>
+<span class="token attr-name">        server_name</span> <span class="token attr-value"> static.zp.cn;</span>
+
+<span class="token attr-name">        location</span> <span class="token attr-value">/ {</span>
+<span class="token attr-name">            root</span> <span class="token attr-value">/app/dist;</span>
+<span class="token attr-name">            index</span> <span class="token attr-value">index.html;</span>
+<span class="token comment" spellcheck="true">            #转发任何请求到 index.html</span>
+        }
+    }
+}</code></pre>
+<p>然后，添加 HOST：</p>
+<p>127.0.0.1 static.zp.cn</p>
+<p>此时，在本地浏览器访问 static.zp.cn ，就可以访问静态站点了。</p>
+<h3 id="5-8-搭建文件服务器"><a href="#5-8-搭建文件服务器" class="headerlink" title="5.8-搭建文件服务器"></a>5.8-搭建文件服务器</h3><p>有时候，团队需要归档一些数据或资料，那么文件服务器必不可少。使用 Nginx 可以非常快速便捷的搭建一个简易的文件服务。</p>
+<p>Nginx 中的配置要点：</p>
+<ul>
+<li>将 autoindex 开启可以显示目录，默认不开启。</li>
+<li>将 autoindex_exact_size 开启可以显示文件的大小。</li>
+<li>将 autoindex_localtime 开启可以显示文件的修改时间。</li>
+<li>root 用来设置开放为文件服务的根路径。</li>
+<li>charset 设置为 <code>charset utf-8,gbk;</code>，可以避免中文乱码问题（windows 服务器下设置后，依然乱码，本人暂时没有找到解决方法）。</li>
+</ul>
+<p>一个最简化的配置如下：</p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">autoindex</span> <span class="token attr-value">on;# 显示目录</span>
+<span class="token attr-name">autoindex_exact_size</span> <span class="token attr-value">on;# 显示文件大小</span>
+<span class="token attr-name">autoindex_localtime</span> <span class="token attr-value">on;# 显示文件时间</span>
+
+<span class="token attr-name">server</span> <span class="token attr-value">{</span>
+<span class="token attr-name">    charset</span> <span class="token attr-value">     utf-8,gbk; # windows 服务器下设置后，依然乱码，暂时无解</span>
+<span class="token attr-name">    listen</span> <span class="token attr-value">      9050 default_server;</span>
+<span class="token attr-name">    listen</span> <span class="token attr-value">      [::]:9050 default_server;</span>
+<span class="token attr-name">    server_name</span> <span class="token attr-value"> _;</span>
+<span class="token attr-name">    root</span> <span class="token attr-value">        /share/fs;</span>
+}</code></pre>
+<h3 id="5-9-Nginx缓存配置"><a href="#5-9-Nginx缓存配置" class="headerlink" title="5.9-Nginx缓存配置"></a>5.9-Nginx缓存配置</h3><p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1.png" alt></p>
+<p>面对第一次客户端的应用Nginx需要从后端的服务获取数据，对于后续的请求，Nginx若进行了缓存就不再从后端服务获取数据。</p>
+<h4 id="1-proxy-cache-path"><a href="#1-proxy-cache-path" class="headerlink" title="1. proxy_cache_path"></a>1. proxy_cache_path</h4><p>语法：proxy_cache_path path [levels=levels].只能用在http中。</p>
+<p>指定缓存位置、缓存名称、内存中缓存内容元数据信息大小限制、缓存总大小限制。缓存位置是一个目录应该先创建好，nginx并不会帮我们创建这个缓存目录</p>
+<pre class=" language-undefined"><code class="language-undefined">proxy_cache_path /root/cache levels=1:2 keys_zone=zzm_cache:10m max_size=1g inactive=60m use_temp_path=off;</code></pre>
+<ul>
+<li>/root/cache：定义 proxy_cache 生成文件的根路径</li>
+<li>levels：默认所有缓存文件都放在上面指定的根路径中，从而可能影响缓存的性能。推荐指定为 2 级目录来存储缓存文件</li>
+<li>key_zone：这个的值是字符串，可以随意写。用于在共享内存中定义一块存储区域来存放缓存的 key 和 metadata（类似于使用次数），这样 nginx 可以快速判断一个 request 是否命中缓存。1m 可以存储 8000 个key,10m可以存在80000个key</li>
+<li>max_size：最大 cache 空间。如果不指定，会使用掉所有 disk space。当达到 disk 上限后，会删除最少使用的 cache</li>
+<li>inactive：内存中缓存的过期检查周期。示例配置中如果 1h 内都没有被访问，则不论状态是否为 expired，都会清除缓存。需要注意的是，inactive 和 expired 配置项的含义是不同的，expired 只是判断过期时间，不会删除缓存；而 inactive 是直接删除过期缓存</li>
+<li>use_temp_path：如果为 off，则 nginx 会将缓存文件直接写入指定的 cache 文件中，而不使用 temp_path 指定的临时存储路径</li>
+</ul>
+<h4 id="2-proxy-cache"><a href="#2-proxy-cache" class="headerlink" title="2. proxy_cache"></a>2. proxy_cache</h4><p>proxy_cache zone | off。默认是关闭的，可以用在http,server,location中。</p>
+<p>指定使用前面设置的缓存名称</p>
+<pre class=" language-bash"><code class="language-bash">    location / <span class="token punctuation">{</span>
+        proxy_cache zzm_cache<span class="token punctuation">;</span>
+        proxy_pass http://zzm<span class="token punctuation">;</span>
+        proxy_cache_valid 200 304 12h<span class="token punctuation">;</span>
+        proxy_cache_valid any 10m<span class="token punctuation">;</span>
+        proxy_cache_key <span class="token variable">$host</span><span class="token variable">$uri</span><span class="token variable">$is_args</span><span class="token variable">$args</span><span class="token punctuation">;</span>
+        add_header Nginx-Cache <span class="token string">"<span class="token variable">$upstream_cache_status</span>"</span><span class="token punctuation">;</span>
+        proxy_next_upstream error <span class="token function">timeout</span> invalid_header http_500 http_502 http_503 http_504<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span></code></pre>
+<ul>
+<li>proxy_cache：对应 http 段的 key_zone，是你定义的 proxy_cache 所使用的共享空间的名称，我在1.1中定义的是zzm_cache，所以在这里也写的是zzm_cache。</li>
+<li>proxy_cache_valid：对指定的 HTTP 状态进行缓存，并指定缓存时间。可以自定义写入多个配置项。这里我们对200和304的返回码缓存12小时。其余的缓存10分钟</li>
+<li>proxy_cache_key：缓存的维度</li>
+<li>is_args:如果$args设置，值为”?”，否则为””</li>
+<li>proxy_next_upstream 当请求服务器发生错误或超时时，会尝试到下一台服务器</li>
+</ul>
+<h4 id="3-静态资源缓存浏览器"><a href="#3-静态资源缓存浏览器" class="headerlink" title="3. 静态资源缓存浏览器"></a>3. 静态资源缓存浏览器</h4><p><strong>expires 指令</strong></p>
+<pre class=" language-properties"><code class="language-properties"><span class="token attr-name">location</span> <span class="token attr-value">/static{</span>
+<span class="token attr-name">alias</span> <span class="token attr-value">/xxx/yyy;</span>
+<span class="token comment" spellcheck="true">                #expires 10s;    # 缓存10s后过期</span>
+<span class="token attr-name">        expires</span> <span class="token attr-value">@22h30m; # 指定缓存过期时间</span>
+<span class="token comment" spellcheck="true">        # expires -1h; # 缓存1小时前失效，即不缓存</span>
+<span class="token comment" spellcheck="true">        # expires epoch; # 过期时间为1 January,1970,00:00:01 GMT，同样不进行缓存</span>
+<span class="token comment" spellcheck="true">        # expires off; # 不设置，会使用浏览器默认值</span>
+<span class="token comment" spellcheck="true">        # expires max; # 过期时间设置为31 December 2037 23:59:59 GMT，“Cache-Control”的值为10年</span>
+}</code></pre>
+<h4 id="4-服务器资源缓存到-Nginx端"><a href="#4-服务器资源缓存到-Nginx端" class="headerlink" title="4. 服务器资源缓存到 Nginx端"></a>4. 服务器资源缓存到 Nginx端</h4><pre class=" language-properties"><code class="language-properties"><span class="token comment" spellcheck="true"># 设置缓存保存的目录</span>
+<span class="token comment" spellcheck="true"># keys_zone 设置共享内存及占用的空间大小，mycache为自定义名称，在下方需使用</span>
+<span class="token comment" spellcheck="true"># max_size 设置缓存总大小</span>
+<span class="token comment" spellcheck="true"># inactive 缓存超出所指定的时间进行清理</span>
+<span class="token attr-name">proxy_cache_path</span> <span class="token attr-value">/usr/local/nginx/upstream_cache keys_zone=mycache:5m max_size=1g inactive=30m use_temp_path=off; </span>
+<span class="token attr-name">server</span> <span class="token attr-value">{</span>
+...
+<span class="token comment" spellcheck="true"># 开启并使用缓存，mycache为上方所指定的名称</span>
+<span class="token attr-name">proxy_cache</span> <span class="token attr-value">mycache;</span>
+<span class="token comment" spellcheck="true"># 针对指定状态码的缓存过期时间</span>
+<span class="token attr-name">proxy_cache_valid</span> <span class="token attr-value">200 304 8h;</span>
+...
+}</code></pre>
+<h3 id="5-10-常见问题"><a href="#5-10-常见问题" class="headerlink" title="5.10-常见问题"></a>5.10-常见问题</h3><ul>
+<li>使用Nginx的反向代理，让同一个用户的请求一定转发到同一台服务器上，这种均衡策略会消耗更多的服务器资源，也增加了代理服务器的负担；</li>
+<li>使用其他策略作为负载均衡时，会出现用户Session丢失的情况，为避免出现这种情况，可以将用户的Session存放到缓存服务器中，比较常用的方案时redis/memchache；</li>
+<li>反向代理服务器也可以开启缓存服务，但是开启该项服务会增加代理服务器的负担，影响整体的负载均衡效率；</li>
+<li>使用Nginx反向代理布置负载均衡，操作相对简单，但是会有“单点故障”的问题，如果后台某台服务器宕机，会带来很多的麻烦，后期如果后台服务器继续增加，反向代理服务器会成为负载均衡方案的瓶颈。</li>
+</ul>
+<h2 id="6-Nginx的架构和原理"><a href="#6-Nginx的架构和原理" class="headerlink" title="6-Nginx的架构和原理"></a>6-Nginx的架构和原理</h2><h3 id="6-1-Nginx的整体架构"><a href="#6-1-Nginx的整体架构" class="headerlink" title="6.1-Nginx的整体架构"></a>6.1-Nginx的整体架构</h3><p><img src="/2020/06/07/nginx-xue-xi-bi-ji/Nginx%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt></p>
+<h4 id="1-主进程"><a href="#1-主进程" class="headerlink" title="1. 主进程"></a>1. 主进程</h4><p>Nginx启动时，会生成两种类型的进程，一个是主进程（master），一个（windows版本的目前只有一个）或多个工作进程（worker）。</p>
+<p>主进程并不处理网络请求，主要负责调度工作进程，也就是图示的3项：加载配置、启动工作进程、非停升级</p>
+<p>因此，Nginx启动以后，查看操作系统的进程列表，我们就能看到至少有两个Nginx进程。</p>
+<h4 id="2-工作进程"><a href="#2-工作进程" class="headerlink" title="2. 工作进程"></a>2. 工作进程</h4><p>服务器实际处理网络请求及响应的是工作进程（worker），在类unix系统上，Nginx可以配置多个worker，而每个worker进程都可以同时处理数以千计的网络请求。</p>
+<h4 id="3-模块化设计"><a href="#3-模块化设计" class="headerlink" title="3.模块化设计"></a>3.模块化设计</h4><p>Nginx的worker进程，包括核心和功能性模块，核心模块负责维持一个运行循环（run-loop），执行网络请求处理的不同阶段的模块功能。</p>
+<p>比如：网络读写、存储读写、内容传输、外出过滤，以及将请求发往上游服务器等。</p>
+<p>而其代码的模块化设计，也使得我们可以根据需要对功能模块进行适当的选择和修改，编译成具有特定功能的服务器。</p>
+<h4 id="4-事件驱动模型"><a href="#4-事件驱动模型" class="headerlink" title="4. 事件驱动模型"></a>4. 事件驱动模型</h4><p>基于异步及非阻塞的事件驱动模型，可以说是Nginx得以获得高并发、高性能的关键因素，同时也得益于对Linux、Solaris及类BSD等操作系统内核中事件通知及I/O性能增强功能的采用，如kqueue、epoll及eventports。</p>
+<h4 id="5-代理（proxy）设计"><a href="#5-代理（proxy）设计" class="headerlink" title="5. 代理（proxy）设计"></a>5. 代理（proxy）设计</h4><p>代理设计，可以说是Nginx深入骨髓的设计，无论是对于HTTP，还是对于FastCGI、Memcache、Redis等的网络请求或响应，本质上都采用了代理机制。所以，Nginx天生就是高性能的代理服务器。</p>
+<h3 id="6-2-Nginx的模块化设计"><a href="#6-2-Nginx的模块化设计" class="headerlink" title="6.2-Nginx的模块化设计"></a>6.2-Nginx的模块化设计</h3><p>高度模块化的设计是Nginx的架构基础。Nginx服务器被分解为多个模块，每个模块就是一个功能模块，只负责自身的功能，模块之间严格遵循“高内聚，低耦合”的原则。</p>
+<p>如下图所示：</p>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1.png" alt></p>
+<h4 id="1-核心模块"><a href="#1-核心模块" class="headerlink" title="1. 核心模块"></a>1. 核心模块</h4><p>核心模块是Nginx服务器正常运行必不可少的模块，提供错误日志记录、配置文件解析、事件驱动机制、进程管理等核心功能。</p>
+<h4 id="2-标准HTTP模块"><a href="#2-标准HTTP模块" class="headerlink" title="2. 标准HTTP模块"></a>2. 标准HTTP模块</h4><p>标准HTTP模块提供HTTP协议解析相关的功能，比如：端口配置、网页编码设置、HTTP响应头设置等等。</p>
+<h4 id="3-可选HTTP模块"><a href="#3-可选HTTP模块" class="headerlink" title="3. 可选HTTP模块"></a>3. 可选HTTP模块</h4><p>可选HTTP模块主要用于扩展标准的HTTP功能，让Nginx能处理一些特殊的服务，比如：Flash多媒体传输、解析GeoIP请求、网络传输压缩、安全协议SSL支持等。</p>
+<h4 id="4-邮件服务模块"><a href="#4-邮件服务模块" class="headerlink" title="4. 邮件服务模块"></a>4. 邮件服务模块</h4><p>邮件服务模块主要用于支持Nginx的邮件服务，包括对POP3协议、IMAP协议和SMTP协议的支持。</p>
+<h4 id="5-第三方模块"><a href="#5-第三方模块" class="headerlink" title="5. 第三方模块"></a>5. 第三方模块</h4><p>第三方模块是为了扩展Nginx服务器应用，完成开发者自定义功能，比如：Json支持、Lua支持等。</p>
+<h3 id="6-3-Nginx的请求方式处理"><a href="#6-3-Nginx的请求方式处理" class="headerlink" title="6.3-Nginx的请求方式处理"></a>6.3-Nginx的请求方式处理</h3><p>Nginx是一个高性能的Web服务器，能够同时处理大量的并发请求。它结合多进程机制和异步机制，异步机制使用的是异步非阻塞方式，接下来就给大家介绍一下Nginx的多线程机制和异步非阻塞机制。</p>
+<h4 id="1-多进程机制"><a href="#1-多进程机制" class="headerlink" title="1. 多进程机制"></a>1. 多进程机制</h4><p>服务器每当收到一个客户端时，就有服务器主进程（master process）生成一个子进程（worker process）出来和客户端建立连接进行交互，直到连接断开，该子进程就结束了。</p>
+<p>使用进程的好处是各个进程之间相互独立，不需要加锁，减少了使用锁对性能造成影响，同时降低编程的复杂度，降低开发成本。</p>
+<p>其次，采用独立的进程，可以让进程互相之间不会影响，如果一个进程发生异常退出时，其它进程正常工作，master进程则很快启动新的worker进程，确保服务不会中断，从而将风险降到最低。</p>
+<p>缺点是操作系统生成一个子进程需要进行内存复制等操作，在资源和时间上会产生一定的开销。当有大量请求时，会导致系统性能下降。</p>
+<h4 id="2-异步非阻塞机制"><a href="#2-异步非阻塞机制" class="headerlink" title="2. 异步非阻塞机制"></a>2. 异步非阻塞机制</h4><p>每个工作进程使用异步非阻塞方式，可以处理多个客户端请求。</p>
+<p>当某个工作进程接收到客户端的请求以后，调用IO进行处理，如果不能立即得到结果，就去处理其他请求（即为非阻塞），而客户端在此期间也无需等待响应，可以去处理其他事情（即为异步）</p>
+<p>当IO返回时，就会通知此工作进程，该进程得到通知，暂时挂起当前处理的事务去响应客户端请求。</p>
+<h3 id="6-4-Nginx事件驱动模型"><a href="#6-4-Nginx事件驱动模型" class="headerlink" title="6.4-Nginx事件驱动模型"></a>6.4-Nginx事件驱动模型</h3><p>在Nginx的异步非阻塞机制中，工作进程在调用IO后，就去处理其他的请求，当IO调用返回后，会通知该工作进程。</p>
+<p>对于这样的系统调用，主要使用Nginx服务器的事件驱动模型来实现，如下图所示：</p>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9E%8B.png" alt></p>
+<p>如上图所示，Nginx的事件驱动模型由事件收集器、事件发送器和事件处理器三部分基本单元组成。</p>
+<ul>
+<li>事件收集器：负责收集worker进程的各种IO请求；</li>
+<li>事件发送器：负责将IO事件发送到事件处理器；</li>
+<li>事件处理器：负责各种事件的响应工作。</li>
+</ul>
+<p>事件发送器将每个请求放入一个待处理事件列表，使用非阻塞I/O方式调用事件处理器来处理该请求。</p>
+<p>其处理方式称为“多路IO复用方法”，常见的包括以下三种：select模型、poll模型、epoll模型。</p>
+<h3 id="6-5-Nginx进程处理模型"><a href="#6-5-Nginx进程处理模型" class="headerlink" title="6.5-Nginx进程处理模型"></a>6.5-Nginx进程处理模型</h3><p>Nginx服务器使用 master/worker 多进程模式，多线程启动和执行的流程如下：</p>
+<p>主程序Masterprocess启动后，通过一个for循环来接收和处理外部信号</p>
+<p>主进程通过fork()函数产生worker子进程，每个子进程执行一个for循环来实现Nginx服务器对事件的接收和处理</p>
+<p>一般推荐worker进程数与CPU内核数一致，这样一来不存在大量的子进程生成和管理任务，避免了进程之间竞争CPU资源和进程切换的开销。</p>
+<p>而且Nginx为了更好的利用多核特性，提供了CPU亲缘性的绑定选项，我们可以将某一个进程绑定在某一个核上，这样就不会因为进程的切换带来Cache的失效。</p>
+<p>对于每个请求，有且只有一个工作进程对其处理。首先，每个worker进程都是从master进程fork过来。在master进程里面，先建立好需要listen的socket（listenfd）之后，然后再fork出多个worker进程。</p>
+<p>所有worker进程的listenfd会在新连接到来时变得可读，为保证只有一个进程处理该连接，所有worker进程在注册listenfd读事件前抢占accept_mutex</p>
+<p>抢到互斥锁的那个进程注册listenfd读事件，在读事件里调用accept接受该连接。</p>
+<p>当一个worker进程在accept这个连接之后，就开始读取请求，解析请求，处理请求，产生数据后，再返回给客户端，最后才断开连接，一个完整的请求就是这样。</p>
+<p>我们可以看到，一个请求，完全由worker进程来处理，而且只在一个worker进程中处理。</p>
+<p>如下图所示：</p>
+<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E8%BF%9B%E7%A8%8B%E5%A4%84%E7%90%86%E6%A8%A1%E5%9E%8B.png" alt></p>
+<p>在Nginx服务器的运行过程中，主进程和工作进程需要进程交互。交互依赖于Socket实现的管道来实现。</p>
+<h4 id="1-主进程与工作进程交互"><a href="#1-主进程与工作进程交互" class="headerlink" title="1. 主进程与工作进程交互"></a>1. 主进程与工作进程交互</h4><p>这条管道与普通的管道不同，它是由主进程指向工作进程的单向管道，包含主进程向工作进程发出的指令工，作进程ID等。同时主进程与外界通过信号通信；每个子进程具备接收信号，并处理相应的事件的能力。</p>
+<h4 id="2-工作进程与工作进程交互"><a href="#2-工作进程与工作进程交互" class="headerlink" title="2. 工作进程与工作进程交互"></a>2. 工作进程与工作进程交互</h4><p>这种交互和主进程-工作进程交互基本一致，但是会通过主进程间接完成，工作进程之间是相互隔离的。</p>
+<p>所以当工作进程W1需要向工作进程W2发指令时，首先找到W2的进程ID，然后将正确的指令写入指向W2的通道，W2收到信号采取相应的措施。</p>
+<blockquote>
+<p>参考：</p>
+<p><a href="https://www.jianshu.com/p/5026ab611d4e" target="_blank" rel="noopener">https://www.jianshu.com/p/5026ab611d4e</a></p>
+<p><a href="https://www.jb51.net/article/143985.htm" target="_blank" rel="noopener">https://www.jb51.net/article/143985.htm</a></p>
+<p><a href="https://mp.weixin.qq.com/s/RfaPtO3VWDozIZvGxN2ASQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/RfaPtO3VWDozIZvGxN2ASQ</a></p>
+<p><a href="https://mp.weixin.qq.com/s/bOhypYveaRbAbDPWUEdFfg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/bOhypYveaRbAbDPWUEdFfg</a></p>
+</blockquote>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io" rel="external nofollow noreferrer">fangpeng</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/">https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Nginx/">
+                                    <span class="chip bg-color">Nginx</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/06/07/yi-zhi-xing-hash-suan-fa/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="一致性Hash算法">
+                        
+                        <span class="card-title">一致性Hash算法</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-06-07
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            fangpeng
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/06/02/fen-bu-shi-id-jie-jue-fang-an/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="分布式ID解决方案">
+                        
+                        <span class="card-title">分布式ID解决方案</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-06-02
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            fangpeng
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 空白格的博客<br />'
+            + '文章作者: fangpeng<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">年份</span>
+            <a href="https://fangpeng12.github.io" target="_blank">fangpeng</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">668.5k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    window.setTimeout("siteTime()", 1000);
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "12";
+                    var startDate = "21";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/fangpeng12" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
