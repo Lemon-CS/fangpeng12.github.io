@@ -448,7 +448,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-06-07
+                    2020-04-29
                 </div>
                 
 
@@ -483,13 +483,13 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
                 <h1 id="Nginx学习笔记"><a href="#Nginx学习笔记" class="headerlink" title="Nginx学习笔记"></a>Nginx学习笔记</h1><h2 id="1-什么是Nginx？"><a href="#1-什么是Nginx？" class="headerlink" title="1-什么是Nginx？"></a>1-什么是Nginx？</h2><p><strong>Nginx (engine x)</strong> 是一款轻量级的 Web 服务器 、反向代理服务器及电子邮件（IMAP/POP3）代理服务器。</p>
 <p>Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资源的消耗而闻名．业界一致认为它是Apache2.2＋mod_proxy_balancer的轻量级代替者，不仅是因为响应静态页面的速度非常快，而且它的模块数量达到Apache的近2/3。对proxy和rewrite模块的支持很彻底，还支持mod_fcgi、ssl、vhosts ，适合用来做mongrel clusters的前端HTTP响应。<br>Nginx和Apache一样使用模块化设计，nginx模块包括内置模块和第三方模块，其中内置模块中包含主模块和事件模块。</p>
 <p><strong>Nginx处理请求逻辑图</strong></p>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/20190511170603322.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/20190511170603322.png" alt></p>
 <h2 id="2-正向代理和反向代理"><a href="#2-正向代理和反向代理" class="headerlink" title="2-正向代理和反向代理"></a>2-正向代理和反向代理</h2><h3 id="2-1-什么是正向代理？"><a href="#2-1-什么是正向代理？" class="headerlink" title="2.1-什么是正向代理？"></a>2.1-什么是正向代理？</h3><p>正向代理，意思是一个位于客户端和原始服务器(origin server)之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标(原始服务器)，然后代理向原始服务器转交请求并将获得的内容返回给客户端。客户端才能使用正向代理。</p>
 <ul>
 <li>客户端请求目标服务器之间的代理服务器</li>
 <li>请求会先经过代理服务器，然后再转发请求到目标服务器，获得内容后，最后再响应给客户端</li>
 </ul>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
 <h3 id="2-2-什么是反向代理？"><a href="#2-2-什么是反向代理？" class="headerlink" title="2.2-什么是反向代理？"></a>2.2-什么是反向代理？</h3><p>反向代理，客户端是无感知代理的存在，以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端。</p>
 <p>反向代理（Reverse Proxy）方式是指以代理服务器来接受 internet 上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给 internet 上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。</p>
 <p><strong>作用：</strong></p>
@@ -497,7 +497,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <li>保证内网的安全，公网作为访问地址，web服务器谁内网；</li>
 <li>负载均衡</li>
 </ul>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.png" alt></p>
 <h2 id="3-Nginx的作用"><a href="#3-Nginx的作用" class="headerlink" title="3-Nginx的作用"></a>3-Nginx的作用</h2><h3 id="3-1-Nginx可以提供的服务"><a href="#3-1-Nginx可以提供的服务" class="headerlink" title="3.1-Nginx可以提供的服务"></a>3.1-Nginx可以提供的服务</h3><ul>
 <li><p><strong>正向代理</strong></p>
 </li>
@@ -1056,7 +1056,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <span class="token attr-name">    server_name</span> <span class="token attr-value"> _;</span>
 <span class="token attr-name">    root</span> <span class="token attr-value">        /share/fs;</span>
 }</code></pre>
-<h3 id="5-9-Nginx缓存配置"><a href="#5-9-Nginx缓存配置" class="headerlink" title="5.9-Nginx缓存配置"></a>5.9-Nginx缓存配置</h3><p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1.png" alt></p>
+<h3 id="5-9-Nginx缓存配置"><a href="#5-9-Nginx缓存配置" class="headerlink" title="5.9-Nginx缓存配置"></a>5.9-Nginx缓存配置</h3><p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1.png" alt></p>
 <p>面对第一次客户端的应用Nginx需要从后端的服务获取数据，对于后续的请求，Nginx若进行了缓存就不再从后端服务获取数据。</p>
 <h4 id="1-proxy-cache-path"><a href="#1-proxy-cache-path" class="headerlink" title="1. proxy_cache_path"></a>1. proxy_cache_path</h4><p>语法：proxy_cache_path path [levels=levels].只能用在http中。</p>
 <p>指定缓存位置、缓存名称、内存中缓存内容元数据信息大小限制、缓存总大小限制。缓存位置是一个目录应该先创建好，nginx并不会帮我们创建这个缓存目录</p>
@@ -1116,7 +1116,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <li>反向代理服务器也可以开启缓存服务，但是开启该项服务会增加代理服务器的负担，影响整体的负载均衡效率；</li>
 <li>使用Nginx反向代理布置负载均衡，操作相对简单，但是会有“单点故障”的问题，如果后台某台服务器宕机，会带来很多的麻烦，后期如果后台服务器继续增加，反向代理服务器会成为负载均衡方案的瓶颈。</li>
 </ul>
-<h2 id="6-Nginx的架构和原理"><a href="#6-Nginx的架构和原理" class="headerlink" title="6-Nginx的架构和原理"></a>6-Nginx的架构和原理</h2><h3 id="6-1-Nginx的整体架构"><a href="#6-1-Nginx的整体架构" class="headerlink" title="6.1-Nginx的整体架构"></a>6.1-Nginx的整体架构</h3><p><img src="/2020/06/07/nginx-xue-xi-bi-ji/Nginx%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt></p>
+<h2 id="6-Nginx的架构和原理"><a href="#6-Nginx的架构和原理" class="headerlink" title="6-Nginx的架构和原理"></a>6-Nginx的架构和原理</h2><h3 id="6-1-Nginx的整体架构"><a href="#6-1-Nginx的整体架构" class="headerlink" title="6.1-Nginx的整体架构"></a>6.1-Nginx的整体架构</h3><p><img src="/2020/04/29/nginx-xue-xi-bi-ji/Nginx%E7%9A%84%E6%9E%B6%E6%9E%84.png" alt></p>
 <h4 id="1-主进程"><a href="#1-主进程" class="headerlink" title="1. 主进程"></a>1. 主进程</h4><p>Nginx启动时，会生成两种类型的进程，一个是主进程（master），一个（windows版本的目前只有一个）或多个工作进程（worker）。</p>
 <p>主进程并不处理网络请求，主要负责调度工作进程，也就是图示的3项：加载配置、启动工作进程、非停升级</p>
 <p>因此，Nginx启动以后，查看操作系统的进程列表，我们就能看到至少有两个Nginx进程。</p>
@@ -1128,7 +1128,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <h4 id="5-代理（proxy）设计"><a href="#5-代理（proxy）设计" class="headerlink" title="5. 代理（proxy）设计"></a>5. 代理（proxy）设计</h4><p>代理设计，可以说是Nginx深入骨髓的设计，无论是对于HTTP，还是对于FastCGI、Memcache、Redis等的网络请求或响应，本质上都采用了代理机制。所以，Nginx天生就是高性能的代理服务器。</p>
 <h3 id="6-2-Nginx的模块化设计"><a href="#6-2-Nginx的模块化设计" class="headerlink" title="6.2-Nginx的模块化设计"></a>6.2-Nginx的模块化设计</h3><p>高度模块化的设计是Nginx的架构基础。Nginx服务器被分解为多个模块，每个模块就是一个功能模块，只负责自身的功能，模块之间严格遵循“高内聚，低耦合”的原则。</p>
 <p>如下图所示：</p>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1.png" alt></p>
 <h4 id="1-核心模块"><a href="#1-核心模块" class="headerlink" title="1. 核心模块"></a>1. 核心模块</h4><p>核心模块是Nginx服务器正常运行必不可少的模块，提供错误日志记录、配置文件解析、事件驱动机制、进程管理等核心功能。</p>
 <h4 id="2-标准HTTP模块"><a href="#2-标准HTTP模块" class="headerlink" title="2. 标准HTTP模块"></a>2. 标准HTTP模块</h4><p>标准HTTP模块提供HTTP协议解析相关的功能，比如：端口配置、网页编码设置、HTTP响应头设置等等。</p>
 <h4 id="3-可选HTTP模块"><a href="#3-可选HTTP模块" class="headerlink" title="3. 可选HTTP模块"></a>3. 可选HTTP模块</h4><p>可选HTTP模块主要用于扩展标准的HTTP功能，让Nginx能处理一些特殊的服务，比如：Flash多媒体传输、解析GeoIP请求、网络传输压缩、安全协议SSL支持等。</p>
@@ -1144,7 +1144,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <p>当IO返回时，就会通知此工作进程，该进程得到通知，暂时挂起当前处理的事务去响应客户端请求。</p>
 <h3 id="6-4-Nginx事件驱动模型"><a href="#6-4-Nginx事件驱动模型" class="headerlink" title="6.4-Nginx事件驱动模型"></a>6.4-Nginx事件驱动模型</h3><p>在Nginx的异步非阻塞机制中，工作进程在调用IO后，就去处理其他的请求，当IO调用返回后，会通知该工作进程。</p>
 <p>对于这样的系统调用，主要使用Nginx服务器的事件驱动模型来实现，如下图所示：</p>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9E%8B.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9E%8B.png" alt></p>
 <p>如上图所示，Nginx的事件驱动模型由事件收集器、事件发送器和事件处理器三部分基本单元组成。</p>
 <ul>
 <li>事件收集器：负责收集worker进程的各种IO请求；</li>
@@ -1164,7 +1164,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
 <p>当一个worker进程在accept这个连接之后，就开始读取请求，解析请求，处理请求，产生数据后，再返回给客户端，最后才断开连接，一个完整的请求就是这样。</p>
 <p>我们可以看到，一个请求，完全由worker进程来处理，而且只在一个worker进程中处理。</p>
 <p>如下图所示：</p>
-<p><img src="/2020/06/07/nginx-xue-xi-bi-ji/%E8%BF%9B%E7%A8%8B%E5%A4%84%E7%90%86%E6%A8%A1%E5%9E%8B.png" alt></p>
+<p><img src="/2020/04/29/nginx-xue-xi-bi-ji/%E8%BF%9B%E7%A8%8B%E5%A4%84%E7%90%86%E6%A8%A1%E5%9E%8B.png" alt></p>
 <p>在Nginx服务器的运行过程中，主进程和工作进程需要进程交互。交互依赖于Socket实现的管道来实现。</p>
 <h4 id="1-主进程与工作进程交互"><a href="#1-主进程与工作进程交互" class="headerlink" title="1. 主进程与工作进程交互"></a>1. 主进程与工作进程交互</h4><p>这条管道与普通的管道不同，它是由主进程指向工作进程的单向管道，包含主进程向工作进程发出的指令工，作进程ID等。同时主进程与外界通过信号通信；每个子进程具备接收信号，并处理相应的事件的能力。</p>
 <h4 id="2-工作进程与工作进程交互"><a href="#2-工作进程与工作进程交互" class="headerlink" title="2. 工作进程与工作进程交互"></a>2. 工作进程与工作进程交互</h4><p>这种交互和主进程-工作进程交互基本一致，但是会通过主进程间接完成，工作进程之间是相互隔离的。</p>
@@ -1201,7 +1201,7 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/">https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/</a>
+                    <a href="https://fangpeng12.github.io/2020/04/29/nginx-xue-xi-bi-ji/">https://fangpeng12.github.io/2020/04/29/nginx-xue-xi-bi-ji/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -1410,24 +1410,24 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/06/07/yi-zhi-xing-hash-suan-fa/">
+                <a href="/2020/05/20/fen-bu-shi-shi-wu/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="一致性Hash算法">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="分布式事务">
                         
-                        <span class="card-title">一致性Hash算法</span>
+                        <span class="card-title">分布式事务</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
+                            2.4-2PC/3PC/TCC1. 2PC/3PC由来：XA规范X/Open 组织（即现在的 Open Group ）定义了分布式事务处理模型。 X/Open DTP 模型（ 1994 ）包括应用程序（ AP ）、事务管理器（ TM ）、资
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-06-07
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-05-20
                         </span>
                         <span class="publish-author">
                             
@@ -1447,32 +1447,48 @@ Nginx因为它的稳定性、丰富的模块库、灵活的配置和低系统资
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/06/02/fen-bu-shi-id-jie-jue-fang-an/">
+                <a href="/2020/04/15/jvm-xu-ni-ji-xiang-jie/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="分布式ID解决方案">
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="JVM虚拟机详解">
                         
-                        <span class="card-title">分布式ID解决方案</span>
+                        <span class="card-title">JVM虚拟机详解</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
+                            JVM虚拟机详解
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-06-02
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-04-15
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            fangpeng
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Java/" class="post-category">
+                                    Java
+                                </a>
+                            
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/JVM%E8%99%9A%E6%8B%9F%E6%9C%BA/">
+                        <span class="chip bg-color">JVM虚拟机</span>
+                    </a>
+                    
                 </div>
                 
             </div>

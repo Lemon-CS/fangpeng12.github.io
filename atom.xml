@@ -62,33 +62,6 @@
   </entry>
   
   <entry>
-    <title>Nginx学习笔记</title>
-    <link href="https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/"/>
-    <id>https://fangpeng12.github.io/2020/06/07/nginx-xue-xi-bi-ji/</id>
-    <published>2020-06-07T06:42:56.000Z</published>
-    <updated>2020-06-07T14:49:27.145Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Nginx学习笔记&quot;&gt;&lt;a href=&quot;#Nginx学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Nginx学习笔记&quot;&gt;&lt;/a&gt;Nginx学习笔记&lt;/h1&gt;&lt;h2 id=&quot;1-什么是Nginx？&quot;&gt;&lt;a href=&quot;#1-什么是Nginx？&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Nginx" scheme="https://fangpeng12.github.io/categories/Nginx/"/>
-    
-    
-      <category term="Nginx" scheme="https://fangpeng12.github.io/tags/Nginx/"/>
-    
-  </entry>
-  
-  <entry>
     <title>分布式ID解决方案</title>
     <link href="https://fangpeng12.github.io/2020/06/02/fen-bu-shi-id-jie-jue-fang-an/"/>
     <id>https://fangpeng12.github.io/2020/06/02/fen-bu-shi-id-jie-jue-fang-an/</id>
@@ -153,6 +126,33 @@
     </summary>
     
     
+    
+  </entry>
+  
+  <entry>
+    <title>Nginx学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/04/29/nginx-xue-xi-bi-ji/"/>
+    <id>https://fangpeng12.github.io/2020/04/29/nginx-xue-xi-bi-ji/</id>
+    <published>2020-04-29T06:42:56.000Z</published>
+    <updated>2020-06-07T15:01:49.207Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Nginx学习笔记&quot;&gt;&lt;a href=&quot;#Nginx学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Nginx学习笔记&quot;&gt;&lt;/a&gt;Nginx学习笔记&lt;/h1&gt;&lt;h2 id=&quot;1-什么是Nginx？&quot;&gt;&lt;a href=&quot;#1-什么是Nginx？&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Nginx" scheme="https://fangpeng12.github.io/categories/Nginx/"/>
+    
+    
+      <category term="Nginx" scheme="https://fangpeng12.github.io/tags/Nginx/"/>
     
   </entry>
   
