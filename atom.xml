@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-06-07T13:20:12.737Z</updated>
+  <updated>2020-06-07T15:04:42.996Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>RabbitMQ学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/rabbitmq-xue-xi-bi-ji/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/rabbitmq-xue-xi-bi-ji/</id>
+    <published>2020-06-07T15:04:42.000Z</published>
+    <updated>2020-06-07T15:04:42.996Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Http和Https详解</title>
+    <link href="https://fangpeng12.github.io/2020/06/07/http-he-https-xiang-jie/"/>
+    <id>https://fangpeng12.github.io/2020/06/07/http-he-https-xiang-jie/</id>
+    <published>2020-06-07T15:03:55.000Z</published>
+    <updated>2020-06-07T15:03:55.247Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
   
   <entry>
     <title>IO模型</title>
@@ -126,6 +156,35 @@
     </summary>
     
     
+    
+  </entry>
+  
+  <entry>
+    <title>Redis学习笔记</title>
+    <link href="https://fangpeng12.github.io/2020/05/05/redis/"/>
+    <id>https://fangpeng12.github.io/2020/05/05/redis/</id>
+    <published>2020-05-05T06:32:50.000Z</published>
+    <updated>2020-06-13T12:13:09.173Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;Redis学习笔记&quot;&gt;&lt;a href=&quot;#Redis学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Redis学习笔记&quot;&gt;&lt;/a&gt;Redis学习笔记&lt;/h1&gt;&lt;h2 id=&quot;1-概述&quot;&gt;&lt;a href=&quot;#1-概述&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://fangpeng12.github.io/categories/Redis/"/>
+    
+    
+      <category term="Redis" scheme="https://fangpeng12.github.io/tags/Redis/"/>
+    
+      <category term="缓存" scheme="https://fangpeng12.github.io/tags/%E7%BC%93%E5%AD%98/"/>
     
   </entry>
   
@@ -406,93 +465,6 @@
       <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
     
       <category term="泛型" scheme="https://fangpeng12.github.io/tags/%E6%B3%9B%E5%9E%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java反射和实现原理</title>
-    <link href="https://fangpeng12.github.io/2020/04/01/java-fan-she-he-shi-xian-yuan-li/"/>
-    <id>https://fangpeng12.github.io/2020/04/01/java-fan-she-he-shi-xian-yuan-li/</id>
-    <published>2020-04-01T09:20:41.000Z</published>
-    <updated>2020-05-17T14:00:27.228Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Java反射和实现原理&quot;&gt;&lt;a href=&quot;#Java反射和实现原理&quot; class=&quot;headerlink&quot; title=&quot;Java反射和实现原理&quot;&gt;&lt;/a&gt;Java反射和实现原理&lt;/h1&gt;&lt;h2 id=&quot;1-反射是什么？&quot;&gt;&lt;a
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="多线程" scheme="https://fangpeng12.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
-    
-      <category term="并发" scheme="https://fangpeng12.github.io/tags/%E5%B9%B6%E5%8F%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java泛型的原理</title>
-    <link href="https://fangpeng12.github.io/2020/03/31/java-fan-xing-de-yuan-li/"/>
-    <id>https://fangpeng12.github.io/2020/03/31/java-fan-xing-de-yuan-li/</id>
-    <published>2020-03-31T08:36:34.000Z</published>
-    <updated>2020-05-17T08:58:29.378Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Java泛型的原理&quot;&gt;&lt;a href=&quot;#Java泛型的原理&quot; class=&quot;headerlink&quot; title=&quot;Java泛型的原理&quot;&gt;&lt;/a&gt;Java泛型的原理&lt;/h1&gt;&lt;h2 id=&quot;1-Java泛型的介绍&quot;&gt;&lt;a href=&quot;#1-Java泛型的介绍&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="泛型" scheme="https://fangpeng12.github.io/tags/%E6%B3%9B%E5%9E%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>面向对象设计</title>
-    <link href="https://fangpeng12.github.io/2020/03/30/mian-xiang-dui-xiang-she-ji/"/>
-    <id>https://fangpeng12.github.io/2020/03/30/mian-xiang-dui-xiang-she-ji/</id>
-    <published>2020-03-30T06:33:21.000Z</published>
-    <updated>2020-05-17T08:17:57.798Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;面向对象设计-OOP&quot;&gt;&lt;a href=&quot;#面向对象设计-OOP&quot; class=&quot;headerlink&quot; title=&quot;面向对象设计(OOP)&quot;&gt;&lt;/a&gt;面向对象设计(OOP)&lt;/h1&gt;&lt;h2 id=&quot;1-什么是面向对象？&quot;&gt;&lt;a
-        
-      
-    
-    </summary>
-    
-    
-      <category term="系统设计" scheme="https://fangpeng12.github.io/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/"/>
-    
-    
-      <category term="面向对象" scheme="https://fangpeng12.github.io/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"/>
     
   </entry>
   
