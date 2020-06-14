@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://fangpeng12.github.io/"/>
-  <updated>2020-06-07T15:04:42.996Z</updated>
+  <updated>2020-06-14T08:55:40.064Z</updated>
   <id>https://fangpeng12.github.io/</id>
   
   <author>
@@ -15,6 +15,21 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Redis实战系列</title>
+    <link href="https://fangpeng12.github.io/2020/06/14/redis-shi-zhan-xi-lie/"/>
+    <id>https://fangpeng12.github.io/2020/06/14/redis-shi-zhan-xi-lie/</id>
+    <published>2020-06-14T08:55:40.000Z</published>
+    <updated>2020-06-14T08:55:40.064Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
   
   <entry>
     <title>RabbitMQ学习笔记</title>
@@ -66,28 +81,29 @@
     <link href="https://fangpeng12.github.io/2020/06/07/bu-long-guo-lu-qi-he-wei-tu/"/>
     <id>https://fangpeng12.github.io/2020/06/07/bu-long-guo-lu-qi-he-wei-tu/</id>
     <published>2020-06-07T13:20:01.000Z</published>
-    <updated>2020-06-07T13:20:01.533Z</updated>
+    <updated>2020-06-14T14:40:23.866Z</updated>
     
     <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;布隆过滤器和位图&quot;&gt;&lt;a href=&quot;#布隆过滤器和位图&quot; class=&quot;headerlink&quot; title=&quot;布隆过滤器和位图&quot;&gt;&lt;/a&gt;布隆过滤器和位图&lt;/h1&gt;&lt;p&gt;Wikipedia 上面提到布隆过滤器早在 1970
+        
+      
     
     </summary>
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>一致性Hash算法</title>
-    <link href="https://fangpeng12.github.io/2020/06/07/yi-zhi-xing-hash-suan-fa/"/>
-    <id>https://fangpeng12.github.io/2020/06/07/yi-zhi-xing-hash-suan-fa/</id>
-    <published>2020-06-07T13:19:43.000Z</published>
-    <updated>2020-06-07T13:19:43.683Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
+      <category term="算法和数据结构" scheme="https://fangpeng12.github.io/categories/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
     
+      <category term="布隆过滤器" scheme="https://fangpeng12.github.io/tags/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/"/>
+    
+      <category term="位图" scheme="https://fangpeng12.github.io/tags/%E4%BD%8D%E5%9B%BE/"/>
+    
+      <category term="bitmap" scheme="https://fangpeng12.github.io/tags/bitmap/"/>
     
   </entry>
   
@@ -156,6 +172,35 @@
     </summary>
     
     
+    
+  </entry>
+  
+  <entry>
+    <title>一致性Hash算法</title>
+    <link href="https://fangpeng12.github.io/2020/05/07/yi-zhi-xing-hash-suan-fa/"/>
+    <id>https://fangpeng12.github.io/2020/05/07/yi-zhi-xing-hash-suan-fa/</id>
+    <published>2020-05-07T13:19:43.000Z</published>
+    <updated>2020-06-14T09:19:58.322Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;一致性Hash算法&quot;&gt;&lt;a href=&quot;#一致性Hash算法&quot; class=&quot;headerlink&quot; title=&quot;一致性Hash算法&quot;&gt;&lt;/a&gt;一致性Hash算法&lt;/h1&gt;&lt;h2 id=&quot;1-前言&quot;&gt;&lt;a href=&quot;#1-前言&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="算法和数据结构" scheme="https://fangpeng12.github.io/categories/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+    
+      <category term="Hash算法" scheme="https://fangpeng12.github.io/tags/Hash%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="一致性Hash" scheme="https://fangpeng12.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7Hash/"/>
     
   </entry>
   
@@ -436,35 +481,6 @@
       <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
     
       <category term="IO" scheme="https://fangpeng12.github.io/tags/IO/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java之Optional使用</title>
-    <link href="https://fangpeng12.github.io/2020/04/02/java-zhi-optional-shi-yong/"/>
-    <id>https://fangpeng12.github.io/2020/04/02/java-zhi-optional-shi-yong/</id>
-    <published>2020-04-02T03:59:35.000Z</published>
-    <updated>2020-05-31T06:07:11.859Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;Java之Optional判空&quot;&gt;&lt;a href=&quot;#Java之Optional判空&quot; class=&quot;headerlink&quot; title=&quot;Java之Optional判空&quot;&gt;&lt;/a&gt;Java之Optional判空&lt;/h1&gt;&lt;h2
-        
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="https://fangpeng12.github.io/tags/Java/"/>
-    
-      <category term="泛型" scheme="https://fangpeng12.github.io/tags/%E6%B3%9B%E5%9E%8B/"/>
     
   </entry>
   
