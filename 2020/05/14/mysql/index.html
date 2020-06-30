@@ -461,14 +461,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    11.4k
+                    30.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    40 分
+                    109 分
                 </div>
                 
 				
@@ -956,6 +956,621 @@ SET default_storage_engine=NDBCLUSTER;</code></pre>
 <p>数据库索引采用 B+ 树的主要原因是 B树在提高了磁盘 IO 性能的同时并没有解决元素遍历的效率低下的问题。正是为了解决这个问题，B+ 树应运而生。B+ 树只要遍历叶子节点就可以实现整棵树的遍历。而且在数据库中基于范围的查询是非常频繁的，而 B 树不支持这样的操作（或者说效率太低） 。</p>
 </li>
 </ul>
+<h3 id="4-7-何时创建索引？"><a href="#4-7-何时创建索引？" class="headerlink" title="4.7-何时创建索引？"></a>4.7-何时创建索引？</h3><h4 id="1-哪些情况需要创建索引"><a href="#1-哪些情况需要创建索引" class="headerlink" title="1. 哪些情况需要创建索引"></a>1. 哪些情况需要创建索引</h4><ol>
+<li>主键自动建立唯一索引</li>
+<li>频繁作为查询条件的字段</li>
+<li>查询中与其他表关联的字段，外键关系建立索引</li>
+<li>单键/组合索引的选择问题，高并发下倾向创建组合索引</li>
+<li>查询中排序的字段，排序字段通过索引访问大幅提高排序速度</li>
+<li>查询中统计或分组字段</li>
+</ol>
+<h4 id="2-哪些情况不要创建索引"><a href="#2-哪些情况不要创建索引" class="headerlink" title="2. 哪些情况不要创建索引"></a>2. 哪些情况不要创建索引</h4><ol>
+<li>表记录太少</li>
+<li>经常增删改的表</li>
+<li>数据重复且分布均匀的表字段，只应该为最经常查询和最经常排序的数据列建立索引（如果某个数据类包含太多的重复数据，建立索引没有太大意义）</li>
+<li>频繁更新的字段不适合创建索引（会加重IO负担）</li>
+<li>where条件里用不到的字段不创建索引</li>
+</ol>
+<h3 id="4-8-MySQL高效索引"><a href="#4-8-MySQL高效索引" class="headerlink" title="4.8-MySQL高效索引"></a>4.8-MySQL高效索引</h3><p><strong>覆盖索引</strong>（Covering Index）,或者叫索引覆盖， 也就是平时所说的不需要回表操作</p>
+<ul>
+<li>就是select的数据列只用从索引中就能够取得，不必读取数据行，MySQL可以利用索引返回select列表中的字段，而不必根据索引再次读取数据文件，换句话说<strong>查询列要被所建的索引覆盖</strong>。</li>
+<li>索引是高效找到行的一个方法，但是一般数据库也能使用索引找到一个列的数据，因此它不必读取整个行。毕竟索引叶子节点存储了它们索引的数据，当能通过读取索引就可以得到想要的数据，那就不需要读取行了。一个索引包含（覆盖）满足查询结果的数据就叫做覆盖索引。</li>
+<li><strong>判断标准</strong>使用explain，可以通过输出的extra列来判断，对于一个索引覆盖查询，显示为<strong>using index</strong>，MySQL查询优化器在执行查询前会决定是否有索引覆盖查询</li>
+</ul>
+<h3 id="4-9-索引失效的场景"><a href="#4-9-索引失效的场景" class="headerlink" title="4.9-索引失效的场景"></a>4.9-索引失效的场景</h3><ul>
+<li><h4 id="不要在查询中使用-、not-in、not-exists"><a href="#不要在查询中使用-、not-in、not-exists" class="headerlink" title="不要在查询中使用 !=、not in、not exists"></a>不要在查询中使用 !=、not in、not exists</h4></li>
+</ul>
+<p><code>SELECT * FROM goods WHERE STATUS != 0</code></p>
+<p>可优化为：</p>
+<p><code>SELECT * FROM goods WHERE STATUS = 1 OR STATUS = 2</code></p>
+<p>由于在使用not in时，MySQL会进行全表扫描而不利用索引，因为MySQL认为使用索引反而更麻烦。比如，从 1000 个人中把编号为145、761 这两个学生之外的所有学生资料抄写一遍。你是先找出这两个学生的成绩放一边儿，然后再开始抄写，还是直接开始一份挨一份抄写，看到这两个号直接跳过去？</p>
+<ul>
+<li><h4 id="不要在where条件的等号左侧中使用函数"><a href="#不要在where条件的等号左侧中使用函数" class="headerlink" title="不要在where条件的等号左侧中使用函数"></a>不要在where条件的等号左侧中使用函数</h4></li>
+</ul>
+<p><code>SELECT * FROM goods WHERE YEAR (time) &gt; = &#39;2017&#39;</code></p>
+<p>可优化为：</p>
+<p><code>SELECT * FROM goods WHERE time &gt; = &#39;2017-01-01&#39;</code></p>
+<p>对于带有列的函数计算，MySQL是无法使用索引的（Oracle可以使用函数索引）。在使用函数时，如SUBSTR函数，将’apple’更改为了’app’，此时值发生了改变，导致之前设置的索引无效。</p>
+<ul>
+<li><h4 id="MySQL支持前缀索引，但是不支持后缀索引"><a href="#MySQL支持前缀索引，但是不支持后缀索引" class="headerlink" title="MySQL支持前缀索引，但是不支持后缀索引"></a>MySQL支持前缀索引，但是不支持后缀索引</h4></li>
+</ul>
+<p><code>SELECT * FROM goods WHERE NAME LIKE &#39;%A&#39;</code></p>
+<p>可优化为：</p>
+<p><code>SELECT * FROM goods WHERE NAME LIKE &#39;A%&#39;</code></p>
+<ul>
+<li>设置联合索引时，索引的建立顺序要和where或者order by条件中的字段顺序相同，如建立name、status（分别为key1、key2）的联合索引，此时以name字段为第一查询顺序的索引有效：</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> goods <span class="token keyword">WHERE</span> NAME <span class="token operator">=</span> <span class="token string">'A'</span> <span class="token operator">AND</span> <span class="token keyword">STATUS</span> <span class="token operator">=</span> <span class="token number">0</span>
+
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> goods <span class="token keyword">WHERE</span> NAME <span class="token operator">=</span> <span class="token string">'A'</span> </code></pre>
+<p>但以STATUS开头的查询索引都会失效：</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> goods <span class="token keyword">WHERE</span> <span class="token keyword">STATUS</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">AND</span> NAME<span class="token operator">=</span><span class="token string">'A'</span>
+
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> goods <span class="token keyword">WHERE</span> <span class="token keyword">STATUS</span> <span class="token operator">=</span> <span class="token number">0</span></code></pre>
+<ul>
+<li><h4 id="where条件中有or，需将or中的每个字段都加上索引"><a href="#where条件中有or，需将or中的每个字段都加上索引" class="headerlink" title="where条件中有or，需将or中的每个字段都加上索引"></a>where条件中有or，需将or中的每个字段都加上索引</h4><p><code>SELECT * FROM goods WHERE NAME = &#39;A&#39; OR STATUS = 0</code></p>
+<p>若仅设置 name 或 status 其中一个字段为索引，索引无效。</p>
+</li>
+<li><h4 id="状态值少的字段不宜使用索引"><a href="#状态值少的字段不宜使用索引" class="headerlink" title="状态值少的字段不宜使用索引"></a>状态值少的字段不宜使用索引</h4><p>例如索引列 sex 字段有2个状态值，如果有10w条数据，那么where sex = 0 将访问表中的 5w个数据块，再加上访问索引块，一共要访问大于 5w个的数据块。如果全表扫描，假设10条数据一个数据块，只需访问 1w个数据块，此时全表扫描比利用索引效率更高，因此对于状态值很少的列，不适合建立索引。</p>
+</li>
+<li><h4 id="数据类型不匹配"><a href="#数据类型不匹配" class="headerlink" title="数据类型不匹配"></a>数据类型不匹配</h4><p>当索引列的数据类型为字符型，按照数字查询会导致索引失效：</p>
+<p><code>SELECT * FROM goods WHERE card = 1234567890</code></p>
+<p>可更改为：</p>
+<p><code>SELECT * FROM goods WHERE card = &#39;1234567890&#39;</code></p>
+<p>通常情况下，当我们为字符类型的字段赋值时需要加入单引号，但是如果把一个纯数字的字符串赋值给一个字符型的字段时，可以不用加单引号，因为此时数据库系统会自动把这串数字转换为字符型数据。但当我们进行查询（where 条件中包含索引字段）时，如果采用纯数字，数据库会采用全表扫描，而非引用索引。我个人的理解是，可以将引号看做是一种函数，失效原因则与在 where条件左侧使用函数导致索引失效的原理相同。</p>
+</li>
+</ul>
+<h2 id="5-MySQL锁机制"><a href="#5-MySQL锁机制" class="headerlink" title="5-MySQL锁机制"></a>5-MySQL锁机制</h2><p>锁是计算机协调多个进程或线程并发访问某一资源的机制。锁保证数据并发访问的一致性、有效性；锁冲突也是影响数据库并发访问性能的一个重要因素。锁是Mysql在服务器层和存储引擎层的的并发控制。</p>
+<p>加锁是消耗资源的，锁的各种操作，包括获得锁、检测锁是否是否已解除、释放锁等。</p>
+<blockquote>
+<p>数据库的乐观锁和悲观锁？<br>MySQL 中有哪几种锁，列举一下？<br>MySQL中InnoDB引擎的行锁是怎么实现的？<br>MySQL 间隙锁有没有了解，死锁有没有了解，写一段会造成死锁的 sql 语句，死锁发生了如何解决，MySQL 有没有提供什么机制去解决死锁？</p>
+</blockquote>
+<p>锁是计算机协调多个进程或线程并发访问某一资源的机制。</p>
+<p>在数据库中，除传统的计算资源（如CPU、RAM、I/O等）的争用以外，数据也是一种供许多用户共享的资源。数据库锁定机制简单来说，就是数据库为了保证数据的一致性，而使各种共享资源在被并发访问变得有序所设计的一种规则。</p>
+<p>打个比方，我们到淘宝上买一件商品，商品只有一件库存，这个时候如果还有另一个人买，那么如何解决是你买到还是另一个人买到的问题？这里肯定要用到事物，我们先从库存表中取出物品数量，然后插入订单，付款后插入付款表信息，然后更新商品数量。在这个过程中，使用锁可以对有限的资源进行保护，解决隔离和并发的矛盾。</p>
+<h3 id="5-1-锁的分类"><a href="#5-1-锁的分类" class="headerlink" title="5.1-锁的分类"></a>5.1-锁的分类</h3><h4 id="1-从对数据操作的类型分类"><a href="#1-从对数据操作的类型分类" class="headerlink" title="1. 从对数据操作的类型分类"></a>1. 从对数据操作的类型分类</h4><ul>
+<li><strong>读锁</strong>（共享锁）：针对同一份数据，多个读操作可以同时进行，不会互相影响</li>
+<li><strong>写锁</strong>（排他锁）：当前写操作没有完成前，它会阻断其他写锁和读锁</li>
+</ul>
+<h4 id="2-从对数据操作的粒度分类"><a href="#2-从对数据操作的粒度分类" class="headerlink" title="2. 从对数据操作的粒度分类"></a>2. 从对数据操作的粒度分类</h4><p>为了尽可能提高数据库的并发度，每次锁定的数据范围越小越好，理论上每次只锁定当前操作的数据的方案会得到最大的并发度，但是管理锁是很耗资源的事情（涉及获取，检查，释放锁等动作），因此数据库系统需要在高并发响应和系统性能两方面进行平衡，这样就产生了“锁粒度（Lock granularity）”的概念。</p>
+<ul>
+<li><strong>表级锁</strong>：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低（MyISAM 和 MEMORY 存储引擎采用的是表级锁）；<ul>
+<li>这些存储引擎通过总是一次性同时获取所有需要的锁以及总是按相同的顺序获取表锁来避免死锁。</li>
+<li>表级锁更适合于以查询为主，并发用户少，只有少量按索引条件更新数据的应用，如Web 应用。</li>
+</ul>
+</li>
+<li><strong>行级锁</strong>：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高（InnoDB 存储引擎既支持行级锁也支持表级锁，但默认情况下是采用行级锁）；<ul>
+<li>最大程度的支持并发，同时也带来了最大的锁开销。</li>
+<li>在 InnoDB 中，除单个 SQL 组成的事务外，锁是逐步获得的，这就决定了在 InnoDB 中发生死锁是可能的。</li>
+<li>行级锁只在存储引擎层实现，而Mysql服务器层没有实现。 行级锁更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。</li>
+</ul>
+</li>
+<li><strong>页面锁</strong>：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般。</li>
+</ul>
+<p>适用：从锁的角度来说，表级锁更适合于以查询为主，只有少量按索引条件更新数据的应用，如Web应用；而行级锁则更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。</p>
+<h3 id="5-2-MyISAM-表锁"><a href="#5-2-MyISAM-表锁" class="headerlink" title="5.2-MyISAM 表锁"></a>5.2-MyISAM 表锁</h3><h4 id="1-MyISAM表级锁模式"><a href="#1-MyISAM表级锁模式" class="headerlink" title="1. MyISAM表级锁模式"></a>1. MyISAM表级锁模式</h4><ul>
+<li>表共享读锁 （Table Read Lock）：不会阻塞其他用户对同一表的读请求，但会阻塞对同一表的写请求；</li>
+<li>表独占写锁 （Table Write Lock）：会阻塞其他用户对同一表的读和写操作；</li>
+</ul>
+<p>MyISAM 表的读操作与写操作之间，以及写操作之间是串行的。当一个线程获得对一个表的写锁后， 只有持有锁的线程可以对表进行更新操作。 其他线程的读、 写操作都会等待，直到锁被释放为止。</p>
+<p>默认情况下，写锁比读锁具有更高的优先级：当一个锁释放时，这个锁会优先给写锁队列中等候的获取锁请求，然后再给读锁队列中等候的获取锁请求。 </p>
+<p>这也正是 MyISAM 表不太适合于有大量更新操作和查询操作应用的原因，因为，大量的更新操作会造成查询操作很难获得读锁，从而可能永远阻塞。同时，一些需要长时间运行的查询操作，也会使写线程“饿死” ，应用中应尽量避免出现长时间运行的查询操作（在可能的情况下可以通过使用中间表等措施对SQL语句做一定的“分解” ，使每一步查询都能在较短时间完成，从而减少锁冲突。如果复杂查询不可避免，应尽量安排在数据库空闲时段执行，比如一些定期统计可以安排在夜间执行）。</p>
+<p>可以设置改变读锁和写锁的优先级：</p>
+<ul>
+<li>通过指定启动参数low-priority-updates，使MyISAM引擎默认给予读请求以优先的权利。</li>
+<li>通过执行命令SET LOW_PRIORITY_UPDATES=1，使该连接发出的更新请求优先级降低。</li>
+<li>通过指定INSERT、UPDATE、DELETE语句的LOW_PRIORITY属性，降低该语句的优先级。</li>
+<li>给系统参数max_write_lock_count设置一个合适的值，当一个表的读锁达到这个值后，MySQL就暂时将写请求的优先级降低，给读进程一定获得锁的机会。</li>
+</ul>
+<h4 id="2-MyISAM加表锁方法"><a href="#2-MyISAM加表锁方法" class="headerlink" title="2. MyISAM加表锁方法"></a>2. MyISAM加表锁方法</h4><p>MyISAM 在执行查询语句（SELECT）前，会自动给涉及的表加读锁，在执行更新操作<br>（UPDATE、DELETE、INSERT 等）前，会自动给涉及的表加写锁，这个过程并不需要用户干预，因此，用户一般不需要直接用 LOCK TABLE 命令给 MyISAM 表显式加锁。</p>
+<p>在自动加锁的情况下，MyISAM 总是一次获得 SQL 语句所需要的全部锁，这也正是 MyISAM 表不会出现死锁（Deadlock Free）的原因。</p>
+<p>MyISAM存储引擎支持并发插入，以减少给定表的读和写操作之间的争用：</p>
+<p>如果MyISAM表在数据文件中间没有空闲块，则行始终插入数据文件的末尾。 在这种情况下，你可以自由混合并发使用MyISAM表的INSERT和SELECT语句而不需要加锁——你可以在其他线程进行读操作的时候，同时将行插入到MyISAM表中。 文件中间的空闲块可能是从表格中间删除或更新的行而产生的。 如果文件中间有空闲快，则并发插入会被禁用，但是当所有空闲块都填充有新数据时，它又会自动重新启用。 要控制此行为，可以使用MySQL的concurrent_insert系统变量。</p>
+<p>如果你使用LOCK TABLES显式获取表锁，则可以请求READ LOCAL锁而不是READ锁，以便在锁定表时，其他会话可以使用并发插入。</p>
+<ul>
+<li>当concurrent_insert设置为0时，不允许并发插入。</li>
+<li>当concurrent_insert设置为1时，如果MyISAM表中没有空洞（即表的中间没有被删除的行），MyISAM允许在一个线程读表的同时，另一个线程从表尾插入记录。这也是MySQL的默认设置。</li>
+<li>当concurrent_insert设置为2时，无论MyISAM表中有没有空洞，都允许在表尾并发插入记录。</li>
+</ul>
+<h4 id="3-查询表级锁争用情况"><a href="#3-查询表级锁争用情况" class="headerlink" title="3. 查询表级锁争用情况"></a>3. 查询表级锁争用情况</h4><p>可以通过检查 table_locks_waited 和 table_locks_immediate 状态变量来分析系统上的表锁的争夺，如果 Table_locks_waited 的值比较高，则说明存在着较严重的表级锁争用情况：</p>
+<pre class=" language-text"><code class="language-text">mysql> SHOW STATUS LIKE 'Table%';
++-----------------------+---------+
+| Variable_name | Value |
++-----------------------+---------+
+| Table_locks_immediate | 1151552 |
+| Table_locks_waited | 15324 |
++-----------------------+---------+</code></pre>
+<h3 id="5-3-InnoDB行级锁和表级锁"><a href="#5-3-InnoDB行级锁和表级锁" class="headerlink" title="5.3-InnoDB行级锁和表级锁"></a>5.3-<strong>InnoDB行级锁和表级锁</strong></h3><h4 id="1-InnoDB锁模式"><a href="#1-InnoDB锁模式" class="headerlink" title="1. InnoDB锁模式"></a>1. InnoDB锁模式</h4><p>InnoDB 实现了以下两种类型的<strong>行锁</strong>：</p>
+<ul>
+<li>共享锁（S）：允许一个事务去读一行，阻止其他事务获得相同数据集的排他锁。</li>
+<li>排他锁（X）：允许获得排他锁的事务更新数据，阻止其他事务取得相同数据集的共享读锁和排他写锁。</li>
+</ul>
+<p>为了允许行锁和表锁共存，实现多粒度锁机制，InnoDB 还有两种内部使用的意向锁（Intention Locks），这两种意向锁都是<strong>表锁</strong>：</p>
+<ul>
+<li>意向共享锁（IS）：事务打算给数据行加行共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。</li>
+<li>意向排他锁（IX）：事务打算给数据行加行排他锁，事务在给一个数据行加排他锁前必须先取得该表的 IX 锁。</li>
+</ul>
+<p><strong>锁模式的兼容情况：</strong></p>
+<p><img src="/2020/05/14/mysql/%E9%94%81%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%85%BC%E5%AE%B9.jpeg" alt></p>
+<p>（如果一个事务请求的锁模式与当前的锁兼容， InnoDB 就将请求的锁授予该事务； 反之， 如果两者不兼容，该事务就要等待锁释放。）</p>
+<h4 id="2-InnoDB加锁方法"><a href="#2-InnoDB加锁方法" class="headerlink" title="2. InnoDB加锁方法"></a>2. InnoDB加锁方法</h4><ul>
+<li><p>意向锁是 InnoDB 自动加的， 不需用户干预。</p>
+</li>
+<li><p>对于 UPDATE、 DELETE 和 INSERT 语句， InnoDB<br>会自动给涉及数据集加排他锁（X)；</p>
+</li>
+<li><p>对于普通 SELECT 语句，InnoDB 不会加任何锁；<br>事务可以通过以下语句显式给记录集加共享锁或排他锁：</p>
+</li>
+<li><ul>
+<li>共享锁（S）：<code>SELECT * FROM table_name WHERE ... LOCK IN SHARE MODE</code>。 其他 session 仍然可以查询记录，并也可以对该记录加 share mode 的共享锁。但是如果当前事务需要对该记录进行更新操作，则很有可能造成死锁。</li>
+<li>排他锁（X)：<code>SELECT * FROM table_name WHERE ... FOR UPDATE</code>。其他 session 可以查询该记录，但是不能对该记录加共享锁或排他锁，而是等待获得锁</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><h5 id="隐式锁定："><a href="#隐式锁定：" class="headerlink" title="隐式锁定："></a><strong>隐式锁定：</strong></h5></li>
+</ul>
+<p>InnoDB在事务执行过程中，使用两阶段锁协议：</p>
+<p>随时都可以执行锁定，InnoDB会根据隔离级别在需要的时候自动加锁；</p>
+<p>锁只有在执行commit或者rollback的时候才会释放，并且所有的锁都是在<strong>同一时刻</strong>被释放。</p>
+<ul>
+<li><h5 id="显式锁定-："><a href="#显式锁定-：" class="headerlink" title="显式锁定 ："></a><strong>显式锁定 ：</strong></h5></li>
+</ul>
+<pre class=" language-text"><code class="language-text">select ... lock in share mode //共享锁 
+select ... for update //排他锁 </code></pre>
+<ul>
+<li><h5 id="select-for-update："><a href="#select-for-update：" class="headerlink" title="select for update："></a>select for update：</h5><p>在执行这个 select 查询语句的时候，会将对应的索引访问条目进行上排他锁（X 锁），也就是说这个语句对应的锁就相当于update带来的效果。select *** for update 的使用场景：为了让自己查到的数据确保是最新数据，并且查到后的数据只允许自己来修改的时候，需要用到 for update 子句。</p>
+</li>
+<li><h5 id="select-lock-in-share-mode-："><a href="#select-lock-in-share-mode-：" class="headerlink" title="select lock in share mode ："></a>select lock in share mode ：</h5><p><strong>in share mode 子句的作用就是将查找到的数据加上一个 share 锁，这个就是表示其他的事务只能对这些数据进行简单的select 操作，并不能够进行 DML 操作。select *</strong> lock in share mode 使用场景：为了确保自己查到的数据没有被其他的事务正在修改，也就是说确保查到的数据是最新的数据，并且不允许其他人来修改数据。但是自己不一定能够修改数据，因为有可能其他的事务也对这些数据 使用了 in share mode 的方式上了 S 锁。</p>
+</li>
+<li><h5 id="性能影响："><a href="#性能影响：" class="headerlink" title="性能影响："></a>性能影响：</h5><p>select for update 语句，相当于一个 update 语句。在业务繁忙的情况下，如果事务没有及时的commit或者rollback 可能会造成其他事务长时间的等待，从而影响数据库的并发使用效率。<br>select lock in share mode 语句是一个给查找的数据上一个共享锁（S 锁）的功能，它允许其他的事务也对该数据上S锁，但是不能够允许对该数据进行修改。如果不及时的commit 或者rollback 也可能会造成大量的事务等待。</p>
+</li>
+<li><h5 id="for-update-和-lock-in-share-mode-的区别："><a href="#for-update-和-lock-in-share-mode-的区别：" class="headerlink" title="for update 和 lock in share mode 的区别："></a><strong>for update 和 lock in share mode 的区别：</strong></h5><p>前一个上的是排他锁（X 锁），一旦一个事务获取了这个锁，其他的事务是没法在这些数据上执行 for update ；后一个是共享锁，多个事务可以同时的对相同数据执行 lock in share mode。</p>
+</li>
+</ul>
+<h4 id="3-InnoDB-行锁实现方式："><a href="#3-InnoDB-行锁实现方式：" class="headerlink" title="3. InnoDB 行锁实现方式："></a>3. <strong>InnoDB 行锁实现方式：</strong></h4><ul>
+<li>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。InnoDB 这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB 才使用行级锁，否则，InnoDB 将使用表锁！</li>
+<li>不论是使用主键索引、唯一索引或普通索引，InnoDB 都会使用行锁来对数据加锁。</li>
+<li>只有执行计划真正使用了索引，才能使用行锁：即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同执行计划的代价来决定的，如果 MySQL 认为全表扫描效率更高，比如对一些很小的表，它就不会使用索引，这种情况下 InnoDB 将使用表锁，而不是行锁。因此，在分析锁冲突时，<br>别忘了检查 SQL 的执行计划（可以通过 explain 检查 SQL 的执行计划），以确认是否真正使用了索引。（更多阅读：<a href="https://link.zhihu.com/?target=http%3A//mp.weixin.qq.com/s/h4B84UmzAUJ81iBY_FXNOg">MySQL索引总结</a>）</li>
+<li>由于 MySQL 的行锁是针对索引加的锁，不是针对记录加的锁，所以虽然多个session是访问不同行的记录， 但是如果是使用相同的索引键， 是会出现锁冲突的（后使用这些索引的session需要等待先使用索引的session释放锁后，才能获取锁）。 应用设计的时候要注意这一点。</li>
+</ul>
+<h4 id="4-InnoDB的间隙锁："><a href="#4-InnoDB的间隙锁：" class="headerlink" title="4. InnoDB的间隙锁："></a>4. <strong>InnoDB的间隙锁：</strong></h4><p>当我们用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围内但并不存在的记录，叫做“间隙（GAP)”，InnoDB也会对这个“间隙”加锁，这种锁机制就是所谓的间隙锁（Next-Key锁）。</p>
+<p>很显然，在使用范围条件检索并锁定记录时，InnoDB这种加锁机制会阻塞符合条件范围内键值的并发插入，这往往会造成严重的锁等待。因此，在实际应用开发中，尤其是并发插入比较多的应用，我们要尽量优化业务逻辑，尽量使用相等条件来访问更新数据，避免使用范围条件。</p>
+<p><strong>InnoDB使用间隙锁的目的：</strong></p>
+<ol>
+<li>防止幻读，以满足相关隔离级别的要求；</li>
+<li>满足恢复和复制的需要：</li>
+</ol>
+<p>MySQL 通过 BINLOG 录入执行成功的 INSERT、UPDATE、DELETE 等更新数据的 SQL 语句，并由此实现 MySQL 数据库的恢复和主从复制。MySQL 的恢复机制（复制其实就是在 Slave Mysql 不断做基于 BINLOG 的恢复）有以下特点：</p>
+<p>一是 MySQL 的恢复是 SQL 语句级的，也就是重新执行 BINLOG 中的 SQL 语句。</p>
+<p>二是 MySQL 的 Binlog 是按照事务提交的先后顺序记录的， 恢复也是按这个顺序进行的。</p>
+<p>由此可见，MySQL 的恢复机制要求：在一个事务未提交前，其他并发事务不能插入满足其锁定条件的任何记录，也就是不允许出现幻读。</p>
+<h4 id="5-获取-InnoDB-行锁争用情况："><a href="#5-获取-InnoDB-行锁争用情况：" class="headerlink" title="5. 获取 InnoDB 行锁争用情况："></a>5. <strong>获取 InnoDB 行锁争用情况：</strong></h4><p>可以通过检查 InnoDB_row_lock 状态变量来分析系统上的行锁的争夺情况：</p>
+<pre class=" language-text"><code class="language-text">mysql> show status like 'innodb_row_lock%'; 
++-------------------------------+-------+ 
+| Variable_name | Value | 
++-------------------------------+-------+ 
+| InnoDB_row_lock_current_waits | 0 | 
+| InnoDB_row_lock_time | 0 | 
+| InnoDB_row_lock_time_avg | 0 | 
+| InnoDB_row_lock_time_max | 0 | 
+| InnoDB_row_lock_waits | 0 | 
++-------------------------------+-------+ 
+5 rows in set (0.01 sec)</code></pre>
+<h4 id="6-锁模式-InnoDB有三种行锁的算法"><a href="#6-锁模式-InnoDB有三种行锁的算法" class="headerlink" title="6. 锁模式(InnoDB有三种行锁的算法)"></a>6. 锁模式(InnoDB有三种行锁的算法)</h4><ul>
+<li><strong>记录锁(Record Locks)</strong>：单个行记录上的锁。对索引项加锁，锁定符合条件的行。其他事务不能修改和删除加锁项；SELECT * FROM table WHERE id = 1 FOR UPDATE;它会在 id=1 的记录上加上记录锁，以阻止其他事务插入，更新，删除 id=1 这一行在通过 主键索引 与 唯一索引 对数据行进行 UPDATE 操作时，也会对该行数据加记录锁：– id 列为主键列或唯一索引列<br>UPDATE SET age = 50 WHERE id = 1;</li>
+<li><strong>间隙锁（Gap Locks）</strong>：当我们使用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁。对于键值在条件范围内但并不存在的记录，叫做“间隙”。InnoDB 也会对这个“间隙”加锁，这种锁机制就是所谓的间隙锁。对索引项之间的“间隙”加锁，锁定记录的范围（对第一条记录前的间隙或最后一条将记录后的间隙加锁），不包含索引项本身。其他事务不能在锁范围内插入数据，这样就防止了别的事务新增幻影行。间隙锁基于非唯一索引，它锁定一段范围内的索引记录。间隙锁基于下面将会提到的Next-Key Locking 算法，请务必牢记：<strong>使用间隙锁锁住的是一个区间，而不仅仅是这个区间中的每一条数据</strong>。SELECT * FROM table WHERE id BETWEN 1 AND 10 FOR UPDATE;即所有在（1，10）区间内的记录行都会被锁住，所有id 为 2、3、4、5、6、7、8、9 的数据行的插入会被阻塞，但是 1 和 10 两条记录行并不会被锁住。GAP锁的目的，是为了防止同一事务的两次当前读，出现幻读的情况</li>
+<li><strong>临键锁(Next-key Locks)</strong>：<strong>临键锁</strong>，是<strong>记录锁与间隙锁的组合</strong>，它的封锁范围，既包含索引记录，又包含索引区间。(临键锁的主要目的，也是为了避免<strong>幻读</strong>(Phantom Read)。如果把事务的隔离级别降级为RC，临键锁则也会失效。)Next-Key 可以理解为一种特殊的<strong>间隙锁</strong>，也可以理解为一种特殊的<strong>算法</strong>。通过<strong>临建锁</strong>可以解决幻读的问题。每个数据行上的非唯一索引列上都会存在一把临键锁，当某个事务持有该数据行的临键锁时，会锁住一段左开右闭区间的数据。需要强调的一点是，InnoDB 中行级锁是基于索引实现的，临键锁只与非唯一索引列有关，在唯一索引列（包括主键列）上不存在临键锁。对于行的查询，都是采用该方法，主要目的是解决幻读的问题。</li>
+</ul>
+<blockquote>
+<p>❝<br>select for update有什么含义，会锁表还是锁行还是其他</p>
+</blockquote>
+<p>for update 仅适用于InnoDB，且必须在事务块(BEGIN/COMMIT)中才能生效。在进行事务操作时，通过“for update”语句，MySQL会对查询结果集中每行数据都添加排他锁，其他线程对该记录的更新与删除操作都会阻塞。排他锁包含行锁、表锁。</p>
+<p>InnoDB这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB才使用行级锁，否则，InnoDB将使用表锁！假设有个表单 products ，里面有id跟name二个栏位，id是主键。</p>
+<ul>
+<li>明确指定主键，并且有此笔资料，row lock</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> id<span class="token operator">=</span><span class="token string">'3'</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> id<span class="token operator">=</span><span class="token string">'3'</span> <span class="token operator">and</span> <span class="token keyword">type</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>明确指定主键，若查无此笔资料，无lock</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> id<span class="token operator">=</span><span class="token string">'-1'</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>无主键，table lock</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> name<span class="token operator">=</span><span class="token string">'Mouse'</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>主键不明确，table lock</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> id<span class="token operator">&lt;></span><span class="token string">'3'</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>主键不明确，table lock</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> products <span class="token keyword">WHERE</span> id <span class="token operator">LIKE</span> <span class="token string">'3'</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span><span class="token punctuation">;</span></code></pre>
+<p><strong>注1</strong>: FOR UPDATE仅适用于InnoDB，且必须在交易区块(BEGIN/COMMIT)中才能生效。</p>
+<p><strong>注2</strong>: 要测试锁定的状况，可以利用MySQL的Command Mode ，开二个视窗来做测试。</p>
+<h4 id="7-LOCK-TABLES-和-UNLOCK-TABLES"><a href="#7-LOCK-TABLES-和-UNLOCK-TABLES" class="headerlink" title="7. LOCK TABLES 和 UNLOCK TABLES"></a>7. <strong>LOCK TABLES 和 UNLOCK TABLES</strong></h4><p>Mysql也支持lock tables和unlock tables，这都是在服务器层（MySQL Server层）实现的，和存储引擎无关，它们有自己的用途，并不能替代事务处理。 （除了禁用了autocommint后可以使用，其他情况不建议使用）：</p>
+<ul>
+<li>LOCK TABLES 可以锁定用于当前线程的表。如果表被其他线程锁定，则当前线程会等待，直到可以获取所有锁定为止。</li>
+<li>UNLOCK TABLES 可以释放当前线程获得的任何锁定。当前线程执行另一个 LOCK TABLES 时，<br>或当与服务器的连接被关闭时，所有由当前线程锁定的表被隐含地解锁</li>
+</ul>
+<h5 id="LOCK-TABLES语法："><a href="#LOCK-TABLES语法：" class="headerlink" title="LOCK TABLES语法："></a><strong>LOCK TABLES语法：</strong></h5><ul>
+<li>在用 LOCK TABLES 对 InnoDB 表加锁时要注意，要将 AUTOCOMMIT 设为 0，否则MySQL 不会给表加锁；</li>
+<li>事务结束前，不要用 UNLOCK TABLES 释放表锁，因为 UNLOCK TABLES会隐含地提交事务；</li>
+<li>COMMIT 或 ROLLBACK 并不能释放用 LOCK TABLES 加的表级锁，必须用UNLOCK TABLES 释放表锁。</li>
+</ul>
+<p>正确的方式见如下语句：<br>例如，如果需要写表 t1 并从表 t 读，可以按如下做：</p>
+<pre class=" language-text"><code class="language-text">SET AUTOCOMMIT=0; 
+LOCK TABLES t1 WRITE, t2 READ, ...; 
+[do something with tables t1 and t2 here]; 
+COMMIT; 
+UNLOCK TABLES;</code></pre>
+<h5 id="使用LOCK-TABLES的场景："><a href="#使用LOCK-TABLES的场景：" class="headerlink" title="使用LOCK TABLES的场景："></a><strong>使用LOCK TABLES的场景：</strong></h5><p>给表显示加表级锁（InnoDB表和MyISAM都可以），一般是为了在一定程度模拟事务操作，实现对某一时间点多个表的一致性读取。（与MyISAM默认的表锁行为类似）</p>
+<p>在用 LOCK TABLES 给表显式加表锁时，必须同时取得所有涉及到表的锁，并且 MySQL 不支持锁升级。也就是说，在执行 LOCK TABLES 后，只能访问显式加锁的这些表，不能访问未加锁的表；同时，如果加的是读锁，那么只能执行查询操作，而不能执行更新操作。</p>
+<p>其实，在MyISAM自动加锁（表锁）的情况下也大致如此，MyISAM 总是一次获得 SQL 语句所需要的全部锁，这也正是 MyISAM 表不会出现死锁（Deadlock Free）的原因。</p>
+<p>例如，有一个订单表 orders，其中记录有各订单的总金额 total，同时还有一个 订单明细表 order_detail，其中记录有各订单每一产品的金额小计 subtotal，假设我们需要检 查这两个表的金额合计是否相符，可能就需要执行如下两条 SQL：</p>
+<pre class=" language-text"><code class="language-text">Select sum(total) from orders; 
+Select sum(subtotal) from order_detail; </code></pre>
+<p>这时，如果不先给两个表加锁，就可能产生错误的结果，因为第一条语句执行过程中，<br>order_detail 表可能已经发生了改变。因此，正确的方法应该是：</p>
+<pre class=" language-text"><code class="language-text">Lock tables orders read local, order_detail read local; 
+Select sum(total) from orders; 
+Select sum(subtotal) from order_detail; 
+Unlock tables;</code></pre>
+<p>（在 LOCK TABLES 时加了“local”选项，其作用就是允许当你持有表的读锁时，其他用户可以在满足 MyISAM 表并发插入条件的情况下，在表尾并发插入记录（MyISAM 存储引擎支持“并发插入”））</p>
+<h3 id="5-4-死锁（Deadlock-Free）"><a href="#5-4-死锁（Deadlock-Free）" class="headerlink" title="5.4-死锁（Deadlock Free）"></a>5.4-<strong>死锁（Deadlock Free）</strong></h3><ul>
+<li><p><strong>死锁产生：</strong></p>
+</li>
+<li><ul>
+<li>死锁是指两个或多个事务在同一资源上相互占用，并请求锁定对方占用的资源，从而导致恶性循环。</li>
+<li>当事务试图以不同的顺序锁定资源时，就可能产生死锁。多个事务同时锁定同一个资源时也可能会产生死锁。</li>
+<li>锁的行为和顺序和存储引擎相关。以同样的顺序执行语句，有些存储引擎会产生死锁有些不会——死锁有双重原因：真正的数据冲突；存储引擎的实现方式。</li>
+</ul>
+</li>
+<li><p><strong>检测死锁：</strong>数据库系统实现了各种死锁检测和死锁超时的机制。InnoDB存储引擎能检测到死锁的循环依赖并立即返回一个错误。</p>
+</li>
+<li><p><strong>死锁恢复：</strong>死锁发生以后，只有部分或完全回滚其中一个事务，才能打破死锁，InnoDB目前处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。所以事务型应用程序在设计时必须考虑如何处理死锁，多数情况下只需要重新执行因死锁回滚的事务即可。</p>
+</li>
+<li><p><strong>外部锁的死锁检测：</strong>发生死锁后，InnoDB 一般都能自动检测到，并使一个事务释放锁并回退，另一个事务获得锁，继续完成事务。但在涉及外部锁，或涉及表锁的情况下，InnoDB 并不能完全自动检测到死锁， 这需要通过设置锁等待超时参数 innodb_lock_wait_timeout 来解决</p>
+</li>
+<li><p><strong>死锁影响性能：</strong>死锁会影响性能而不是会产生严重错误，因为InnoDB会自动检测死锁状况并回滚其中一个受影响的事务。在高并发系统上，当许多线程等待同一个锁时，死锁检测可能导致速度变慢。 有时当发生死锁时，禁用死锁检测（使用innodb_deadlock_detect配置选项）可能会更有效，这时可以依赖innodb_lock_wait_timeout设置进行事务回滚。</p>
+</li>
+</ul>
+<h4 id="1-MyISAM避免死锁："><a href="#1-MyISAM避免死锁：" class="headerlink" title="1. MyISAM避免死锁："></a>1. <strong>MyISAM避免死锁：</strong></h4><ul>
+<li>在自动加锁的情况下，MyISAM 总是一次获得 SQL 语句所需要的全部锁，所以 MyISAM 表不会出现死锁。</li>
+</ul>
+<h4 id="2-InnoDB避免死锁："><a href="#2-InnoDB避免死锁：" class="headerlink" title="2. InnoDB避免死锁："></a>2. <strong>InnoDB避免死锁：</strong></h4><ul>
+<li>为了在单个InnoDB表上执行多个并发写入操作时避免死锁，可以在事务开始时通过为预期要修改的每个元祖（行）使用SELECT … FOR UPDATE语句来获取必要的锁，即使这些行的更改语句是在之后才执行的。</li>
+<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请共享锁、更新时再申请排他锁，因为这时候当用户再申请排他锁时，其他事务可能又已经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁</li>
+<li>如果事务需要修改或锁定多个表，则应在每个事务中以相同的顺序使用加锁语句。 在应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样可以大大降低产生死锁的机会</li>
+<li>通过SELECT … LOCK IN SHARE MODE获取行的读锁后，如果当前事务再需要对该记录进行更新操作，则很有可能造成死锁。</li>
+<li>改变事务隔离级别</li>
+</ul>
+<p>如果出现死锁，可以用 SHOW INNODB STATUS 命令来确定最后一个死锁产生的原因。返回结果中包括死锁相关事务的详细信息，如引发死锁的 SQL 语句，事务已经获得的锁，正在等待什么锁，以及被回滚的事务等。据此可以分析死锁产生的原因和改进措施。</p>
+<h3 id="5-5-一些优化锁性能的建议"><a href="#5-5-一些优化锁性能的建议" class="headerlink" title="5.5-一些优化锁性能的建议"></a>5.5-<strong>一些优化锁性能的建议</strong></h3><ul>
+<li>尽量使用较低的隔离级别；</li>
+<li>精心设计索引， 并尽量使用索引访问数据， 使加锁更精确， 从而减少锁冲突的机会</li>
+<li>选择合理的事务大小，小事务发生锁冲突的几率也更小</li>
+<li>给记录集显示加锁时，最好一次性请求足够级别的锁。比如要修改数据的话，最好直接申请排他锁，而不是先申请共享锁，修改时再请求排他锁，这样容易产生死锁</li>
+<li>不同的程序访问一组表时，应尽量约定以相同的顺序访问各表，对一个表而言，尽可能以固定的顺序存取表中的行。这样可以大大减少死锁的机会</li>
+<li>尽量用相等条件访问数据，这样可以避免间隙锁对并发插入的影响</li>
+<li>不要申请超过实际需要的锁级别</li>
+<li>除非必须，查询时不要显示加锁。 MySQL的MVCC可以实现事务中的查询不用加锁，优化事务性能；MVCC只在COMMITTED READ（读提交）和REPEATABLE READ（可重复读）两种隔离级别下工作</li>
+<li>对于一些特定的事务，可以使用表锁来提高处理速度或减少死锁的可能</li>
+</ul>
+<h3 id="5-6-乐观锁、悲观锁"><a href="#5-6-乐观锁、悲观锁" class="headerlink" title="5.6-乐观锁、悲观锁"></a>5.6-<strong>乐观锁、悲观锁</strong></h3><p><strong>乐观锁与悲观锁是两种并发控制的思想，可用于解决丢失更新问题</strong></p>
+<ul>
+<li><p><strong>乐观锁(Optimistic Lock)</strong>：假设不会发生并发冲突，只在提交操作时检查是否违反数据完整性。 乐观锁不能解决脏读的问题。</p>
+<p>乐观锁, 顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库如果提供类似于write_condition机制的其实都是提供的乐观锁。</p>
+<p>乐观锁会“乐观地”假定大概率不会发生并发更新冲突，访问、处理数据过程中不加锁，只在更新数据时再根据版本号或时间戳判断是否有冲突，有则处理，无则提交事务。用数据版本（Version）记录机制实现，这是乐观锁最常用的一种实现方式</p>
+</li>
+<li><p><strong>悲观锁(Pessimistic Lock)</strong>：假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作。</p>
+<p>悲观锁，顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。</p>
+<p>悲观锁会“悲观地”假定大概率会发生并发更新冲突，访问、处理数据前就加排他锁，在整个数据处理过程中锁定数据，事务提交或回滚后才释放锁。另外与乐观锁相对应的，<strong>悲观锁是由数据库自己实现了的，要用的时候，我们直接调用数据库的相关语句就可以了。</strong></p>
+</li>
+</ul>
+<h2 id="6-MySQL查询"><a href="#6-MySQL查询" class="headerlink" title="6-MySQL查询"></a>6-MySQL查询</h2><blockquote>
+<p>count(*) 和 count(1)和count(列名)区别 ps：这道题说法有点多</p>
+</blockquote>
+<p>执行效果上：</p>
+<ul>
+<li>count(*)包括了所有的列，相当于行数，在统计结果的时候，不会忽略列值为NULL</li>
+<li>count(1)包括了所有列，用1代表代码行，在统计结果的时候，不会忽略列值为NULL</li>
+<li>count(列名)只包括列名那一列，在统计结果的时候，会忽略列值为空（这里的空不是只空字符串或者0，而是表示null）的计数，即某个字段值为NULL时，不统计。</li>
+</ul>
+<p>执行效率上：</p>
+<ul>
+<li>列名为主键，count(列名)会比count(1)快</li>
+<li>列名不为主键，count(1)会比count(列名)快</li>
+<li>如果表多个列并且没有主键，则 count(1) 的执行效率优于 count(*)</li>
+<li>如果有主键，则 select count（主键）的执行效率是最优的</li>
+<li>如果表只有一个字段，则 select count(*) 最优。</li>
+</ul>
+<blockquote>
+<p>MySQL中 in和 exists 的区别？</p>
+</blockquote>
+<ul>
+<li>exists：exists对外表用loop逐条查询，每次查询都会查看exists的条件语句，当exists里的条件语句能够返回记录行时（无论记录行是的多少，只要能返回），条件就为真，返回当前loop到的这条记录；反之，如果exists里的条件语句不能返回记录行，则当前loop到的这条记录被丢弃，exists的条件就像一个bool条件，当能返回结果集则为true，不能返回结果集则为false</li>
+<li>in：in查询相当于多个or条件的叠加</li>
+</ul>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> A <span class="token keyword">WHERE</span> A<span class="token punctuation">.</span>id <span class="token operator">IN</span> <span class="token punctuation">(</span><span class="token keyword">SELECT</span> id <span class="token keyword">FROM</span> B<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> A <span class="token keyword">WHERE</span> <span class="token keyword">EXISTS</span> <span class="token punctuation">(</span><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">from</span> B <span class="token keyword">WHERE</span> B<span class="token punctuation">.</span>id <span class="token operator">=</span> A<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><strong>如果查询的两个表大小相当，那么用in和exists差别不大</strong>。</p>
+<p>如果两个表中一个较小，一个是大表，则子查询表大的用exists，子查询表小的用in：</p>
+<blockquote>
+<p>UNION和UNION ALL的区别?</p>
+</blockquote>
+<p>UNION和UNION ALL都是将两个结果集合并为一个，<strong>两个要联合的SQL语句 字段个数必须一样，而且字段类型要“相容”（一致）；</strong></p>
+<ul>
+<li>UNION在进行表连接后会筛选掉重复的数据记录（效率较低），而UNION ALL则不会去掉重复的数据记录；</li>
+<li>UNION会按照字段的顺序进行排序，而UNION ALL只是简单的将两个结果合并就返回；</li>
+</ul>
+<p><strong>SQL执行顺序</strong></p>
+<ul>
+<li><p>手写</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token keyword">DISTINCT</span> <span class="token operator">&lt;</span>select_list<span class="token operator">></span>
+<span class="token keyword">FROM</span> <span class="token operator">&lt;</span>left_table<span class="token operator">></span> <span class="token operator">&lt;</span>join_type<span class="token operator">></span>
+<span class="token keyword">JOIN</span> <span class="token operator">&lt;</span>right_table<span class="token operator">></span> <span class="token keyword">ON</span> <span class="token operator">&lt;</span>join_condition<span class="token operator">></span>
+<span class="token keyword">WHERE</span> <span class="token operator">&lt;</span>where_condition<span class="token operator">></span>
+<span class="token keyword">GROUP</span> <span class="token keyword">BY</span> <span class="token operator">&lt;</span>group_by_list<span class="token operator">></span>
+<span class="token keyword">HAVING</span> <span class="token operator">&lt;</span>having_condition<span class="token operator">></span>
+<span class="token keyword">ORDER</span> <span class="token keyword">BY</span> <span class="token operator">&lt;</span>order_by_condition<span class="token operator">></span>
+<span class="token keyword">LIMIT</span> <span class="token operator">&lt;</span>limit_number<span class="token operator">></span></code></pre>
+</li>
+</ul>
+<ul>
+<li><p>机读</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">FROM</span> <span class="token operator">&lt;</span>left_table<span class="token operator">></span>
+<span class="token keyword">ON</span> <span class="token operator">&lt;</span>join_condition<span class="token operator">></span>
+<span class="token operator">&lt;</span>join_type<span class="token operator">></span> <span class="token keyword">JOIN</span> <span class="token operator">&lt;</span>right_table<span class="token operator">></span>
+<span class="token keyword">WHERE</span> <span class="token operator">&lt;</span>where_condition<span class="token operator">></span>
+<span class="token keyword">GROUP</span> <span class="token keyword">BY</span> <span class="token operator">&lt;</span>group_by_list<span class="token operator">></span>
+<span class="token keyword">HAVING</span> <span class="token operator">&lt;</span>having_condition<span class="token operator">></span>
+<span class="token keyword">SELECT</span>
+<span class="token keyword">DISTINCT</span> <span class="token operator">&lt;</span>select_list<span class="token operator">></span>
+<span class="token keyword">ORDER</span> <span class="token keyword">BY</span> <span class="token operator">&lt;</span>order_by_condition<span class="token operator">></span>
+<span class="token keyword">LIMIT</span> <span class="token operator">&lt;</span>limit_number<span class="token operator">></span></code></pre>
+</li>
+</ul>
+<h2 id="7-MySQL事务"><a href="#7-MySQL事务" class="headerlink" title="7-MySQL事务"></a>7-MySQL事务</h2><blockquote>
+<p>事务的隔离级别有哪些？MySQL的默认隔离级别是什么？<br>什么是幻读，脏读，不可重复读呢？<br>MySQL事务的四大特性以及实现原理<br>MVCC熟悉吗，它的底层原理？</p>
+</blockquote>
+<p>MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说，在人员管理系统中，你删除一个人员，你即需要删除人员的基本资料，也要删除和该人员相关的信息，如信箱，文章等等，这样，这些数据库操作语句就构成一个事务。</p>
+<p>务是MySQL区别于NoSQL的重要特征，是保证关系型数据库数据一致性的关键技术。事务可看作是对数据库操作的基本执行单元，可能包含一个或者多个SQL语句。这些语句在执行时，要么都执行，要么都不执行。</p>
+<p>事务的执行主要包括两个操作，提交和回滚。</p>
+<blockquote>
+<p><strong>提交</strong>：commit，将事务执行结果写入数据库。</p>
+</blockquote>
+<blockquote>
+<p><strong>回滚</strong>：rollback，回滚所有已经执行的语句，返回修改之前的数据。</p>
+</blockquote>
+<h3 id="7-1-ACID-—-事务基本要素"><a href="#7-1-ACID-—-事务基本要素" class="headerlink" title="7.1-ACID — 事务基本要素"></a>7.1-ACID — 事务基本要素</h3><blockquote>
+<p><strong>原子性（Atomicity）</strong> ：语句要么全执行，要么全不执行，是事务最核心的特性，事务本身就是以原子性来定义的；实现主要基于undo log日志实现的。</p>
+<p><strong>持久性（Durability</strong> ：保证事务提交后不会因为宕机等原因导致数据丢失；实现主要基于redo log日志。</p>
+<p><strong>隔离性（Isolation）</strong> ：保证事务执行尽可能不受其他事务影响；InnoDB默认的隔离级别是RR，RR的实现主要基于锁机制、数据的隐藏列、undo log和类next-key lock机制。</p>
+<p><strong>一致性（Consistency）</strong> ：事务追求的最终目标，一致性的实现既需要数据库层面的保障，也需要应用层面的保障。在事务开始之前和事务结束以后，数据库的完整性约束没有被破坏。</p>
+</blockquote>
+<h4 id="1-原子性"><a href="#1-原子性" class="headerlink" title="1. 原子性"></a>1. 原子性</h4><p>事务的原子性就如原子操作一般，表示事务不可再分，其中的操作要么都做，要么都不做；如果事务中一个SQL语句执行失败，则已执行的语句也必须回滚，数据库退回到事务前的状态。只有0和1，没有其它值。</p>
+<p>事务的原子性表明事务就是一个整体，当事务无法成功执行的时候，需要将事务中已经执行过的语句全部回滚，使得数据库回归到最初未开始事务的状态。</p>
+<p>事务的原子性就是通过undo log日志进行实现的。当事务需要进行回滚时，InnoDB引擎就会调用undo log日志进行SQL语句的撤销，实现数据的回滚。</p>
+<h4 id="2-持久性"><a href="#2-持久性" class="headerlink" title="2. 持久性"></a>2. 持久性</h4><p>事务的持久性是指当事务提交之后，数据库的改变就应该是永久性的，而不是暂时的。这也就是说，当事务提交之后，任何其它操作甚至是系统的宕机故障都不会对原来事务的执行结果产生影响。</p>
+<p>事务的持久性是通过InnoDB存储引擎中的redo log日志来实现的，具体实现思路见下文。</p>
+<h4 id="3-隔离性"><a href="#3-隔离性" class="headerlink" title="3. 隔离性"></a>3. 隔离性</h4><p>原子性和持久性是单个事务本身层面的性质，而隔离性是指事务之间应该保持的关系。隔离性要求不同事务之间的影响是互不干扰的，一个事务的操作与其它事务是相互隔离的。</p>
+<p>由于事务可能并不只包含一条SQL语句，所以在事务的执行期间很有可能会有其它事务开始执行。因此多事务的并发性就要求事务之间的操作是相互隔离的。这一点跟多线程之间数据同步的概念有些类似。</p>
+<h4 id="4-锁机制"><a href="#4-锁机制" class="headerlink" title="4. 锁机制"></a><strong>4. 锁机制</strong></h4><p>事务之间的隔离，是通过锁机制实现的。当一个事务需要对数据库中的某行数据进行修改时，需要先给数据加锁；加了锁的数据，其它事务是不运行操作的，只能等待当前事务提交或回滚将锁释放。</p>
+<p>锁机制并不是一个陌生的概念，在许多场景中都会利用到不同实现的锁对数据进行保护和同步。而在MySQL中，根据不同的划分标准，还可将锁分为不同的种类。</p>
+<h3 id="7-2-并发事务处理带来的问题"><a href="#7-2-并发事务处理带来的问题" class="headerlink" title="7.2-并发事务处理带来的问题"></a>7.2-并发事务处理带来的问题</h3><ul>
+<li>更新丢失（Lost Update)：事务A和事务B选择同一行，然后基于最初选定的值更新该行时，由于两个事务都不知道彼此的存在，就会发生丢失更新问题</li>
+<li>脏读(Dirty Reads)：事务A读取了事务B更新的数据，然后B回滚操作，那么A读取到的数据是脏数据</li>
+<li>不可重复读（Non-Repeatable Reads)：事务 A 多次读取同一数据，事务B在事务A多次读取的过程中，对数据作了更新并提交，导致事务A多次读取同一数据时，结果不一致。</li>
+<li>幻读（Phantom Reads)：幻读与不可重复读类似。它发生在一个事务A读取了几行数据，接着另一个并发事务B插入了一些数据时。在随后的查询中，事务A就会发现多了一些原本不存在的记录，就好像发生了幻觉一样，所以称为幻读。</li>
+</ul>
+<h4 id="1-脏读"><a href="#1-脏读" class="headerlink" title="1. 脏读"></a>1. 脏读</h4><p>当前事务中读到其他事务未提交的数据，也就是脏数据。</p>
+<p><img src="/2020/05/14/mysql/%E8%84%8F%E8%AF%BB.png" alt></p>
+<p>以上图为例，事务A在读取文章的阅读量时，读取到了事务B为提交的数据。如果事务B最后没有顺利提交，导致事务回滚，那么实际上阅读量并没有修改成功，而事务A却是读到的修改后的值，显然不合情理。</p>
+<h4 id="2-不可重复读"><a href="#2-不可重复读" class="headerlink" title="2. 不可重复读"></a>2. <strong>不可重复读</strong></h4><p>在事务A中先后两次读取同一个数据，但是两次读取的结果不一样。脏读与不可重复读的区别在于：前者读到的是其他事务未提交的数据，后者读到的是其他事务已提交的数据。</p>
+<p><img src="/2020/05/14/mysql/%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB.png" alt></p>
+<p>以上图为例，事务A在先后读取文章阅读量的数据时，结果却不一样。说明事务A在执行的过程中，阅读量的值被其它事务给修改了。这样使得数据的查询结果不再可靠，同样也不合实际。</p>
+<h4 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3. 幻读"></a>3. 幻读</h4><p>在事务A中按照某个条件先后两次查询数据库，两次查询结果的行数不同，这种现象称为幻读。不可重复读与幻读的区别可以通俗的理解为：前者是数据变了，后者是数据的行数变了。</p>
+<p><img src="/2020/05/14/mysql/%E5%B9%BB%E8%AF%BB.png" alt></p>
+<p>以上图为例，当对0&lt;阅读量&lt;100的文章进行查询时，先查到了一个结果，后来查询到了两个结果。这表明同一个事务的查询结果数不一，行数不一致。这样的问题使得在根据某些条件对数据筛选的时候，前后筛选结果不具有可靠性。</p>
+<h4 id="4-幻读和不可重复读的区别"><a href="#4-幻读和不可重复读的区别" class="headerlink" title="4. 幻读和不可重复读的区别"></a>4. <strong>幻读和不可重复读的区别</strong></h4><ul>
+<li><strong>不可重复读的重点是修改</strong>：在同一事务中，同样的条件，第一次读的数据和第二次读的数据不一样。（因为中间有其他事务提交了修改）</li>
+<li><strong>幻读的重点在于新增或者删除</strong>：在同一事务中，同样的条件,，第一次和第二次读出来的记录数不一样。（因为中间有其他事务提交了插入/删除）</li>
+</ul>
+<h4 id="5-并发事务处理带来的问题的解决办法："><a href="#5-并发事务处理带来的问题的解决办法：" class="headerlink" title="5. 并发事务处理带来的问题的解决办法："></a>5. <strong>并发事务处理带来的问题的解决办法：</strong></h4><ul>
+<li><p>“更新丢失”通常是应该完全避免的。但防止更新丢失，并不能单靠数据库事务控制器来解决，需要应用程序对要更新的数据加必要的锁来解决，因此，防止更新丢失应该是应用的责任。</p>
+</li>
+<li><p>“脏读” 、 “不可重复读”和“幻读” ，其实都是数据库读一致性问题，必须由数据库提供一定的事务隔离机制来解决：</p>
+</li>
+<li><ul>
+<li>一种是加锁：在读取数据前，对其加锁，阻止其他事务对数据进行修改。</li>
+<li>另一种是数据多版本并发控制（MultiVersion Concurrency Control，简称 <strong>MVCC</strong> 或 MCC），也称为多版本数据库：不用加任何锁， 通过一定机制生成一个数据请求时间点的一致性数据快照 （Snapshot)， 并用这个快照来提供一定级别 （语句级或事务级） 的一致性读取。从用户的角度来看，好象是数据库可以提供同一数据的多个版本。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-3-事务隔离级别"><a href="#7-3-事务隔离级别" class="headerlink" title="7.3-事务隔离级别"></a>7.3-事务隔离级别</h3><p>数据库事务的隔离级别有4种，由低到高分别为</p>
+<ul>
+<li><strong>READ-UNCOMMITTED(读未提交)：</strong> 最低的隔离级别，允许读取尚未提交的数据变更，<strong>可能会导致脏读、幻读或不可重复读</strong>。</li>
+<li><strong>READ-COMMITTED(读已提交)：</strong> 允许读取并发事务已经提交的数据，<strong>可以阻止脏读，但是幻读或不可重复读仍有可能发生</strong>。</li>
+<li><strong>REPEATABLE-READ(可重复读)：</strong> 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，<strong>可以阻止脏读和不可重复读，但幻读仍有可能发生</strong>。</li>
+<li><strong>SERIALIZABLE(可串行化)：</strong> 最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，<strong>该级别可以防止脏读、不可重复读以及幻读</strong>。</li>
+</ul>
+<p><img src="/2020/05/14/mysql/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB.png" alt></p>
+<p>在实际的数据库设计中，隔离级别越高，导致数据库的并发效率会越低；而隔离级别太低，又会导致数据库在读写过程中会遇到各种乱七八糟的问题。</p>
+<p>因此在大多数数据库系统中，默认的隔离级别时读已提交（如Oracle）或者可重复读RR（MySQL的InnoDB引擎）。</p>
+<p><strong>查看当前数据库的事务隔离级别：</strong></p>
+<pre class=" language-text"><code class="language-text">show variables like 'tx_isolation'</code></pre>
+<p>下面通过事例一一阐述在事务的并发操作中可能会出现脏读，不可重复读，幻读和事务隔离级别的联系。</p>
+<p>数据库的事务隔离越严格，并发副作用越小，但付出的代价就越大，因为事务隔离实质上就是使事务在一定程度上“串行化”进行，这显然与“并发”是矛盾的。同时，不同的应用对读一致性和事务隔离程度的要求也是不同的，比如许多应用对“不可重复读”和“幻读”并不敏感，可能更关心数据并发访问的能力。</p>
+<h4 id="1-Read-uncommitted"><a href="#1-Read-uncommitted" class="headerlink" title="1. Read uncommitted"></a>1. Read uncommitted</h4><p>读未提交，就是一个事务可以读取另一个未提交事务的数据。</p>
+<ul>
+<li><p><strong>事例</strong>：老板要给程序员发工资，程序员的工资是3.6万/月。但是发工资时老板不小心按错了数字，按成3.9万/月，该钱已经打到程序员的户口，但是事务还没有提交，就在这时，程序员去查看自己这个月的工资，发现比往常多了3千元，以为涨工资了非常高兴。但是老板及时发现了不对，马上回滚差点就提交了的事务，将数字改成3.6万再提交。</p>
+</li>
+<li><p><strong>分析</strong>：实际程序员这个月的工资还是3.6万，但是程序员看到的是3.9万。他看到的是老板还没提交事务时的数据。这就是脏读。</p>
+</li>
+</ul>
+<p>那怎么解决脏读呢？Read committed！读提交，能解决脏读问题。</p>
+<h4 id="2-Read-committed"><a href="#2-Read-committed" class="headerlink" title="2. Read committed"></a>2. Read committed</h4><p>读提交，顾名思义，就是一个事务要等另一个事务提交后才能读取数据。</p>
+<ul>
+<li><p><strong>事例</strong>：程序员拿着信用卡去享受生活（卡里当然是只有3.6万），当他埋单时（程序员事务开启），收费系统事先检测到他的卡里有3.6万，就在这个时候！！程序员的妻子要把钱全部转出充当家用，并提交。当收费系统准备扣款时，再检测卡里的金额，发现已经没钱了（第二次检测金额当然要等待妻子转出金额事务提交完）。程序员就会很郁闷，明明卡里是有钱的…</p>
+</li>
+<li><p><strong>分析</strong>：这就是读提交，若有事务对数据进行更新（UPDATE）操作时，读操作事务要等待这个更新操作事务提交后才能读取数据，可以解决脏读问题。但在这个事例中，出现了一个事务范围内两个相同的查询却返回了不同数据，这就是<strong>不可重复读</strong>。</p>
+</li>
+</ul>
+<p>那怎么解决可能的不可重复读问题？Repeatable read ！</p>
+<h4 id="3-Repeatable-read"><a href="#3-Repeatable-read" class="headerlink" title="3. Repeatable read"></a>3. Repeatable read</h4><p>重复读，就是在开始读取数据（事务开启）时，不再允许修改操作。<strong>MySQL的默认事务隔离级别</strong></p>
+<ul>
+<li><p><strong>事例</strong>：程序员拿着信用卡去享受生活（卡里当然是只有3.6万），当他埋单时（事务开启，不允许其他事务的UPDATE修改操作），收费系统事先检测到他的卡里有3.6万。这个时候他的妻子不能转出金额了。接下来收费系统就可以扣款了。</p>
+</li>
+<li><p><strong>分析</strong>：重复读可以解决不可重复读问题。写到这里，应该明白的一点就是，<strong>不可重复读对应的是修改，即UPDATE操作。但是可能还会有幻读问题。因为幻读问题对应的是插入INSERT操作，而不是UPDATE操作</strong>。</p>
+</li>
+</ul>
+<p><strong>什么时候会出现幻读？</strong></p>
+<p>事例：程序员某一天去消费，花了2千元，然后他的妻子去查看他今天的消费记录（全表扫描FTS，妻子事务开启），看到确实是花了2千元，就在这个时候，程序员花了1万买了一部电脑，即新增INSERT了一条消费记录，并提交。当妻子打印程序员的消费记录清单时（妻子事务提交），发现花了1.2万元，似乎出现了幻觉，这就是幻读。</p>
+<p>那怎么解决幻读问题？Serializable！</p>
+<h4 id="4-Serializable-串行化"><a href="#4-Serializable-串行化" class="headerlink" title="4. Serializable 串行化"></a>4. Serializable 串行化</h4><p>Serializable 是最高的事务隔离级别，在该级别下，事务串行化顺序执行，可以避免脏读、不可重复读与幻读。简单来说，Serializable会在读取的每一行数据上都加锁，所以可能导致大量的超时和锁争用问题。这种事务隔离级别效率低下，比较耗数据库性能，一般不使用。</p>
+<h3 id="7-4-MVCC"><a href="#7-4-MVCC" class="headerlink" title="7.4-MVCC"></a>7.4-MVCC</h3><p>MySQL的大多数事务型存储引擎实现都不是简单的行级锁。基于提升并发性考虑，一般都同时实现了多版本并发控制（MVCC），包括Oracle、PostgreSQL。只是实现机制各不相同。</p>
+<p>可以认为 MVCC 是行级锁的一个变种，但它在很多情况下避免了加锁操作，因此开销更低。虽然实现机制有所不同，但大都实现了非阻塞的读操作，写操作也只是锁定必要的行。</p>
+<p>MVCC 的实现是通过保存数据在某个时间点的快照来实现的。也就是说不管需要执行多长时间，每个事物看到的数据都是一致的。</p>
+<p>典型的MVCC实现方式，分为<strong>乐观（optimistic）并发控制和悲观（pressimistic）并发控制</strong>。下边通过 InnoDB的简化版行为来说明 MVCC 是如何工作的。</p>
+<p>InnoDB 的 MVCC，是通过在每行记录后面保存两个隐藏的列来实现。这两个列，一个保存了行的创建时间，一个保存行的过期时间（删除时间）。当然存储的并不是真实的时间，而是系统版本号（system version number）。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。</p>
+<blockquote>
+<p>MVCC的特点就是在同一时刻，不同事务可以读取到不同版本的数据，从而可以解决脏读和不可重复读的问题。</p>
+<p>MVCC实际上就是通过数据的隐藏列和回滚日志（undo log），实现多个版本数据的共存。这样的好处是，使用MVCC进行读数据的时候，不用加锁，从而避免了同时读写的冲突。</p>
+<p>在实现MVCC时，每一行的数据中会额外保存几个隐藏的列，比如当前行创建时的版本号和删除时间和指向undo log的回滚指针。这里的版本号并不是实际的时间值，而是系统版本号。每开始新的事务，系统版本号都会自动递增。事务开始时的系统版本号会作为事务的版本号，用来和查询每行记录的版本号进行比较。</p>
+<p>每个事务又有自己的版本号，这样事务内执行数据操作时，就通过版本号的比较来达到数据版本控制的目的。</p>
+<p>另外，InnoDB实现的隔离级别RR时可以避免幻读现象的，这是通过<code>next-key lock</code>机制实现的。</p>
+<p><code>next-key lock</code>实际上就是行锁的一种，只不过它不只是会锁住当前行记录的本身，还会锁定一个范围。比如上面幻读的例子，开始查询0&lt;阅读量&lt;100的文章时，只查到了一个结果。<code>next-key lock</code>会将查询出的这一行进行锁定，同时还会对0&lt;阅读量&lt;100这个范围进行加锁，这实际上是一种间隙锁。间隙锁能够防止其他事务在这个间隙修改或者插入记录。这样一来，就保证了在0&lt;阅读量&lt;100这个间隙中，只存在原来的一行数据，从而避免了幻读。</p>
+</blockquote>
+<ul>
+<li><p><strong>REPEATABLE READ（可重读）隔离级别下MVCC如何工作：</strong></p>
+<ul>
+<li><p>SELECTInnoDB会根据以下两个条件检查每行记录：只有符合上述两个条件的才会被查询出来</p>
+</li>
+<li><ul>
+<li>InnoDB只查找版本早于当前事务版本的数据行，这样可以确保事务读取的行，要么是在开始事务之前已经存在要么是事务自身插入或者修改过的</li>
+<li>行的删除版本号要么未定义，要么大于当前事务版本号，这样可以确保事务读取到的行在事务开始之前未被删除</li>
+</ul>
+</li>
+<li><p>INSERT：InnoDB为新插入的每一行保存当前系统版本号作为行版本号</p>
+</li>
+<li><p>DELETE：InnoDB为删除的每一行保存当前系统版本号作为行删除标识</p>
+</li>
+<li><p>UPDATE：InnoDB为插入的一行新纪录保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行作为删除标识</p>
+</li>
+</ul>
+<p>保存这两个额外系统版本号，使大多数操作都不用加锁。使数据操作简单，性能很好，并且也能保证只会读取到符合要求的行。不足之处是每行记录都需要额外的存储空间，需要做更多的行检查工作和一些额外的维护工作。</p>
+<p>MVCC 只在 COMMITTED READ（读提交）和REPEATABLE READ（可重复读）两种隔离级别下工作。</p>
+</li>
+</ul>
+<h2 id="8-MySQL日志系统"><a href="#8-MySQL日志系统" class="headerlink" title="8-MySQL日志系统"></a>8-MySQL日志系统</h2><p>MySQL日志系统是数据库的重要组件，用于记录数据库的更新和修改。若数据库发生故障，可通过不同日志记录恢复数据库的原来数据。因此实际上日志系统直接决定着MySQL运行的鲁棒性和稳健性。</p>
+<p>MySQL的日志有很多种，如二进制日志（binlog）、错误日志、查询日志、慢查询日志等，此外InnoDB存储引擎还提供了两种日志：redo log（重做日志）和undo log（回滚日志）。这里将重点针对InnoDB引擎，对重做日志、回滚日志和二进制日志这三种进行分析。</p>
+<h3 id="8-1-事务日志"><a href="#8-1-事务日志" class="headerlink" title="8.1-事务日志"></a>8.1-事务日志</h3><p>InnoDB 使用日志来减少提交事务时的开销。因为日志中已经记录了事务，就无须在每个事务提交时把缓冲池的脏块刷新(flush)到磁盘中。</p>
+<p>事务修改的数据和索引通常会映射到表空间的随机位置，所以刷新这些变更到磁盘需要很多随机 IO。</p>
+<p>InnoDB 假设使用常规磁盘，随机IO比顺序IO昂贵得多，因为一个IO请求需要时间把磁头移到正确的位置，然后等待磁盘上读出需要的部分，再转到开始位置。</p>
+<p>InnoDB 用日志把随机IO变成顺序IO。一旦日志安全写到磁盘，事务就持久化了，即使断电了，InnoDB可以重放日志并且恢复已经提交的事务。</p>
+<p>InnoDB 使用一个后台线程智能地刷新这些变更到数据文件。这个线程可以批量组合写入，使得数据写入更顺序，以提高效率。</p>
+<p>事务日志可以帮助提高事务效率：</p>
+<ul>
+<li>使用事务日志，存储引擎在修改表的数据时只需要修改其内存拷贝，再把该修改行为记录到持久在硬盘上的事务日志中，而不用每次都将修改的数据本身持久到磁盘。</li>
+<li>事务日志采用的是追加的方式，因此写日志的操作是磁盘上一小块区域内的顺序I/O，而不像随机I/O需要在磁盘的多个地方移动磁头，所以采用事务日志的方式相对来说要快得多。</li>
+<li>事务日志持久以后，内存中被修改的数据在后台可以慢慢刷回到磁盘。</li>
+<li>如果数据的修改已经记录到事务日志并持久化，但数据本身没有写回到磁盘，此时系统崩溃，存储引擎在重启时能够自动恢复这一部分修改的数据。</li>
+</ul>
+<p>目前来说，大多数存储引擎都是这样实现的，我们通常称之为<strong>预写式日志</strong>（Write-Ahead Logging），修改数据需要写两次磁盘。</p>
+<h3 id="8-2-事务的实现"><a href="#8-2-事务的实现" class="headerlink" title="8.2-事务的实现"></a>8.2-事务的实现</h3><p>事务的实现是基于数据库的存储引擎。不同的存储引擎对事务的支持程度不一样。MySQL 中支持事务的存储引擎有 InnoDB 和 NDB。</p>
+<p>事务的实现就是如何实现ACID特性。</p>
+<p>事务的隔离性是通过锁实现，而事务的原子性、一致性和持久性则是通过事务日志实现 。</p>
+<blockquote>
+<p>❝<br>事务是如何通过日志来实现的，说得越深入越好。</p>
+</blockquote>
+<p>事务日志包括：<strong>重做日志redo</strong>和<strong>回滚日志undo</strong></p>
+<ul>
+<li><strong>redo log（重做日志</strong>） 实现持久化和原子性在innoDB的存储引擎中，事务日志通过重做(redo)日志和innoDB存储引擎的日志缓冲(InnoDB Log Buffer)实现。事务开启时，事务中的操作，都会先写入存储引擎的日志缓冲中，在事务提交之前，这些缓冲的日志都需要提前刷新到磁盘上持久化，这就是DBA们口中常说的“日志先行”(Write-Ahead Logging)。当事务提交之后，在Buffer Pool中映射的数据文件才会慢慢刷新到磁盘。此时如果数据库崩溃或者宕机，那么当系统重启进行恢复时，就可以根据redo log中记录的日志，把数据库恢复到崩溃前的一个状态。未完成的事务，可以继续提交，也可以选择回滚，这基于恢复的策略而定。在系统启动的时候，就已经为redo log分配了一块连续的存储空间，以顺序追加的方式记录Redo Log，通过顺序IO来改善性能。所有的事务共享redo log的存储空间，它们的Redo Log按语句的执行顺序，依次交替的记录在一起。</li>
+<li><strong>undo log（回滚日志）</strong> 实现一致性undo log 主要为事务的回滚服务。在事务执行的过程中，除了记录redo log，还会记录一定量的undo log。undo log记录了数据在每个操作前的状态，如果事务执行过程中需要回滚，就可以根据undo log进行回滚操作。单个事务的回滚，只会回滚当前事务做的操作，并不会影响到其他的事务做的操作。Undo记录的是已部分完成并且写入硬盘的未完成的事务，默认情况下回滚日志是记录下表空间中的（共享表空间或者独享表空间）</li>
+</ul>
+<p>二种日志均可以视为一种恢复操作，redo_log是恢复提交事务修改的页操作，而undo_log是回滚行记录到特定版本。二者记录的内容也不同，redo_log是物理日志，记录页的物理修改操作，而undo_log是逻辑日志，根据每行记录进行记录。</p>
+<blockquote>
+<p>❝<br>又引出个问题：你知道MySQL 有多少种日志吗？</p>
+</blockquote>
+<ul>
+<li><strong>错误日志</strong>：记录出错信息，也记录一些警告信息或者正确的信息。</li>
+<li><strong>查询日志</strong>：记录所有对数据库请求的信息，不论这些请求是否得到了正确的执行。</li>
+<li><strong>慢查询日志</strong>：设置一个阈值，将运行时间超过该值的所有SQL语句都记录到慢查询的日志文件中。</li>
+<li><strong>二进制日志</strong>：记录对数据库执行更改的所有操作。</li>
+<li><strong>中继日志</strong>：中继日志也是二进制日志，用来给slave 库恢复</li>
+<li><strong>事务日志</strong>：重做日志redo和回滚日志undo</li>
+</ul>
+<h3 id="8-3-重做日志（redo-log）"><a href="#8-3-重做日志（redo-log）" class="headerlink" title="8.3-重做日志（redo log）"></a>8.3-重做日志（redo log）</h3><p>重做日志（redo log）是InnoDB引擎层的日志，用来记录事务操作引起数据的变化，记录的是数据页的物理修改。</p>
+<p>重做日记的作用其实很好理解，我打个比方。数据库中数据的修改就好比你写的论文，万一哪天论文丢了怎么呢？以防这种不幸的发生，我们可以在写论文的时候，每一次修改都拿个小本本记录一下，记录什么时间对某一页进行了怎么样的修改。这就是重做日志。</p>
+<p>InnoDB引擎对数据的更新，是先将更新记录写入redo log日志，然后会在系统空闲的时候或者是按照设定的更新策略再将日志中的内容更新到磁盘之中。这就是所谓的<strong>预写式技术（Write Ahead logging）</strong>。这种技术可以大大减少IO操作的频率，提升数据刷新的效率。</p>
+<h4 id="1-脏数据刷盘"><a href="#1-脏数据刷盘" class="headerlink" title="1. 脏数据刷盘"></a>1. <strong>脏数据刷盘</strong></h4><p>值得注意的是，redo log日志的大小是固定的，为了能够持续不断的对更新记录进行写入，在redo log日志中设置了两个标志位置，checkpoint和write_pos，分别表示记录擦除的位置和记录写入的位置。redo log日志的数据写入示意图可见下图。</p>
+<p><img src="/2020/05/14/mysql/1231463451254.png" alt></p>
+<p>当<code>write_pos</code>标志到了日志结尾时，会从结尾跳至日志头部进行重新循环写入。所以redo log的逻辑结构并不是线性的，而是可看作一个圆周运动。<code>write_pos</code>与<code>checkpoint</code>中间的空间可用于写入新数据，写入和擦除都是往后推移，循环往复的。</p>
+<p><img src="/2020/05/14/mysql/53264652364562.png" alt></p>
+<p>当<code>write_pos</code>追上<code>checkpoint</code>时，表示redo log日志已经写满。这时不能继续执行新的数据库更新语句，需要停下来先删除一些记录，执行<code>checkpoint</code>规则腾出可写空间。</p>
+<blockquote>
+<p><strong>checkpoint规则</strong>：checkpoint触发后，将buffer中脏数据页和脏日志页都刷到磁盘。</p>
+</blockquote>
+<blockquote>
+<p><strong>脏数据</strong>：指内存中未刷到磁盘的数据。</p>
+</blockquote>
+<p>redo log中最重要的概念就是缓冲池<code>buffer pool</code>，这是在内存中分配的一个区域，包含了磁盘中部分数据页的映射，作为访问数据库的缓冲。</p>
+<blockquote>
+<p>当请求读取数据时，会先判断是否在缓冲池命中，如果未命中才会在磁盘上进行检索后放入缓冲池；</p>
+</blockquote>
+<blockquote>
+<p>当请求写入数据时，会先写入缓冲池，缓冲池中修改的数据会定期刷新到磁盘中。这一过程也被称之为<strong>刷脏</strong> 。</p>
+</blockquote>
+<p>因此，当数据修改时，除了修改<code>buffer pool</code>中的数据，还会在redo log中记录这次操作；当事务提交时，会根据redo log的记录对数据进行刷盘。如果MySQL宕机，重启时可以读取redo log中的数据，对数据库进行恢复，从而保证了事务的持久性，使得数据库获得<code>crash-safe</code>能力。</p>
+<h4 id="2-脏日志刷盘"><a href="#2-脏日志刷盘" class="headerlink" title="2. 脏日志刷盘"></a>2. <strong>脏日志刷盘</strong></h4><p>除了上面提到的对于脏数据的刷盘，实际上redo log日志在记录时，为了保证日志文件的持久化，也需要经历将日志记录从内存写入到磁盘的过程。redo log日志可分为两个部分，一是存在易失性内存中的缓存日志<code>redo log buff</code>，二是保存在磁盘上的redo log日志文件<code>redo log file</code>。</p>
+<p>为了确保每次记录都能够写入到磁盘中的日志中，每次将<code>redo log buffer</code>中的日志写入<code>redo log file</code>的过程中都会调用一次操作系统的<code>fsync</code>操作。</p>
+<blockquote>
+<p><strong>fsync函数</strong>：包含在UNIX系统头文件#include &lt;unistd.h&gt;中，用于同步内存中所有已修改的文件数据到储存设备。</p>
+</blockquote>
+<p>在写入的过程中，还需要经过操作系统内核空间的<code>os buffer</code>。redo log日志的写入过程可见下图。</p>
+<p>![](redo log日志刷盘流程.png)</p>
+<h3 id="8-4-二进制日志（binlog）"><a href="#8-4-二进制日志（binlog）" class="headerlink" title="8.4-二进制日志（binlog）"></a>8.4-二进制日志（binlog）</h3><p>二进制日志binlog是服务层的日志，还被称为归档日志。binlog主要记录数据库的变化情况，内容包括数据库所有的更新操作。所有涉及数据变动的操作，都要记录进二进制日志中。因此有了binlog可以很方便的对数据进行复制和备份，因而也常用作主从库的同步。</p>
+<p>这里binlog所存储的内容看起来似乎与redo log很相似，但是其实不然。redo log是一种物理日志，记录的是实际上对某个数据进行了怎么样的修改；而binlog是逻辑日志，记录的是SQL语句的原始逻辑，比如”给ID=2这一行的a字段加1 “。binlog日志中的内容是二进制的，根据日记格式参数的不同，可能基于SQL语句、基于数据本身或者二者的混合。一般常用记录的都是SQL语句。</p>
+<p>这里的物理和逻辑的概念，我的个人理解是：</p>
+<blockquote>
+<p>物理的日志可看作是实际数据库中数据页上的变化信息，只看重结果，而不在乎是通过“何种途径”导致了这种结果；</p>
+<p>逻辑的日志可看作是通过了某一种方法或者操作手段导致数据发生了变化，存储的是逻辑性的操作。</p>
+</blockquote>
+<p>同时，redo log是基于<code>crash recovery</code>，保证MySQL宕机后的数据恢复；而binlog是基于<code>point-in-time recovery</code>，保证服务器可以基于时间点对数据进行恢复，或者对数据进行备份。</p>
+<p>事实上最开始MySQL是没有redo log日志的。因为起先MySQL是没有InnoDB引擎的，自带的引擎是MyISAM。binlog是服务层的日志，因此所有引擎都能够使用。但是光靠binlog日志只能提供归档的作用，无法提供<code>crash-safe</code>能力，所以InnoDB引擎就采用了学自于Oracle的技术，也就是redo log，这才拥有了<code>crash-safe</code>能力。这里对redo log日志和binlog日志的特点分别进行了对比：</p>
+<p><img src="/2020/05/14/mysql/24535264624.png" alt></p>
+<p>在MySQL执行更新语句时，都会涉及到redo log日志和binlog日志的读写。一条更新语句的执行过程如下：</p>
+<p><img src="/2020/05/14/mysql/MySQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png" alt></p>
+<p>从上图可以看出，MySQL在执行更新语句的时候，在服务层进行语句的解析和执行，在引擎层进行数据的提取和存储；同时在服务层对binlog进行写入，在InnoDB内进行redo log的写入。</p>
+<p>不仅如此，在对redo log写入时有两个阶段的提交，一是binlog写入之前<code>prepare</code>状态的写入，二是binlog写入之后<code>commit</code>状态的写入。</p>
+<p>之所以要安排这么一个两阶段提交，自然是有它的道理的。现在我们可以假设不采用两阶段提交的方式，而是采用“单阶段”进行提交，即要么先写入redo log，后写入binlog；要么先写入binlog，后写入redo log。这两种方式的提交都会导致原先数据库的状态和被恢复后的数据库的状态不一致。</p>
+<p><strong>先写入redo log，后写入binlog：</strong></p>
+<p>在写完redo log之后，数据此时具有<code>crash-safe</code>能力，因此系统崩溃，数据会恢复成事务开始之前的状态。但是，若在redo log写完时候，binlog写入之前，系统发生了宕机。此时binlog没有对上面的更新语句进行保存，导致当使用binlog进行数据库的备份或者恢复时，就少了上述的更新语句。从而使得<code>id=2</code>这一行的数据没有被更新。</p>
+<p>![](先写redo log后写binlog的问题.png)</p>
+<p><strong>先写入binlog，后写入redo log：</strong></p>
+<p>写完binlog之后，所有的语句都被保存，所以通过binlog复制或恢复出来的数据库中id=2这一行的数据会被更新为a=1。但是如果在redo log写入之前，系统崩溃，那么redo log中记录的这个事务会无效，导致实际数据库中<code>id=2</code>这一行的数据并没有更新。</p>
+<p>![](先写binlog后写redo log的问题.png)</p>
+<p>由此可见，两阶段的提交就是为了避免上述的问题，使得binlog和redo log中保存的信息是一致的。</p>
+<h3 id="8-5-回滚日志（undo-log）"><a href="#8-5-回滚日志（undo-log）" class="headerlink" title="8.5-回滚日志（undo log）"></a>8.5-回滚日志（undo log）</h3><p>回滚日志同样也是InnoDB引擎提供的日志，顾名思义，回滚日志的作用就是对数据进行回滚。当事务对数据库进行修改，InnoDB引擎不仅会记录redo log，还会生成对应的undo log日志；如果事务执行失败或调用了rollback，导致事务需要回滚，就可以利用undo log中的信息将数据回滚到修改之前的样子。</p>
+<p>但是undo log不redo log不一样，它属于逻辑日志。它对SQL语句执行相关的信息进行记录。当发生回滚时，InnoDB引擎会根据undo log日志中的记录做与之前相反的工作。比如对于每个数据插入操作（insert），回滚时会执行数据删除操作（delete）；对于每个数据删除操作（delete），回滚时会执行数据插入操作（insert）；对于每个数据更新操作（update），回滚时会执行一个相反的数据更新操作（update），把数据改回去。undo log由两个作用，一是提供回滚，二是实现MVCC。</p>
+<h2 id="9-主从复制"><a href="#9-主从复制" class="headerlink" title="9-主从复制"></a>9-主从复制</h2><p>主从复制的概念很简单，就是从原来的数据库复制一个完全一样的数据库，原来的数据库称作主数据库，复制的数据库称为从数据库。从数据库会与主数据库进行数据同步，保持二者的数据一致性。</p>
+<p>主从复制的原理实际上就是通过bin log日志实现的。bin log日志中保存了数据库中所有SQL语句，通过对bin log日志中SQL的复制，然后再进行语句的执行即可实现从数据库与主数据库的同步。</p>
+<p>主从复制的过程可见下图。主从复制的过程主要是靠三个线程进行的，一个运行在主服务器中的发送线程，用于发送binlog日志到从服务器。两外两个运行在从服务器上的I/O线程和SQL线程。I/O线程用于读取主服务器发送过来的binlog日志内容，并拷贝到本地的中继日志中。SQL线程用于读取中继日志中关于数据更新的SQL语句并执行，从而实现主从库的数据一致。</p>
+<p><img src="/2020/05/14/mysql/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png" alt></p>
+<p>之所以需要实现主从复制，实际上是由实际应用场景所决定的。主从复制能够带来的好处有：</p>
+<blockquote>
+<ol>
+<li><p>通过复制实现数据的异地备份，当主数据库故障时，可切换从数据库，避免数据丢失。</p>
+</li>
+<li><p>可实现架构的扩展，当业务量越来越大，I/O访问频率过高时，采用多库的存储，可以降低磁盘I/O访问的频率，提高单个机器的I/O性能。</p>
+</li>
+<li><p>可实现读写分离，使数据库能支持更大的并发。</p>
+</li>
+<li><p>实现服务器的负载均衡，通过在主服务器和从服务器之间切分处理客户查询的负荷。</p>
+</li>
+</ol>
+</blockquote>
 
             </div>
             <hr/>
@@ -1457,7 +2072,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">787.5k</span>&nbsp;字
+                class="white-color">806.7k</span>&nbsp;字
             
             
             
