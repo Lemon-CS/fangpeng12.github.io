@@ -461,7 +461,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    30.6k
+                    30.7k
                 </div>
                 
 
@@ -841,13 +841,15 @@ SET default_storage_engine=NDBCLUSTER;</code></pre>
 <p>哈希算法：也叫散列算法，就是把任意值(key)通过哈希函数变换为固定长度的 key 地址，通过这个地址进行具体数据的数据结构。</p>
 <p><img src="/2020/05/14/mysql/%E5%93%88%E5%B8%8C%E8%A1%A8.jpeg" alt></p>
 <p>考虑这个数据库表 user，表中一共有 7 个数据，我们需要检索 id=7 的数据，SQL 语法是：</p>
-<pre><code>select \* fromuserwhereid=7;</code></pre><p>哈希算法首先计算存储 id=7 的数据的物理地址 addr=hash(7)=4231，而 4231 映射的物理地址是 0x77，0x77 就是 id=7 存储的额数据的物理地址，通过该独立地址可以找到对应 user_name=’g’这个数据。这就是哈希算法快速检索数据的计算过程。</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token keyword">user</span> <span class="token keyword">where</span> id<span class="token operator">=</span><span class="token number">7</span><span class="token punctuation">;</span></code></pre>
+<p>哈希算法首先计算存储 id=7 的数据的物理地址 addr=hash(7)=4231，而 4231 映射的物理地址是 0x77，0x77 就是 id=7 存储的额数据的物理地址，通过该独立地址可以找到对应 user_name=’g’这个数据。这就是哈希算法快速检索数据的计算过程。</p>
 <p>但是哈希算法有个数据碰撞的问题，也就是哈希函数可能对不同的 key 会计算出同一个结果，比如 hash(7)可能跟 hash(199)计算出来的结果一样，也就是不同的 key 映射到同一个结果了，这就是碰撞问题。解决碰撞问题的一个常见处理方式就是链地址法，即用链表把碰撞的数据接连起来。计算哈希值之后，还需要检查该哈希值是否存在碰撞数据链表，有则一直遍历到链表尾，直达找到真正的 key 对应的数据为止。</p>
 <p><img src="/2020/05/14/mysql/2143142341235.jpeg" alt></p>
 <p><img src="/2020/05/14/mysql/23523525235325.jpeg" alt></p>
 <p>从算法时间复杂度分析来看，哈希算法时间复杂度为 O（1），检索速度非常快。比如查找 id=7 的数据，哈希索引只需要计算一次就可以获取到对应的数据，检索速度非常快。但是 Mysql 并没有采取哈希作为其底层算法，这是为什么呢？</p>
 <p>因为考虑到数据检索有一个常用手段就是范围查找，比如以下这个 SQL 语句：</p>
-<pre><code>select \* fromuserwhereid \&gt;3;</code></pre><p>针对以上这个语句，我们希望做的是找出 id&gt;3 的数据，这是很典型的范围查找。如果使用哈希算法实现的索引，范围查找怎么做呢？一个简单的思路就是一次把所有数据找出来加载到内存，然后再在内存里筛选筛选目标范围内的数据。但是这个范围查找的方法也太笨重了，没有一点效率而言。</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token keyword">user</span> <span class="token keyword">where</span> id <span class="token operator">></span><span class="token number">3</span><span class="token punctuation">;</span></code></pre>
+<p>针对以上这个语句，我们希望做的是找出 id&gt;3 的数据，这是很典型的范围查找。如果使用哈希算法实现的索引，范围查找怎么做呢？一个简单的思路就是一次把所有数据找出来加载到内存，然后再在内存里筛选筛选目标范围内的数据。但是这个范围查找的方法也太笨重了，没有一点效率而言。</p>
 <p>所以，使用哈希算法实现的索引虽然可以做到快速检索数据，但是没办法做数据高效范围查找，因此哈希索引是不适合作为 Mysql 的底层索引的数据结构。</p>
 </li>
 <li><h5 id="二叉查找树-BST"><a href="#二叉查找树-BST" class="headerlink" title="二叉查找树(BST)"></a>二叉查找树(BST)</h5><p>二叉查找树是一种支持数据快速查找的数据结构，如图下所示:</p>
@@ -1571,6 +1573,14 @@ Unlock tables;</code></pre>
 </li>
 </ol>
 </blockquote>
+<blockquote>
+<p>参考</p>
+<p>——<a href="https://zhuanlan.zhihu.com/p/29150809" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/29150809</a></p>
+<p>——<a href="https://zhuanlan.zhihu.com/p/143969890?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=912308138894557184" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/143969890?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=912308138894557184</a></p>
+<p>——<a href="https://zhuanlan.zhihu.com/p/59764376?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=912308138894557184" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/59764376?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=912308138894557184</a></p>
+<p>——<a href="https://mp.weixin.qq.com/s/y7Jo67stdbakETo2UV1ivg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/y7Jo67stdbakETo2UV1ivg</a></p>
+<p>——<a href="https://mp.weixin.qq.com/s/2WzX1hTVsM_cStzrfABJhg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/2WzX1hTVsM_cStzrfABJhg</a></p>
+</blockquote>
 
             </div>
             <hr/>
@@ -2072,7 +2082,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">806.7k</span>&nbsp;字
+                class="white-color">806.8k</span>&nbsp;字
             
             
             
